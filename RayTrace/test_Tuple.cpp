@@ -11,8 +11,9 @@
 //And a.w = 1.0
 //And a is a point
 //And a is not a vector
-TEST(TupleTest, IsVec) {
-	Tuple t(4.3f, -4.2f, 3.1f, 1.0f);
+TEST(TupleTest, IsPoint) {
+	Point3 pt(4.3f, -4.2f, 3.1f);
+	const Tuple& t = pt;
 	EXPECT_EQ(t.x, 4.3f);
 	EXPECT_EQ(t.y, -4.2f);
 	EXPECT_EQ(t.z, 3.1f);
@@ -29,40 +30,102 @@ TEST(TupleTest, IsVec) {
 //And a.w = 0.0
 //And a is not a point
 //And a is a vector
-//
+TEST(TupleTest, IsVector) {
+	Vec3 v(4.3f, -4.2f, 3.1f);
+	const Tuple& t = v;
+	EXPECT_EQ(t.x, 4.3f);
+	EXPECT_EQ(t.y, -4.2f);
+	EXPECT_EQ(t.z, 3.1f);
+	EXPECT_EQ(t.w, 0.0f);
+	EXPECT_FALSE(t.IsPoint3());
+	EXPECT_TRUE(t.IsVec3());
+}
+
 //Scenario : point() creates tuples with w = 1
 //Given p ← point(4, -4, 3)
 //Then p = tuple(4, -4, 3, 1)
-//
+TEST(TupleTest, Point3Ctor) {
+	Point3 left(4, -4, 3);
+	Point3 right(4, -4, 3);
+	EXPECT_EQ(left, right);
+	right = left;
+	right.x = 99;
+	EXPECT_NE(left, right);
+	right = left;
+	right.y = 99;
+	EXPECT_NE(left, right);
+	right = left;
+	right.z = 99;
+	EXPECT_NE(left, right);
+}
+
 //Scenario : vector() creates tuples with w = 0
 //Given v ← vector(4, -4, 3)
 //Then v = tuple(4, -4, 3, 0)
-//
+TEST(TupleTest, Vec3Ctor) {
+	Vec3 left(4, -4, 3);
+	Vec3 right(4, -4, 3);
+	EXPECT_EQ(left, right);
+}
+
 //Scenario : Adding two tuples
 //Given a1 ← tuple(3, -2, 5, 1)
 //And a2 ← tuple(-2, 3, 1, 0)
 //Then a1 + a2 = tuple(1, 1, 6, 1)
-//
+TEST(TupleTest, AddVectors) {
+	Vec3 v1(3, -2, 5);
+	Vec3 v2(-2, 3, 1);
+	Vec3 result = v1 + v2;
+	EXPECT_EQ(result, Vec3(1,1, 6));
+
+	Point3 pt(1, 2, 3);
+	Point3 res2 = pt + v1;
+	EXPECT_EQ(res2, Point3(4, 0, 8));
+}
+
 //Scenario : Subtracting two points
 //Given p1 ← point(3, 2, 1)
 //And p2 ← point(5, 6, 7)
 //Then p1 - p2 = vector(-2, -4, -6)
-//
+TEST(TupleTest, SubtractPoints) {
+	Point3 p1(3,2,1);
+	Point3 p2(5,6,7);
+	Vec3 result = p1 - p2;
+	EXPECT_EQ(result, Vec3(-2, -4, -6));
+}
+
 //Scenario : Subtracting a vector from a point
 //Given p ← point(3, 2, 1)
 //And v ← vector(5, 6, 7)
 //Then p - v = point(-2, -4, -6)
-//
+TEST(TupleTest, VecSubPoint) {
+	Point3 p(3, 2, 1);
+	Vec3 v(5, 6, 7);
+	Point3 result = p - v;
+	EXPECT_EQ(result, Point3(-2, -4, -6));
+}
+
 //Scenario : Subtracting two vectors
 //Given v1 ← vector(3, 2, 1)
 //And v2 ← vector(5, 6, 7)
 //Then v1 - v2 = vector(-2, -4, -6)
-//
+TEST(TupleTest, VecSubVec) {
+	Vec3 v1(3, 2, 1);
+	Vec3 v2(5, 6, 7);
+	Vec3 result = v1 - v2;
+	EXPECT_EQ(result, Vec3(-2, -4, -6));
+}
+
 //Scenario : Subtracting a vector from the zero vector
 //Given zero ← vector(0, 0, 0)
 //And v ← vector(1, -2, 3)
 //Then zero - v = vector(-1, 2, -3)
-//
+TEST(TupleTest, ZeroSubVec) {
+	Vec3 v(1, -2, 3);
+	Vec3 result = Vec3::zero() - v;
+	EXPECT_EQ(result, Vec3(-1, 2, -3));
+}
+
 //Scenario : Negating a tuple
 //Given a ← tuple(1, -2, 3, -4)
 //Then - a = tuple(-1, 2, -3, 4)
