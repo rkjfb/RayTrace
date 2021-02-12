@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Tuple.h"
 
+using namespace ray;
+
 //Feature: Tuples, Vectors, and Points
 
 //Scenario : A tuple with w = 1.0 is a point
@@ -13,13 +15,9 @@
 //And a is not a vector
 TEST(TupleTest, IsPoint) {
 	Point3 pt(4.3f, -4.2f, 3.1f);
-	const Tuple& t = pt;
-	EXPECT_EQ(t.x, 4.3f);
-	EXPECT_EQ(t.y, -4.2f);
-	EXPECT_EQ(t.z, 3.1f);
-	EXPECT_EQ(t.w, 1.0f);
-	EXPECT_TRUE(t.IsPoint3());
-	EXPECT_FALSE(t.IsVec3());
+	EXPECT_EQ(pt.x, 4.3f);
+	EXPECT_EQ(pt.y, -4.2f);
+	EXPECT_EQ(pt.z, 3.1f);
 }
 
 //Scenario : A tuple with w = 0 is a vector
@@ -32,13 +30,10 @@ TEST(TupleTest, IsPoint) {
 //And a is a vector
 TEST(TupleTest, IsVector) {
 	Vec3 v(4.3f, -4.2f, 3.1f);
-	const Tuple& t = v;
-	EXPECT_EQ(t.x, 4.3f);
-	EXPECT_EQ(t.y, -4.2f);
-	EXPECT_EQ(t.z, 3.1f);
-	EXPECT_EQ(t.w, 0.0f);
-	EXPECT_FALSE(t.IsPoint3());
-	EXPECT_TRUE(t.IsVec3());
+	EXPECT_EQ(v.x, 4.3f);
+	EXPECT_EQ(v.y, -4.2f);
+	EXPECT_EQ(v.z, 3.1f);
+	EXPECT_EQ(v.w, 0.0f);
 }
 
 //Scenario : point() creates tuples with w = 1
@@ -129,11 +124,29 @@ TEST(TupleTest, ZeroSubVec) {
 //Scenario : Negating a tuple
 //Given a ← tuple(1, -2, 3, -4)
 //Then - a = tuple(-1, 2, -3, 4)
-//
+TEST(TupleTest, Negate) {
+	Point3 p(1, -2, 3);
+	Point3 neg = -p;
+	EXPECT_EQ(neg, Point3(-1, 2, -3));
+
+	Vec3 v(1, -2, 3);
+	Vec3 negv = -v;
+	EXPECT_EQ(negv, Vec3(-1,2,-3));
+}
+
 //Scenario : Multiplying a tuple by a scalar
 //Given a ← tuple(1, -2, 3, -4)
 //Then a * 3.5 = tuple(3.5, -7, 10.5, -14)
-//
+TEST(TupleTest, ScalarMultiple) {
+	Point3 p(1, -2, 3);
+	Point3 presult = p * 3.5f;
+	EXPECT_EQ(presult, Point3(3.5, -7, 10.5));
+
+	Vec3 v(1, -2, 3, -4);
+	Vec3 vresult = v * 3.5f;
+	EXPECT_EQ(vresult, Vec3(3.5, -7, 10.5, -14));
+}
+
 //Scenario : Multiplying a tuple by a fraction
 //Given a ← tuple(1, -2, 3, -4)
 //Then a * 0.5 = tuple(0.5, -1, 1.5, -2)
