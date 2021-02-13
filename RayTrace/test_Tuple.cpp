@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Tuple.h"
+#include "test_Tuple.h"
 
 using namespace ray;
 
@@ -150,56 +151,123 @@ TEST(TupleTest, ScalarMultiple) {
 //Scenario : Multiplying a tuple by a fraction
 //Given a ← tuple(1, -2, 3, -4)
 //Then a * 0.5 = tuple(0.5, -1, 1.5, -2)
-//
+TEST(TupleTest, ScalarMultipleFrac) {
+	Point3 p(1, -2, 3);
+	Point3 presult = p * 0.5f;
+	EXPECT_EQ(presult, Point3(0.5, -1, 1.5));
+
+	Vec3 v(1, -2, 3, -4);
+	Vec3 vresult = v * 0.5f;
+	EXPECT_EQ(vresult, Vec3(0.5, -1, 1.5, -2));
+}
+
 //Scenario : Dividing a tuple by a scalar
 //Given a ← tuple(1, -2, 3, -4)
 //Then a / 2 = tuple(0.5, -1, 1.5, -2)
-//
+// TODO: *1/n for now.
+
 //Scenario : Computing the magnitude of vector(1, 0, 0)
 //Given v ← vector(1, 0, 0)
 //Then magnitude(v) = 1
-//
+TEST(Vector, MagnitudeX) {
+	Vec3 v(1, 0, 0);
+	double  mag = v.magnitude();
+	EXPECT_EQ(mag, 1);
+}
+
 //Scenario : Computing the magnitude of vector(0, 1, 0)
 //Given v ← vector(0, 1, 0)
 //Then magnitude(v) = 1
-//
+TEST(Vector, MagnitudeY) {
+	Vec3 v(0, 1, 0);
+	double  mag = v.magnitude();
+	EXPECT_EQ(mag, 1);
+}
+
 //Scenario : Computing the magnitude of vector(0, 0, 1)
 //Given v ← vector(0, 0, 1)
 //Then magnitude(v) = 1
-//
+TEST(Vector, MagnitudeZ) {
+	Vec3 v(0, 0, 1);
+	double  mag = v.magnitude();
+	EXPECT_EQ(mag, 1);
+}
+
 //Scenario : Computing the magnitude of vector(1, 2, 3)
 //Given v ← vector(1, 2, 3)
 //Then magnitude(v) = √14
-//
+TEST(Vector, Magnitude123) {
+	Vec3 v(1, 2, 3);
+	double mag = v.magnitude();
+	EXPECT_NEAR(mag, sqrt(14), RAY_EPISILON);
+}
+
 //Scenario : Computing the magnitude of vector(-1, -2, -3)
 //Given v ← vector(-1, -2, -3)
 //Then magnitude(v) = √14
-//
+TEST(Vector, MagnitudeNeg) {
+	Vec3 v(-1, -2, -3);
+	double mag = v.magnitude();
+	EXPECT_NEAR(mag, sqrt(14), RAY_EPISILON);
+}
+
 //Scenario : Normalizing vector(4, 0, 0) gives(1, 0, 0)
 //Given v ← vector(4, 0, 0)
 //Then normalize(v) = vector(1, 0, 0)
-//
+TEST(Vector, NormalizeX) {
+	Vec3 v(4, 0, 0);
+	Vec3 result = v.normalize();
+	EXPECT_EQ(result, Vec3(1,0,0));
+}
+
 //Scenario : Normalizing vector(1, 2, 3)
 //Given v ← vector(1, 2, 3)
 //# vector(1 / √14, 2 / √14, 3 / √14)
 //Then normalize(v) = approximately vector(0.26726, 0.53452, 0.80178)
-//
+TEST(Vector, Normalize) {
+	Vec3 v(1, 2, 3);
+	Vec3 result = v.normalize();
+	EXPECT_EQ(result, Vec3(0.26726f, 0.53452f, 0.80178f));
+}
+
 //Scenario: The magnitude of a normalized vector
 //Given v ← vector(1, 2, 3)
 //When norm ← normalize(v)
 //Then magnitude(norm) = 1
-//
+TEST(Vector, MagNorm) {
+	Vec3 v(1, 2, 3);
+	Vec3 norm = v.normalize(); 
+	double mag = norm.magnitude();
+
+	EXPECT_NEAR(mag, 1, RAY_EPISILON);
+}
+
 //Scenario : The dot product of two tuples
 //Given a ← vector(1, 2, 3)
 //And b ← vector(2, 3, 4)
 //Then dot(a, b) = 20
-//
+TEST(Vector, Dot) {
+	Vec3 a(1, 2, 3);
+	Vec3 b(2, 3, 4);
+	double dot = a.dot(b);
+
+	EXPECT_NEAR(dot, 20, RAY_EPISILON);
+}
+
 //Scenario : The cross product of two vectors
 //Given a ← vector(1, 2, 3)
 //And b ← vector(2, 3, 4)
 //Then cross(a, b) = vector(-1, 2, -1)
 //And cross(b, a) = vector(1, -2, 1)
-//
+TEST(Vector, Cross) {
+	Vec3 a(1, 2, 3);
+	Vec3 b(2, 3, 4);
+	Vec3 cross1 = a.cross(b);
+	EXPECT_EQ(cross1, Vec3(-1, 2, -1));
+	Vec3 cross2 = b.cross(a);
+	EXPECT_EQ(cross2, Vec3(1, -2, 1));
+}
+
 //Scenario : Colors are(red, green, blue) tuples
 //Given c ← color(-0.5, 0.4, 1.7)
 //Then c.red = -0.5
