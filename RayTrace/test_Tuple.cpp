@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Tuple.h"
+#include "Color.h"
 #include "test_Tuple.h"
+
 
 using namespace ray;
 
@@ -216,7 +218,7 @@ TEST(Vector, MagnitudeNeg) {
 //Then normalize(v) = vector(1, 0, 0)
 TEST(Vector, NormalizeX) {
 	Vec3 v(4, 0, 0);
-	Vec3 result = v.normalize();
+	Vec3 result = v.norm();
 	EXPECT_EQ(result, Vec3(1,0,0));
 }
 
@@ -226,7 +228,7 @@ TEST(Vector, NormalizeX) {
 //Then normalize(v) = approximately vector(0.26726, 0.53452, 0.80178)
 TEST(Vector, Normalize) {
 	Vec3 v(1, 2, 3);
-	Vec3 result = v.normalize();
+	Vec3 result = v.norm();
 	EXPECT_EQ(result, Vec3(0.26726f, 0.53452f, 0.80178f));
 }
 
@@ -236,7 +238,7 @@ TEST(Vector, Normalize) {
 //Then magnitude(norm) = 1
 TEST(Vector, MagNorm) {
 	Vec3 v(1, 2, 3);
-	Vec3 norm = v.normalize(); 
+	Vec3 norm = v.norm(); 
 	double mag = norm.magnitude();
 
 	EXPECT_NEAR(mag, 1, RAY_EPISILON);
@@ -273,34 +275,75 @@ TEST(Vector, Cross) {
 //Then c.red = -0.5
 //And c.green = 0.4
 //And c.blue = 1.7
-//
+TEST(Color, Ctor) {
+	Color c(-0.5f, 0.4f, 1.7f);
+	EXPECT_EQ(c.r, -0.5f);
+	EXPECT_EQ(c.g, 0.4f);
+	EXPECT_EQ(c.b, 1.7f);
+}
+
 //Scenario : Adding colors
 //Given c1 ← color(0.9, 0.6, 0.75)
 //And c2 ← color(0.7, 0.1, 0.25)
 //Then c1 + c2 = color(1.6, 0.7, 1.0)
-//
+TEST(Color, Add) {
+	Color c1(0.9f, 0.6f, 0.75f);
+	Color c2(0.7f, 0.1f, 0.25f);
+	Color result = c1 + c2;
+
+	EXPECT_EQ(result, Color(1.6f, 0.7f, 1.0f));
+}
+
 //Scenario : Subtracting colors
 //Given c1 ← color(0.9, 0.6, 0.75)
 //And c2 ← color(0.7, 0.1, 0.25)
 //Then c1 - c2 = color(0.2, 0.5, 0.5)
-//
+TEST(Color, Subtract) {
+	Color c1(0.9f, 0.6f, 0.75f);
+	Color c2(0.7f, 0.1f, 0.25f);
+	Color result = c1 - c2;
+
+	EXPECT_EQ(result, Color(0.2f, 0.5f, 0.5f));
+}
+
 //Scenario : Multiplying a color by a scalar
 //Given c ← color(0.2, 0.3, 0.4)
 //Then c * 2 = color(0.4, 0.6, 0.8)
-//
+TEST(Color, ScalarMul) {
+	Color c(0.2f, 0.3f, 0.4f);
+	Color result = c * 2;
+
+	EXPECT_EQ(result, Color(0.4f, 0.6f, 0.8f));
+}
+
 //Scenario : Multiplying colors
 //Given c1 ← color(1, 0.2, 0.4)
 //And c2 ← color(0.9, 1, 0.1)
 //Then c1 * c2 = color(0.9, 0.2, 0.04)
-//
+// TODO
+
 //Scenario : Reflecting a vector approaching at 45°
 //Given v ← vector(1, -1, 0)
 //And n ← vector(0, 1, 0)
 //When r ← reflect(v, n)
 //Then r = vector(1, 1, 0)
-//
+TEST(Vector, Reflect) {
+	Vec3 v(1, -1, 0);
+	Vec3 n(0, 1, 0);
+	Vec3 result = v.reflect(n);
+	EXPECT_EQ(result, Vec3(1, 1, 0));
+}
+
 //Scenario : Reflecting a vector off a slanted surface
 //Given v ← vector(0, -1, 0)
 //And n ← vector(√2 / 2, √2 / 2, 0)
 //When r ← reflect(v, n)
 //Then r = vector(1, 0, 0)
+TEST(Vector, Reflect2) {
+	Vec3 v(0, -1, 0);
+	float p = static_cast<float>(sqrt(2) / 2);
+	Vec3 n(p, p, 0);
+	Vec3 result = v.reflect(n);
+	EXPECT_EQ(result, Vec3(1, 0, 0)); 
+}
+

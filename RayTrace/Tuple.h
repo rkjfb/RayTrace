@@ -50,7 +50,7 @@ public:
 		return sqrt(x * x + y * y + z * z);
 	}
 
-	Vec3 normalize() const {
+	Vec3 norm() const {
 		double magmul = 1 / magnitude();
 		return Vec3(static_cast<float>(x * magmul), static_cast<float>(y * magmul), static_cast<float>(z * magmul));
 	}
@@ -61,6 +61,13 @@ public:
 
 	Vec3 cross(const Vec3& v) const {
 		return Vec3(y *v.z -z*v.y, z * v.x-x*v.z, x * v.y -y*v.x);
+	}
+
+	// n should be normalized.
+    Vec3 reflect(const Vec3& n) const {
+		assert(n == n.norm());
+		float d = static_cast<float>(dot(n));
+		return *this - n * 2 * d;
 	}
 
 	static Vec3 zero() {
