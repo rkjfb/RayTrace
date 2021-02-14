@@ -17,12 +17,7 @@ namespace ray {
 		std::vector<std::vector<Color>>& pixels() {
 			return grid;
 		}
-		void write_ppm(std::ostream& s) {
-			int r = 255;
-			s << "P3" << std::endl;
-			s << width() << " " << height() << std::endl;
-			s << r << std::endl;
-		}
+		void write_ppm(std::ostream& s);
 
 	private:
 		std::vector<std::vector<Color>> grid;
