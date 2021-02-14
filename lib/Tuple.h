@@ -1,6 +1,7 @@
 #pragma once
 #include <cassert>
 #include <ostream>
+#include <array>
 
 namespace ray {
 
@@ -23,6 +24,13 @@ public:
 		y = iny;
 		z = inz;
 		w = inw;
+	}
+
+	Vec3(std::array<float, 4> a) {
+		x = a[0];
+		y = a[1];
+		z = a[2];
+		w = a[3];
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Vec3& v) {

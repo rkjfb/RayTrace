@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Matrix.h"
 
+using namespace ray;
+
 //Feature: Matrices
 //
 //Scenario: Constructing and inspecting a 4x4 matrix
@@ -87,7 +89,22 @@ TEST(Matrix, Ctor3) {
 //      | 9 | 8 | 7 | 6 |
 //      | 5 | 4 | 3 | 2 |
 //  Then A = B
-//
+TEST(Matrix, Equal4) {
+	Matrix4 a(std::array<float, 16>{
+		1, 2, 3, 4,
+			5, 6, 7, 8,
+			9, 8, 7, 6,
+			5, 4, 3, 2
+	});
+	Matrix4 b(std::array<float, 16>{
+		1, 2, 3, 4,
+			5, 6, 7, 8,
+			9, 8, 7, 6,
+			5, 4, 3, 2
+	});
+	EXPECT_EQ(a, b);
+}
+
 //Scenario: Matrix equality with different matrices
 //  Given the following matrix A:
 //      | 1 | 2 | 3 | 4 |
@@ -100,7 +117,22 @@ TEST(Matrix, Ctor3) {
 //      | 8 | 7 | 6 | 5 |
 //      | 4 | 3 | 2 | 1 |
 //  Then A != B
-//
+TEST(Matrix, NotEqual4) {
+	Matrix4 a(std::array<float, 16>{
+		1, 2, 3, 4,
+			5, 6, 7, 8,
+			9, 8, 7, 6,
+			5, 4, 3, 2
+	});
+	Matrix4 b(std::array<float, 16>{
+	 2, 3, 4, 5, 
+	 6, 7, 8, 9, 
+	 8, 7, 6, 5, 
+	 4, 3, 2, 1
+	});
+	EXPECT_NE(a, b);
+}
+
 //Scenario: Multiplying two matrices
 //  Given the following matrix A:
 //      | 1 | 2 | 3 | 4 |
@@ -117,7 +149,30 @@ TEST(Matrix, Ctor3) {
 //      | 44|  54 | 114 | 108 |
 //      | 40|  58 | 110 | 102 |
 //      | 16|  26 |  46 |  42 |
-//
+TEST(Matrix, MulMatrix4) {
+	Matrix4 a(std::array<float, 16>{
+		1, 2, 3, 4,
+			5, 6, 7, 8,
+			9, 8, 7, 6,
+			5, 4, 3, 2
+	});
+	Matrix4 b(std::array<float, 16>{
+		-2, 1, 2, 3,
+		3, 2, 1, -1,
+		4, 3, 6, 5,
+		1, 2, 7, 8
+	});
+	Matrix4 result = a * b;
+
+	Matrix4 expect(std::array<float, 16>{
+		20, 22, 50, 48,
+		44, 54, 114,108,
+		40, 58, 110,102,
+		16, 26, 46, 42 
+	});
+	EXPECT_EQ(result, expect);
+}
+
 //Scenario: A matrix multiplied by a tuple
 //  Given the following matrix A:
 //      | 1 | 2 | 3 | 4 |
@@ -126,7 +181,18 @@ TEST(Matrix, Ctor3) {
 //      | 0 | 0 | 0 | 1 |
 //    And b ← tuple(1, 2, 3, 1)
 //  Then A * b = tuple(18, 24, 33, 1)
-//
+TEST(Matrix, MulVec3) {
+	Matrix4 a(std::array<float, 16>{
+		1, 2, 3, 4,
+			2, 4, 4, 2,
+			8, 6, 4, 1,
+			0, 0, 0, 1
+	});
+	Vec3 b(1, 2, 3, 1);
+	Vec3 result = a * b;
+	EXPECT_EQ(result, Vec3(18, 24, 33, 1));
+}
+
 //Scenario: Multiplying a matrix by the identity matrix
 //  Given the following matrix A:
 //    | 0 | 1 |  2 |  4 |
@@ -134,11 +200,28 @@ TEST(Matrix, Ctor3) {
 //    | 2 | 4 |  8 | 16 |
 //    | 4 | 8 | 16 | 32 |
 //  Then A * identity_matrix = A
-//
+TEST(Matrix, MulIdent) {
+	Matrix4 a(std::array<float, 16>{
+		0, 1, 2, 4,
+		1,2,4,8,
+		2,4,8,16,
+		4,8,16,32
+	});
+	Matrix4 result = a * Matrix4::identity();
+
+	EXPECT_EQ(result, a);
+}
+
 //Scenario: Multiplying the identity matrix by a tuple
 //  Given a ← tuple(1, 2, 3, 4)
 //  Then identity_matrix * a = a
-//
+TEST(Matrix, MulVec3Ident) {
+	Vec3 v(1, 2, 3, 4);
+	Vec3 result = Matrix4::identity() * v;
+
+	EXPECT_EQ(result, v);
+}
+
 //Scenario: Transposing a matrix
 //  Given the following matrix A:
 //    | 0 | 9 | 3 | 0 |
