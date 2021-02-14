@@ -1,4 +1,5 @@
 #pragma once
+
 namespace ray {
 
 	bool IsEqual(float left, float right);

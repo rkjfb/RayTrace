@@ -1,5 +1,7 @@
 #pragma once
 #include "Color.h"
+
+#include <vector>
 namespace ray {
 	class Canvas
 	{

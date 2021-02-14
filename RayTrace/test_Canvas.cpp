@@ -107,9 +107,9 @@ TEST(Canvas, PpmCorners) {
 TEST(Canvas, LineSplit) {
 	Canvas c(10, 2);
 	auto& pixels = c.pixels();
-	for (int x = 0; x < c.width(); x++) {
-		for (int y = 0; y < c.height(); y++) {
-			pixels[x][y] = Color(1, 0.8, 0.6);
+	for (size_t x = 0; x < c.width(); x++) {
+		for (size_t y = 0; y < c.height(); y++) {
+			pixels[x][y] = Color(1, 0.8f, 0.6f);
 		}
 	}
 

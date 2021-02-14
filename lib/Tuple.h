@@ -1,4 +1,6 @@
 #pragma once
+#include <cassert>
+
 namespace ray {
 
 	static constexpr float RAY_EPISILON = 0.0001f;

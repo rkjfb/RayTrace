@@ -2,6 +2,7 @@
 #include "Canvas.h"
 #include <array>
 #include <algorithm>
+#include <string>
 namespace ray {
 	void Canvas::write_ppm(std::ostream& s) {
 		// color range
@@ -17,7 +18,7 @@ namespace ray {
 				auto& pixel = grid[x][y];
 				std::array<float, 3> colors = { pixel.r, pixel.g, pixel.b };
 
-				for (int i = 0; i < colors.size(); i++) {
+				for (size_t i = 0; i < colors.size(); i++) {
 					float c = std::clamp(colors[i], 0.0f, 1.0f);
 					std::string num = std::to_string(std::lround(c * range));
 					// 70 character line length limit.
