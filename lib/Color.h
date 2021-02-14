@@ -37,7 +37,9 @@ namespace ray {
 		Color operator*(float s) const {
 			return Color(s * r, s * g, s * b);
 		}
-
+		static Color white() {
+			return Color(1, 1, 1);
+		}
 	};
 
 } // namespace ray

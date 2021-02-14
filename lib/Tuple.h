@@ -1,5 +1,6 @@
 #pragma once
 #include <cassert>
+#include <ostream>
 
 namespace ray {
 
@@ -14,6 +15,8 @@ public:
 	float y = 0.0f;
 	float z = 0.0f;
 	float w = 0.0f;
+
+	Vec3() = default;
 
 	Vec3(float inx, float iny, float inz, float inw = 0.0f) {
 		x = inx;
@@ -84,6 +87,7 @@ public:
 	float y = 0.0f;
 	float z = 0.0f;
 
+	Point3() = default;
 	Point3(float inx, float iny, float inz)
 	{
 		x = inx;
