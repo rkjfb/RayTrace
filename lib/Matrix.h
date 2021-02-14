@@ -19,6 +19,28 @@ namespace ray {
 			m10 = i[2];
 			m11 = i[3];
 		}
+		friend std::ostream& operator<<(std::ostream& os, const Matrix2& m) {
+			return os << "Matrix2("
+				<< m.m00 << ", "
+				<< m.m01 << ", "
+				<< m.m10 << ", "
+				<< m.m11 << ")";
+		}
+
+		bool operator==(const Matrix2& rhs) const {
+			return IsEqual(m00, rhs.m00) &&
+				IsEqual(m01, rhs.m01) &&
+				IsEqual(m10, rhs.m10) &&
+				IsEqual(m11, rhs.m11);
+		}
+		bool operator!=(const Matrix2& rhs) const {
+			return !operator==(rhs);
+		}
+
+		float det() const {
+			return m00 * m11 - m01 * m10;
+		}
+
 	};
 
 	class Matrix3
@@ -44,6 +66,101 @@ namespace ray {
 			m22 = i[8];
 		}
 
+		friend std::ostream& operator<<(std::ostream& os, const Matrix3& m) {
+			return os << "Matrix3("
+				<< m.m00 << ", "
+				<< m.m01 << ", "
+				<< m.m02 << ", "
+				<< m.m10 << ", "
+				<< m.m11 << ", "
+				<< m.m12 << ", "
+				<< m.m20 << ", "
+				<< m.m21 << ", "
+				<< m.m22 << ")";
+		}
+
+		bool operator==(const Matrix3& rhs) const {
+			return IsEqual(m00, rhs.m00) &&
+				IsEqual(m01, rhs.m01) &&
+				IsEqual(m02, rhs.m02) &&
+				IsEqual(m10, rhs.m10) &&
+				IsEqual(m11, rhs.m11) &&
+				IsEqual(m12, rhs.m12) &&
+				IsEqual(m20, rhs.m20) &&
+				IsEqual(m21, rhs.m21) &&
+				IsEqual(m22, rhs.m22);
+		}
+		bool operator!=(const Matrix3& rhs) const {
+			return !operator==(rhs);
+		}
+
+		// returns supplied row as array
+		std::array<float, 3> row(int i) const {
+			switch (i) {
+			case 0:
+				return { m00, m01, m02 };
+			case 1:
+				return { m10, m11, m12 };
+			case 2:
+				break;
+			default:
+				assert(false);
+			}
+			return { m20, m21, m22 };
+		}
+
+		// returns supplied column as array
+		std::array<float, 3> col(int i) const {
+			switch (i) {
+			case 0:
+				return { m00, m10, m20 };
+			case 1:
+				return { m01, m11, m21};
+			case 2:
+				break;
+			default:
+				assert(false);
+			}
+			return { m02, m12, m22 };
+		}
+
+		Matrix2 submatrix(int droprow, int dropcol) const {
+			std::array<float, 4> m2;
+			int index = 0;
+			for (int i = 0; i < 3; i++) {
+				if (i == droprow) continue;
+				std::array<float, 3> r = row(i);
+				for (int j = 0; j < 3; j++) {
+					if (j == dropcol) continue;
+					m2[index] = r[j];
+					index++;
+				}
+			}
+			assert(index == 4);
+			return Matrix2(m2);
+		}
+
+		float minor(int row, int col) const {
+			Matrix2 m = submatrix(row, col);
+			return m.det();
+		}
+
+		float cofactor(int row, int col) const {
+			float f = minor(row, col);
+			if ((row + col) % 2 == 1) {
+				f = -f;
+			}
+			return f;
+		}
+
+		float det() const {
+			float det = 0;
+			std::array<float, 3> r = row(0);
+			for (int i = 0; i < r.size(); i++) {
+				det += r[i] * cofactor(0, i);
+			}
+			return det;
+		}
 	};
 
 	class Matrix4
@@ -172,6 +289,80 @@ namespace ray {
 				}
 			}
 			return Matrix4(ret);
+		}
+
+		Matrix4 transpose() const {
+			auto a = std::array<float, 16>{
+				m00, m10, m20, m30,
+				m01, m11, m21, m31,
+				m02, m12, m22, m32,
+				m03, m13, m23, m33
+				};
+			return Matrix4(a);
+		}
+
+		Matrix3 submatrix(int droprow, int dropcol) const {
+			std::array<float, 9> m3;
+			int index = 0;
+			for (int i = 0; i < 4; i++) {
+				if (i == droprow) continue;
+				std::array<float, 4> r = row(i);
+				for (int j = 0; j < 4; j++) {
+					if (j == dropcol) continue;
+					m3[index] = r[j];
+					index++;
+				}
+			}
+			assert(index == 9);
+			return Matrix3(m3);
+		}
+
+		float minor(int row, int col) const {
+			Matrix3 m = submatrix(row, col);
+			return m.det();
+		}
+
+		float cofactor(int row, int col) const {
+			float f = minor(row, col);
+			if ((row + col) % 2 == 1) {
+				f = -f;
+			}
+			return f;
+		}
+
+		float det() const {
+			float det = 0;
+			std::array<float, 4> r = row(0);
+			for (int i = 0; i < r.size(); i++) {
+				det += r[i] * cofactor(0, i);
+			}
+			return det;
+		}
+
+		bool invertible() const {
+			return !IsEqual(det(), 0);
+		}
+
+		Matrix4 inverse() const {
+			// Pseudocode:
+			// 1. Matrix4 of cofactors
+			// 2. transpose
+			// 3. divide by determinant
+			//
+			// We're trying to skip the transpose and intermediate storage steps here.
+			assert(invertible());
+
+			std::array<float, 16> m4;
+			float mul = 1 / det();
+			for (int row = 0; row < 4; row++) {
+				for (int col = 0; col < 4; col++) {
+					float c = cofactor(row, col);
+					// (column, row) to transpose
+					m4[col * 4 + row] = mul * c;
+				}
+			}
+
+			return Matrix4(m4);
 		}
 
 		static Matrix4 identity() {
