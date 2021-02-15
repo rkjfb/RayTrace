@@ -3,11 +3,13 @@
 
 #include <iostream>
 #include "Chapter2.h"
+#include "Chapter4.h"
 int main()
 {
     std::cout << "Hello World!\n";
-    Chapter2 chap2;
-    chap2.run();
+    //Chapter2 chap;
+    Chapter4 chap;
+    chap.run();
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

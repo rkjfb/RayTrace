@@ -148,6 +148,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Chapter2.cpp" />
+    <ClCompile Include="Chapter4.cpp" />
     <ClCompile Include="together.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chapter2.h" />
+    <ClInclude Include="Chapter4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
