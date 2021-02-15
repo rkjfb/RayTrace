@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include "Tuple.h"
+#include "Ray.h"
 
 namespace ray {
 
@@ -286,6 +287,10 @@ namespace ray {
 				ret[i] = rhs.x * r[0] + rhs.y * r[1] + rhs.z * r[2] + r[3];
 			}
 			return Point3(ret);
+		}
+
+		Ray operator*(const Ray& rhs) const {
+			return Ray(operator*(rhs.origin), operator*(rhs.direction));
 		}
 
 		Matrix4 operator*(const Matrix4& rhs) const {

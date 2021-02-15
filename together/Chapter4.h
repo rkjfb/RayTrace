@@ -22,7 +22,7 @@ public:
 
 			ray::Matrix4 armtx = ray::Matrix4::translate(0, armlength, 0);
 			ray::Matrix4 clockrot = ray::Matrix4::rotateZ(rot * i);
-			ray::Matrix4 centertx = ray::Matrix4::translate(width / 2, height / 2, 0);
+			ray::Matrix4 centertx = ray::Matrix4::translate(static_cast<float>(width / 2), static_cast<float>(height / 2), 0);
 
 			ray::Point3 p;
 			ray::Point3 position = centertx * clockrot * armtx * p;

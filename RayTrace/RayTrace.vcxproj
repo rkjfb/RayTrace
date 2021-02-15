@@ -45,6 +45,7 @@
     </ClCompile>
     <ClCompile Include="test_Canvas.cpp" />
     <ClCompile Include="test_Matrix.cpp" />
+    <ClCompile Include="test_Rays.cpp" />
     <ClCompile Include="test_Transformations.cpp" />
     <ClCompile Include="test_Tuple.cpp" />
   </ItemGroup>
