@@ -40,6 +40,9 @@ namespace ray {
 		static Color white() {
 			return Color(1, 1, 1);
 		}
+		static Color red() {
+			return Color(1, 0,0);
+		}
 	};
 
 } // namespace ray
