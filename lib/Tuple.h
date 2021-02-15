@@ -6,6 +6,8 @@
 namespace ray {
 
 	static constexpr float RAY_EPISILON = 0.0001f;
+	// available in c++20 as std::number::pi
+	static constexpr float pi = 3.14159265358979323846f;
 // Equality
 bool IsEqual(float left, float right);
 

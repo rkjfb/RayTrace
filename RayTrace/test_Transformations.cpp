@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Matrix.h"
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 using namespace ray;
 
 //Feature: Matrix Transformations
@@ -44,7 +47,7 @@ TEST(Transform, TranslateVector) {
 //  Given transform ← scaling(2, 3, 4)
 //    And p ← point(-4, 6, 8)
 //   Then transform * p = point(-8, 18, 32)
-TEST(Transform, Scale) {
+TEST(Transform, ScalePoint) {
 	Matrix4 t = Matrix4::scale(2,3,4);
 	Point3 p(-4, 6, 8);
 	Point3 result = t * p;
@@ -55,45 +58,105 @@ TEST(Transform, Scale) {
 //  Given transform ← scaling(2, 3, 4)
 //    And v ← vector(-4, 6, 8)
 //   Then transform * v = vector(-8, 18, 32)
-//
+TEST(Transform, ScaleVector) {
+	Matrix4 t = Matrix4::scale(2, 3, 4);
+	Vec3 v(-4, 6, 8);
+	Vec3 result = t * v;
+	EXPECT_EQ(result, Vec3(-8, 18, 32));
+}
+
 //Scenario: Multiplying by the inverse of a scaling matrix
 //  Given transform ← scaling(2, 3, 4)
 //    And inv ← inverse(transform)
 //    And v ← vector(-4, 6, 8)
 //   Then inv * v = vector(-2, 2, 2)
-//
+TEST(Transform, InverseScaleVector) {
+	Matrix4 t = Matrix4::scale(2, 3, 4);
+	Matrix4 inv = t.inverse();
+	Vec3 v(-4, 6, 8);
+	Vec3 result = inv * v;
+	EXPECT_EQ(result, Vec3(-2,2,2));
+}
+
 //Scenario: Reflection is scaling by a negative value
 //  Given transform ← scaling(-1, 1, 1)
 //    And p ← point(2, 3, 4)
 //   Then transform * p = point(-2, 3, 4)
-//
+TEST(Transform, ScaleReflect) {
+	Matrix4 t = Matrix4::scale(-1,1,1);
+	Point3 p(2, 3, 4);
+	Point3 result = t * p;
+	EXPECT_EQ(result, Point3(-2, 3, 4));
+}
+
 //Scenario: Rotating a point around the x axis
 //  Given p ← point(0, 1, 0)
 //    And half_quarter ← rotation_x(π / 4)
 //    And full_quarter ← rotation_x(π / 2)
 //  Then half_quarter * p = point(0, √2/2, √2/2)
 //    And full_quarter * p = point(0, 0, 1)
-//
+TEST(Transform, RotateX) {
+	Point3 p(0, 1, 0);
+
+	Matrix4 half = Matrix4::rotateX(pi / 4);
+	Point3 halfp = half * p;
+	EXPECT_EQ(halfp, Point3(0, sqrtf(2) / 2, sqrtf(2) / 2));
+
+	Matrix4 full = Matrix4::rotateX(pi / 2); 
+	Point3 fullp = full * p;
+	EXPECT_EQ(fullp, Point3(0, 0, 1));
+}
+
 //Scenario: The inverse of an x-rotation rotates in the opposite direction
 //  Given p ← point(0, 1, 0)
 //    And half_quarter ← rotation_x(π / 4)
 //    And inv ← inverse(half_quarter)
 //  Then inv * p = point(0, √2/2, -√2/2)
-//
+TEST(Transform, RotateX2) {
+	Point3 p(0, 1, 0);
+
+	Matrix4 half = Matrix4::rotateX(pi / 4);
+	Matrix4 inv = half.inverse();
+	Point3 invp = inv * p;
+	EXPECT_EQ(invp, Point3(0, sqrtf(2) / 2, -sqrtf(2) / 2));
+}
+
 //Scenario: Rotating a point around the y axis
 //  Given p ← point(0, 0, 1)
 //    And half_quarter ← rotation_y(π / 4)
 //    And full_quarter ← rotation_y(π / 2)
 //  Then half_quarter * p = point(√2/2, 0, √2/2)
 //    And full_quarter * p = point(1, 0, 0)
-//
+TEST(Transform, RotateY) {
+	Point3 p(0, 0, 1);
+
+	Matrix4 half = Matrix4::rotateY(pi / 4);
+	Point3 halfp = half * p;
+	EXPECT_EQ(halfp, Point3(sqrtf(2) / 2, 0, sqrtf(2) / 2));
+
+	Matrix4 full = Matrix4::rotateY(pi / 2);
+	Point3 fullp = full * p;
+	EXPECT_EQ(fullp, Point3(1, 0, 0));
+}
+
 //Scenario: Rotating a point around the z axis
 //  Given p ← point(0, 1, 0)
 //    And half_quarter ← rotation_z(π / 4)
 //    And full_quarter ← rotation_z(π / 2)
 //  Then half_quarter * p = point(-√2/2, √2/2, 0)
 //    And full_quarter * p = point(-1, 0, 0)
-//
+TEST(Transform, RotateZ) {
+	Point3 p(0, 1, 0);
+
+	Matrix4 half = Matrix4::rotateZ(pi / 4);
+	Point3 halfp = half * p;
+	EXPECT_EQ(halfp, Point3(-sqrtf(2) / 2, sqrtf(2) / 2, 0));
+
+	Matrix4 full = Matrix4::rotateZ(pi / 2);
+	Point3 fullp = full * p;
+	EXPECT_EQ(fullp, Point3(-1, 0, 0));
+}
+
 //Scenario: A shearing transformation moves x in proportion to y
 //  Given transform ← shearing(1, 0, 0, 0, 0, 0)
 //    And p ← point(2, 3, 4)

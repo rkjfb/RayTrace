@@ -394,6 +394,30 @@ namespace ray {
 			m.m22 = z;
 			return m;
 		}
+
+		static Matrix4 rotateX(float r) {
+			Matrix4 m;
+			m.m11 = m.m22 = cos(r);
+			m.m21 = sin(r);
+			m.m12 = -m.m21;
+			return m;
+		}
+
+		static Matrix4 rotateY(float r) {
+			Matrix4 m;
+			m.m00 = m.m22 = cos(r);
+			m.m02 = sin(r);
+			m.m20 = -m.m02;
+			return m;
+		}
+
+		static Matrix4 rotateZ(float r) {
+			Matrix4 m;
+			m.m00 = m.m11 = cos(r);
+			m.m10 = sin(r);
+			m.m01 = -m.m10;
+			return m;
+		}
 	};
 } // namespace ray
 
