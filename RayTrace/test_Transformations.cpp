@@ -161,32 +161,74 @@ TEST(Transform, RotateZ) {
 //  Given transform ← shearing(1, 0, 0, 0, 0, 0)
 //    And p ← point(2, 3, 4)
 //  Then transform * p = point(5, 3, 4)
-//
+TEST(Transform, ShearXY) {
+	Matrix4 t = Matrix4::shear(1, 0, 0, 0, 0, 0);
+	Point3 p(2,3,4);
+
+	Point3 result = t * p;
+	EXPECT_EQ(result, Point3(5,3,4));
+}
+
 //Scenario: A shearing transformation moves x in proportion to z
 //  Given transform ← shearing(0, 1, 0, 0, 0, 0)
 //    And p ← point(2, 3, 4)
 //  Then transform * p = point(6, 3, 4)
-//
+TEST(Transform, ShearXZ) {
+	Matrix4 t = Matrix4::shear(0, 1, 0, 0, 0, 0);
+	Point3 p(2, 3, 4);
+
+	Point3 result = t * p;
+	EXPECT_EQ(result, Point3(6, 3, 4));
+}
+
 //Scenario: A shearing transformation moves y in proportion to x
 //  Given transform ← shearing(0, 0, 1, 0, 0, 0)
 //    And p ← point(2, 3, 4)
 //  Then transform * p = point(2, 5, 4)
-//
+TEST(Transform, ShearYX) {
+	Matrix4 t = Matrix4::shear(0, 0, 1, 0, 0, 0);
+	Point3 p(2, 3, 4);
+
+	Point3 result = t * p;
+	EXPECT_EQ(result, Point3(2,5, 4));
+}
+
 //Scenario: A shearing transformation moves y in proportion to z
 //  Given transform ← shearing(0, 0, 0, 1, 0, 0)
 //    And p ← point(2, 3, 4)
 //  Then transform * p = point(2, 7, 4)
-//
+TEST(Transform, ShearYZ) {
+	Matrix4 t = Matrix4::shear(0, 0, 0, 1, 0, 0);
+	Point3 p(2, 3, 4);
+
+	Point3 result = t * p;
+	EXPECT_EQ(result, Point3(2,7, 4));
+}
+
 //Scenario: A shearing transformation moves z in proportion to x
 //  Given transform ← shearing(0, 0, 0, 0, 1, 0)
 //    And p ← point(2, 3, 4)
 //  Then transform * p = point(2, 3, 6)
-//
+TEST(Transform, ShearZX) {
+	Matrix4 t = Matrix4::shear(0, 0, 0, 0, 1, 0);
+	Point3 p(2, 3, 4);
+
+	Point3 result = t * p;
+	EXPECT_EQ(result, Point3(2, 3, 6));
+}
+
 //Scenario: A shearing transformation moves z in proportion to y
 //  Given transform ← shearing(0, 0, 0, 0, 0, 1)
 //    And p ← point(2, 3, 4)
 //  Then transform * p = point(2, 3, 7)
-//
+TEST(Transform, ShearZY) {
+	Matrix4 t = Matrix4::shear(0, 0, 0, 0, 0, 1);
+	Point3 p(2, 3, 4);
+
+	Point3 result = t * p;
+	EXPECT_EQ(result, Point3(2, 3, 7));
+}
+
 //Scenario: Individual transformations are applied in sequence
 //  Given p ← point(1, 0, 1)
 //    And A ← rotation_x(π / 2)

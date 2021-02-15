@@ -418,6 +418,17 @@ namespace ray {
 			m.m01 = -m.m10;
 			return m;
 		}
+
+		static Matrix4 shear(float xy, float xz, float yx, float yz, float zx, float zy) {
+			Matrix4 m;
+			m.m01 = xy;
+			m.m02 = xz;
+			m.m10 = yx;
+			m.m12 = yz;
+			m.m20 = zx;
+			m.m21 = zy;
+			return m;
+		}
 	};
 } // namespace ray
 
