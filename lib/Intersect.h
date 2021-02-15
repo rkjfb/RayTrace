@@ -11,8 +11,11 @@ namespace ray {
 
 		Intersection(float time, const Sphere& o) : t(time), object(&o) {}
 
+		// vector re-use to avoid high heap cpu time.
 		// FUTURE: Make an Intersections object that wraps the vector and maybe has non-linear search (positive heap?) and hit caching.
-		static std::vector<Intersection> intersect(const Sphere& s, const Ray& inr) {
+		static void intersect(const Sphere& s, const Ray& inr, std::vector<Intersection>& out) {
+			out.clear();
+
 			Matrix4 inv = s.transform.inverse();
 			Ray r = inv * inr;
 			Vec3 sphere_ray = r.origin - Point3();
@@ -21,15 +24,15 @@ namespace ray {
 			double c = sphere_ray.dot(sphere_ray) - 1;
 			double discriminant = b * b - 4 * a * c;
 			if (discriminant < 0) {
-				return {};
+				return;
 			}
 
 			double mul = 1 / (2 * a);
 			double sqrtdisc = sqrt(discriminant);
 			float t1 = static_cast<float>((-b - sqrtdisc) * mul);
+			out.emplace_back(Intersection(t1, s));
 			float t2 = static_cast<float>((-b + sqrtdisc) * mul);
-
-			return { Intersection(t1, s), Intersection(t2, s) };
+			out.emplace_back(Intersection(t2, s));
 		}
 
 		// Returns the smallest positive hit. As a raw pointer, straight into list.

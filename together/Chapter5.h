@@ -19,13 +19,14 @@ public:
 		auto& pixels = canvas.pixels();
 
 		ray::Sphere sphere;
+		std::vector<ray::Intersection> intersections;
 		for (int x = 0; x < width; x++) {
 			float flx = 2.0f * x / width - 1.0f;
 			for (int y = 0; y < height; y++) {
 				float fly = 2.0f * y / height - 1.0f;
 
 				ray::Ray r(ray::Point3(flx, fly, 1), ray::Vec3(0, 0, -1));
-				auto intersections = ray::Intersection::intersect(sphere, r);
+				ray::Intersection::intersect(sphere, r, intersections);
 				if (intersections.size() > 0) {
 					pixels[x][y] = ray::Color::red();
 				}
