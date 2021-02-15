@@ -23,7 +23,7 @@ namespace ray {
 					std::string num = std::to_string(std::lround(c * range));
 					// 70 character line length limit.
 					if (line.size() + 1 + num.size() > 70) {
-						s << line << std::endl;
+						s << line << '\n';
 						line = num;
 					}
 					else
