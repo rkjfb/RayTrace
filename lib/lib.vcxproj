@@ -156,14 +156,17 @@
     <ClInclude Include="Canvas.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Intersect.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Shape.h" />
     <ClInclude Include="Tuple.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="Intersect.cpp" />
     <ClCompile Include="lib.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="pch.cpp">
@@ -173,6 +176,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Tuple.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
