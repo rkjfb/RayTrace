@@ -243,7 +243,22 @@ TEST(Transform, ShearZY) {
 //  # then apply translation
 //  When p4 ← C * p3
 //  Then p4 = point(15, 0, 7)
-//
+TEST(Transform, Sequence) {
+	Point3 p(1,0,1);
+	Matrix4 a = Matrix4::rotateX(pi / 2);
+	Matrix4 b = Matrix4::scale(5, 5, 5);
+	Matrix4 c = Matrix4::translate(10, 5, 7);
+
+	Point3 p2 = a * p;
+	EXPECT_EQ(p2, Point3(1,-1,0));
+
+	Point3 p3 = b * p2;
+	EXPECT_EQ(p3, Point3(5, -5, 0));
+
+	Point3 p4 = c * p3;
+	EXPECT_EQ(p4, Point3(15, 0, 7));
+}
+
 //Scenario: Chained transformations must be applied in reverse order
 //  Given p ← point(1, 0, 1)
 //    And A ← rotation_x(π / 2)
@@ -251,7 +266,18 @@ TEST(Transform, ShearZY) {
 //    And C ← translation(10, 5, 7)
 //  When T ← C * B * A
 //  Then T * p = point(15, 0, 7)
-//
+TEST(Transform, Sequence2) {
+	Point3 p(1, 0, 1);
+	Matrix4 a = Matrix4::rotateX(pi / 2);
+	Matrix4 b = Matrix4::scale(5, 5, 5);
+	Matrix4 c = Matrix4::translate(10, 5, 7);
+
+	Matrix4 t = c * b * a;
+
+	Point3 p2 = t * p;
+	EXPECT_EQ(p2, Point3(15, 0, 7));
+}
+
 //Scenario: The transformation matrix for the default orientation
 //  Given from ← point(0, 0, 0)
 //    And to ← point(0, 0, -1)
