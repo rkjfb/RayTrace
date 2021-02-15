@@ -279,6 +279,15 @@ namespace ray {
 			return Vec3(ret);
 		}
 
+		Point3 operator*(const Point3& rhs) const {
+			std::array<float, 3> ret;
+			for (int i = 0; i < ret.size(); i++) {
+				std::array<float, 4> r = row(i);
+				ret[i] = rhs.x * r[0] + rhs.y * r[1] + rhs.z * r[2] + r[3];
+			}
+			return Point3(ret);
+		}
+
 		Matrix4 operator*(const Matrix4& rhs) const {
 			std::array<float, 16> ret;
 			for (int i = 0; i < 4; i++) {
@@ -370,6 +379,21 @@ namespace ray {
 			return Matrix4();
 		}
 
+		static Matrix4 translate(float x, float y, float z) {
+			Matrix4 m;
+			m.m03 = x;
+			m.m13 = y;
+			m.m23 = z;
+			return m;
+		}
+
+		static Matrix4 scale(float x, float y, float z) {
+			Matrix4 m;
+			m.m00 = x;
+			m.m11 = y;
+			m.m22 = z;
+			return m;
+		}
 	};
 } // namespace ray
 

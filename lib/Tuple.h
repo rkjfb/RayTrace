@@ -102,6 +102,11 @@ public:
 		y = iny;
 		z = inz;
 	}
+	Point3(std::array<float, 3> a) {
+		x = a[0];
+		y = a[1];
+		z = a[2];
+	}
 
 	friend std::ostream& operator<<(std::ostream& os, const Point3& rhs) {
 		return os << "Point3(" << rhs.x << ", " << rhs.y << ", " << rhs.z << ")";
