@@ -9,7 +9,7 @@ public:
 	Material material;
 	Sphere() = default;
 	Sphere(const Matrix4& t) : transform(t) {}
-	Vec3 normal_at(Point3 world_point) {
+	Vec3 normal_at(Point3 world_point) const {
 		Matrix4 inv = transform.inverse();
 		Point3 object_point = inv * world_point;
 
