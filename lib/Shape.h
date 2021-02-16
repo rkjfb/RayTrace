@@ -1,11 +1,12 @@
 #pragma once
 #include "Matrix.h"
-
+#include "Material.h"
 namespace ray {
 class Sphere
 {
 public:
 	Matrix4 transform;
+	Material material;
 	Sphere() = default;
 	Sphere(const Matrix4& t) : transform(t) {}
 	Vec3 normal_at(Point3 world_point) {

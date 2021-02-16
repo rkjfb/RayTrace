@@ -235,16 +235,28 @@ TEST(Sphere, NormalTransform) {
 //  Given s ← sphere()
 //  When m ← s.material
 //  Then m = material()
-//
+TEST(Sphere, Material) {
+	Sphere s;
+	EXPECT_EQ(s.material, Material());
+}
+
 //Scenario: A sphere may be assigned a material
 //  Given s ← sphere()
 //    And m ← material()
 //    And m.ambient ← 1
 //  When s.material ← m
 //  Then s.material = m
-//
+TEST(Sphere, MaterialAssign) {
+	Material m;
+	m.ambient = 1;
+	Sphere s;
+	s.material = m;
+	EXPECT_EQ(s.material, m);
+}
+
 //Scenario: A helper for producing a sphere with a glassy material
 //  Given s ← glass_sphere()
 //  Then s.transform = identity_matrix
 //    And s.material.transparency = 1.0
 //    And s.material.refractive_index = 1.5
+// TODO
