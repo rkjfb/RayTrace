@@ -158,40 +158,79 @@ TEST(Sphere, IntersectTranslateMiss) {
 //  Given s ← sphere()
 //  When n ← normal_at(s, point(1, 0, 0))
 //  Then n = vector(1, 0, 0)
-//
+TEST(Sphere, NormalX) {
+	Sphere s;
+	Vec3 n = s.normal_at(Point3(1, 0, 0));
+	EXPECT_EQ(n, Vec3(1,0,0));
+}
+
 //Scenario: The normal on a sphere at a point on the y axis
 //  Given s ← sphere()
 //  When n ← normal_at(s, point(0, 1, 0))
 //  Then n = vector(0, 1, 0)
-//
+TEST(Sphere, NormalY) {
+	Sphere s;
+	Vec3 n = s.normal_at(Point3(0, 1, 0));
+	EXPECT_EQ(n, Vec3(0, 1, 0));
+}
+
 //Scenario: The normal on a sphere at a point on the z axis
 //  Given s ← sphere()
 //  When n ← normal_at(s, point(0, 0, 1))
 //  Then n = vector(0, 0, 1)
-//
+TEST(Sphere, NormalZ) {
+	Sphere s;
+	Vec3 n = s.normal_at(Point3(0, 0, 1));
+	EXPECT_EQ(n, Vec3(0, 0, 1));
+}
+
 //Scenario: The normal on a sphere at a nonaxial point
 //  Given s ← sphere()
 //  When n ← normal_at(s, point(√3/3, √3/3, √3/3))
 //  Then n = vector(√3/3, √3/3, √3/3)
-//
+TEST(Sphere, NormalNonAxial) {
+	Sphere s;
+	float tt = sqrtf(3) / 3;
+	Vec3 n = s.normal_at(Point3(tt, tt, tt));
+	EXPECT_EQ(n, Vec3(tt,tt,tt));
+}
+
 //Scenario: The normal is a normalized vector
 //  Given s ← sphere()
 //  When n ← normal_at(s, point(√3/3, √3/3, √3/3))
 //  Then n = normalize(n)
-//
+TEST(Sphere, NormalNonAxialNorm) {
+	Sphere s;
+	float tt = sqrtf(3) / 3;
+	Vec3 n = s.normal_at(Point3(tt, tt, tt));
+	Vec3 result = n.norm();
+	EXPECT_EQ(result, n);
+}
 //Scenario: Computing the normal on a translated sphere
 //  Given s ← sphere()
 //    And set_transform(s, translation(0, 1, 0))
 //  When n ← normal_at(s, point(0, 1.70711, -0.70711))
 //  Then n = vector(0, 0.70711, -0.70711)
-//
+TEST(Sphere, NormalTranslate) {
+	Sphere s(Matrix4::translate(0,1,0));
+	Vec3 n = s.normal_at(Point3(0, 1.70711f, -0.70711f));
+	EXPECT_EQ(n, Vec3(0, 0.70711f, -0.70711f));
+}
+
 //Scenario: Computing the normal on a transformed sphere
 //  Given s ← sphere()
 //    And m ← scaling(1, 0.5, 1) * rotation_z(π/5)
 //    And set_transform(s, m)
 //  When n ← normal_at(s, point(0, √2/2, -√2/2))
 //  Then n = vector(0, 0.97014, -0.24254)
-//
+TEST(Sphere, NormalTransform) {
+	Matrix4 t = Matrix4::scale(1, 0.5, 1) * Matrix4::rotateZ(pi / 5);
+	Sphere s(t);
+	float st = sqrtf(2) / 2;
+	Vec3 n = s.normal_at(Point3(0, st,-st));
+	EXPECT_EQ(n, Vec3(0, 0.97014f, -0.24254f));
+}
+
 //Scenario: A sphere has a default material
 //  Given s ← sphere()
 //  When m ← s.material
