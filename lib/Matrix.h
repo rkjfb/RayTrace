@@ -357,7 +357,8 @@ namespace ray {
 			return !IsEqual(det(), 0);
 		}
 
-		Matrix4 inverse() const {
+		// Inverse from the book: very slow.
+		Matrix4 inverse_book() const {
 			// Pseudocode:
 			// 1. Matrix4 of cofactors
 			// 2. transpose
@@ -377,6 +378,52 @@ namespace ray {
 			}
 
 			return Matrix4(m4);
+		}
+
+		std::array<float, 16> to_array() const {
+			return {
+				m00, m01,m02,m03,
+				m10, m11,m12,m13,
+				m20, m21,m22,m23,
+				m30, m31,m32,m33 };
+		}
+
+		// Much faster invert than the book version.
+		// Copied from https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
+		// Which copied from https://glm.g-truc.net/0.9.9/index.html
+		//bool InverseMat44(Matrix4& out)
+		Matrix4 inverse() const
+		{
+			std::array<float, 16> inv;
+			double det;
+			int i;
+
+			inv[0] = m11 * m22 * m33 - m11 * m23 * m32 - m21 * m12 * m33 + m21 * m13 * m32 + m31 * m12 * m23 - m31 * m13 * m22;
+			inv[4] = -m10 * m22 * m33 + m10 * m23 * m32 + m20 * m12 * m33 - m20 * m13 * m32 - m30 * m12 * m23 + m30 * m13 * m22;
+			inv[8] = m10 * m21 * m33 - m10 * m23 * m31 - m20 * m11 * m33 + m20 * m13 * m31 + m30 * m11 * m23 - m30 * m13 * m21;
+			inv[12] = -m10 * m21 * m32 + m10 * m22 * m31 + m20 * m11 * m32 - m20 * m12 * m31 - m30 * m11 * m22 + m30 * m12 * m21;
+			inv[1] = -m01 * m22 * m33 + m01 * m23 * m32 + m21 * m02 * m33 - m21 * m03 * m32 - m31 * m02 * m23 + m31 * m03 * m22;
+			inv[5] = m00 * m22 * m33 - m00 * m23 * m32 - m20 * m02 * m33 + m20 * m03 * m32 + m30 * m02 * m23 - m30 * m03 * m22;
+			inv[9] = -m00 * m21 * m33 + m00 * m23 * m31 + m20 * m01 * m33 - m20 * m03 * m31 - m30 * m01 * m23 + m30 * m03 * m21;
+			inv[13] = m00 * m21 * m32 - m00 * m22 * m31 - m20 * m01 * m32 + m20 * m02 * m31 + m30 * m01 * m22 - m30 * m02 * m21;
+			inv[2] = m01 * m12 * m33 - m01 * m13 * m32 - m11 * m02 * m33 + m11 * m03 * m32 + m31 * m02 * m13 - m31 * m03 * m12;
+			inv[6] = -m00 * m12 * m33 + m00 * m13 * m32 + m10 * m02 * m33 - m10 * m03 * m32 - m30 * m02 * m13 + m30 * m03 * m12;
+			inv[10] = m00 * m11 * m33 - m00 * m13 * m31 - m10 * m01 * m33 + m10 * m03 * m31 + m30 * m01 * m13 - m30 * m03 * m11;
+			inv[14] = -m00 * m11 * m32 + m00 * m12 * m31 + m10 * m01 * m32 - m10 * m02 * m31 - m30 * m01 * m12 + m30 * m02 * m11;
+			inv[3] = -m01 * m12 * m23 + m01 * m13 * m22 + m11 * m02 * m23 - m11 * m03 * m22 - m21 * m02 * m13 + m21 * m03 * m12;
+			inv[7] = m00 * m12 * m23 - m00 * m13 * m22 - m10 * m02 * m23 + m10 * m03 * m22 + m20 * m02 * m13 - m20 * m03 * m12;
+			inv[11] = -m00 * m11 * m23 + m00 * m13 * m21 + m10 * m01 * m23 - m10 * m03 * m21 - m20 * m01 * m13 + m20 * m03 * m11;
+			inv[15] = m00 * m11 * m22 - m00 * m12 * m21 - m10 * m01 * m22 + m10 * m02 * m21 + m20 * m01 * m12 - m20 * m02 * m11;
+
+			det = m00 * inv[0] + m01 * inv[4] + m02 * inv[8] + m03 * inv[12]; 
+			assert(det != 0);
+
+			det = 1.0 / det;
+
+			for (i = 0; i < 16; i++)
+				inv[i] = static_cast<float>(inv[i] * det);
+
+			return Matrix4(inv);
 		}
 
 		static Matrix4 identity() {
