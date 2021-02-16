@@ -34,11 +34,17 @@ namespace ray {
 		Color operator-(const Color& rhs) const {
 			return Color(r - rhs.r, g - rhs.g, b - rhs.b);
 		}
+		Color operator*(const Color& rhs) const {
+			return Color(r * rhs.r, g * rhs.g, b * rhs.b);
+		}
 		Color operator*(float s) const {
 			return Color(s * r, s * g, s * b);
 		}
 		static Color white() {
 			return Color(1, 1, 1);
+		}
+		static Color black() {
+			return Color(0,0,0);
 		}
 		static Color red() {
 			return Color(1, 0,0);

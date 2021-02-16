@@ -157,7 +157,7 @@ namespace ray {
 		float det() const {
 			float det = 0;
 			std::array<float, 3> r = row(0);
-			for (size_t i = 0; i < r.size(); i++) {
+			for (int i = 0; i < r.size(); i++) {
 				det += r[i] * cofactor(0, i);
 			}
 			return det;
@@ -282,7 +282,7 @@ namespace ray {
 
 		Point3 operator*(const Point3& rhs) const {
 			std::array<float, 3> ret;
-			for (size_t i = 0; i < ret.size(); i++) {
+			for (int i = 0; i < ret.size(); i++) {
 				std::array<float, 4> r = row(i);
 				ret[i] = rhs.x * r[0] + rhs.y * r[1] + rhs.z * r[2] + r[3];
 			}
@@ -347,7 +347,7 @@ namespace ray {
 		float det() const {
 			float det = 0;
 			std::array<float, 4> r = row(0);
-			for (size_t i = 0; i < r.size(); i++) {
+			for (int i = 0; i < r.size(); i++) {
 				det += r[i] * cofactor(0, i);
 			}
 			return det;

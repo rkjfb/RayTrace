@@ -28,47 +28,96 @@ TEST(Material, Ctor) {
 //Scenario: Reflectivity for the default material
 //  Given m ← material()
 //  Then m.reflective = 0.0
-//
+// TODO
+
 //Scenario: Transparency and Refractive Index for the default material
 //  Given m ← material()
 //  Then m.transparency = 0.0
 //    And m.refractive_index = 1.0
-//
+// TODO
+
 //Scenario: Lighting with the eye between the light and the surface
 //  Given eyev ← vector(0, 0, -1)
 //    And normalv ← vector(0, 0, -1)
 //    And light ← point_light(point(0, 0, -10), color(1, 1, 1))
 //  When result ← lighting(m, light, position, eyev, normalv)
 //  Then result = color(1.9, 1.9, 1.9)
-//
+TEST(Material, Lighting) {
+	Material mat;
+	Point3 position;
+	Vec3 eyev(0, 0, -1);
+	Vec3 normalv(0, 0, -1);
+	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
+	Color result = mat.lighting(light, position, eyev, normalv);
+	EXPECT_EQ(result, Color(1.9f, 1.9f, 1.9f));
+}
+
 //Scenario: Lighting with the eye between light and surface, eye offset 45°
 //  Given eyev ← vector(0, √2/2, -√2/2)
 //    And normalv ← vector(0, 0, -1)
 //    And light ← point_light(point(0, 0, -10), color(1, 1, 1))
 //  When result ← lighting(m, light, position, eyev, normalv)
 //  Then result = color(1.0, 1.0, 1.0)
-//
+TEST(Material, Lighting45deg) {
+	Material mat;
+	Point3 position;
+	float st = sqrtf(2) / 2;
+	Vec3 eyev(0, st, -st);
+	Vec3 normalv(0, 0, -1);
+	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
+	Color result = mat.lighting(light, position, eyev, normalv);
+	EXPECT_EQ(result, Color(1, 1, 1));
+}
+
 //Scenario: Lighting with eye opposite surface, light offset 45°
 //  Given eyev ← vector(0, 0, -1)
 //    And normalv ← vector(0, 0, -1)
 //    And light ← point_light(point(0, 10, -10), color(1, 1, 1))
 //  When result ← lighting(m, light, position, eyev, normalv)
 //  Then result = color(0.7364, 0.7364, 0.7364)
-//
+TEST(Material, Lighting45degEyeBack) {
+	Material mat;
+	Point3 position;
+	Vec3 eyev(0, 0, -1);
+	Vec3 normalv(0, 0, -1);
+	PointLight light(Point3(0, 10, -10), Color(1, 1, 1));
+	Color result = mat.lighting(light, position, eyev, normalv);
+	EXPECT_EQ(result, Color(0.7364f, 0.7364f, 0.7364f));
+}
+
 //Scenario: Lighting with eye in the path of the reflection vector
 //  Given eyev ← vector(0, -√2/2, -√2/2)
 //    And normalv ← vector(0, 0, -1)
 //    And light ← point_light(point(0, 10, -10), color(1, 1, 1))
 //  When result ← lighting(m, light, position, eyev, normalv)
 //  Then result = color(1.6364, 1.6364, 1.6364)
-//
+TEST(Material, LightingReflectPath) {
+	Material mat;
+	Point3 position;
+	float st = sqrtf(2) / 2;
+	Vec3 eyev(0, -st, -st);
+	Vec3 normalv(0, 0, -1);
+	PointLight light(Point3(0, 10, -10), Color(1, 1, 1));
+	Color result = mat.lighting(light, position, eyev, normalv);
+	EXPECT_EQ(result, Color(1.6364f, 1.6364f, 1.6364f));
+}
+
 //Scenario: Lighting with the light behind the surface
 //  Given eyev ← vector(0, 0, -1)
 //    And normalv ← vector(0, 0, -1)
 //    And light ← point_light(point(0, 0, 10), color(1, 1, 1))
 //  When result ← lighting(m, light, position, eyev, normalv)
 //  Then result = color(0.1, 0.1, 0.1)
-//
+TEST(Material, LightingEyeSurfLight) {
+	Material mat;
+	Point3 position;
+	Vec3 eyev(0, 0, -1);
+	Vec3 normalv(0, 0, -1);
+	PointLight light(Point3(0, 0, 10), Color(1, 1, 1)); 
+	Color result = mat.lighting(light, position, eyev, normalv);
+	EXPECT_EQ(result, Color(0.1f, 0.1f, 0.1f));
+}
+
 //Scenario: Lighting with the surface in shadow
 //  Given eyev ← vector(0, 0, -1)
 //    And normalv ← vector(0, 0, -1)

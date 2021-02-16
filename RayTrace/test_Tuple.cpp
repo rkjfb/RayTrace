@@ -320,7 +320,13 @@ TEST(Color, ScalarMul) {
 //Given c1 ← color(1, 0.2, 0.4)
 //And c2 ← color(0.9, 1, 0.1)
 //Then c1 * c2 = color(0.9, 0.2, 0.04)
-// TODO
+TEST(Color, ColorMulColor) {
+	Color c1(1, 0.2f, 0.4f);
+	Color c2(0.9f, 1, 0.1f);
+	Color result = c1*c2;
+
+	EXPECT_EQ(result, Color(0.9f, 0.2f, 0.04f));
+}
 
 //Scenario : Reflecting a vector approaching at 45°
 //Given v ← vector(1, -1, 0)
