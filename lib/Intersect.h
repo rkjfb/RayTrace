@@ -1,6 +1,7 @@
 #pragma once
 #include "Shape.h"
 #include "Tuple.h"
+#include <algorithm>
 
 namespace ray {
 	class Intersection
@@ -14,8 +15,6 @@ namespace ray {
 		// vector re-use to avoid high heap cpu time.
 		// FUTURE: Make an Intersections object that wraps the vector and maybe has non-linear search (positive heap?) and hit caching.
 		static void intersect(const Sphere& s, const Ray& inr, std::vector<Intersection>& out) {
-			out.clear();
-
 			Matrix4 inv = s.transform.inverse();
 			Ray r = inv * inr;
 			Vec3 sphere_ray = r.origin - Point3();
@@ -48,6 +47,15 @@ namespace ray {
 			}
 
 			return ret;
+		}
+
+		static void sort(std::vector<Intersection>& v) {
+			struct {
+				bool operator()(const Intersection& a, const Intersection& b) const { 
+					return a.t < b.t; 
+				}
+			} customLess;
+			std::sort(v.begin(), v.end(), customLess);
 		}
 	};
 }

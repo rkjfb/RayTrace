@@ -9,6 +9,18 @@ public:
 	Material material;
 	Sphere() = default;
 	Sphere(const Matrix4& t) : transform(t) {}
+
+	friend std::ostream& operator<<(std::ostream& os, const Sphere& rhs) {
+		return os << "Sphere(" << rhs.transform << ", " << rhs.material << ")";
+	}
+
+	bool operator==(const Sphere& rhs) const {
+		return transform == rhs.transform && material == rhs.material;
+	}
+	bool operator!=(const Sphere& rhs) const {
+		return !operator==(rhs);
+	}
+
 	Vec3 normal_at(Point3 world_point) const {
 		Matrix4 inv = transform.inverse();
 		Point3 object_point = inv * world_point;
