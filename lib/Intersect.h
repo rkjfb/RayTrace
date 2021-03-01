@@ -75,6 +75,10 @@ namespace ray {
 			info.point = ray.position(info.t);
 			info.eye = -ray.direction;
 			info.normal = info.object->normal_at(info.point);
+			if (info.normal.dot(info.eye) < 0) {
+				info.inside = true;
+				info.normal = -info.normal;
+			}
 			return info;
 		}
 	};

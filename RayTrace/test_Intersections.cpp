@@ -53,7 +53,7 @@ TEST(Intersect, Info) {
 //    And i ← intersection(4, shape)
 //  When comps ← prepare_computations(i, r)
 //  Then comps.inside = false
-TEST(Intersect, Inside) {
+TEST(Intersect, Outside) {
 	Ray ray(Point3(0, 0,-5), Vec3(0, 0,1));
 	Sphere s;
 	Intersection i(4, s);
@@ -71,7 +71,17 @@ TEST(Intersect, Inside) {
 //    And comps.inside = true
 //      # normal would have been (0, 0, 1), but is inverted!
 //    And comps.normalv = vector(0, 0, -1)
-//
+TEST(Intersect, Inside) {
+	Ray ray(Point3(0, 0, 0), Vec3(0, 0, 1));
+	Sphere s;
+	Intersection i(1, s);
+	IntersectionInfo info = i.info(ray);
+	EXPECT_EQ(info.point, Point3(0,0,1));
+	EXPECT_EQ(info.eye, Vec3(0,0,-1));
+	EXPECT_EQ(info.inside, true);
+	EXPECT_EQ(info.normal, Vec3(0,0,-1));
+}
+
 //Scenario: The hit should offset the point
 //  Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
 //    And shape ← sphere() with:

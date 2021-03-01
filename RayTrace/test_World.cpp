@@ -73,7 +73,16 @@ TEST(World, Intersect) {
 //  When comps ← prepare_computations(i, r)
 //    And c ← shade_hit(w, comps)
 //  Then c = color(0.38066, 0.47583, 0.2855)
-//
+TEST(World, Shade) {
+	World w;
+	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
+	Intersection i(4, w.shapes()[0]);
+	IntersectionInfo info = i.info(r);
+	Color c = w.shade(info);
+
+	EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f)); 
+}
+
 //Scenario: Shading an intersection from the inside
 //  Given w ← default_world()
 //    And w.light ← point_light(point(0, 0.25, 0), color(1, 1, 1))
@@ -83,19 +92,43 @@ TEST(World, Intersect) {
 //  When comps ← prepare_computations(i, r)
 //    And c ← shade_hit(w, comps)
 //  Then c = color(0.90498, 0.90498, 0.90498)
-//
+TEST(World, ShadeInside) {
+	PointLight light(Point3(0, 0.25f, 0), Color(1, 1, 1));
+	World w(light);
+	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
+	Intersection i(0.5, w.shapes()[1]);
+	IntersectionInfo info = i.info(r);
+	Color c = w.shade(info);
+
+	EXPECT_EQ(c, Color(0.90498f, 0.90498f, 0.90498f));
+}
+
 //Scenario: The color when a ray misses
 //  Given w ← default_world()
 //    And r ← ray(point(0, 0, -5), vector(0, 1, 0))
 //  When c ← color_at(w, r)
 //  Then c = color(0, 0, 0)
-//
+TEST(World, ColorAtMiss) {
+	World w;
+	Ray r(Point3(0, 0, -5), Vec3(0, 1, 0));
+	Color c = w.color_at(r);
+
+	EXPECT_EQ(c, Color::black());
+}
+
 //Scenario: The color when a ray hits
 //  Given w ← default_world()
 //    And r ← ray(point(0, 0, -5), vector(0, 0, 1))
 //  When c ← color_at(w, r)
 //  Then c = color(0.38066, 0.47583, 0.2855)
-//
+TEST(World, ColorAt) {
+	World w;
+	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
+	Color c = w.color_at(r);
+
+	EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f));
+}
+
 //Scenario: The color with an intersection behind the ray
 //  Given w ← default_world()
 //    And outer ← the first object in w
@@ -105,7 +138,21 @@ TEST(World, Intersect) {
 //    And r ← ray(point(0, 0, 0.75), vector(0, 0, -1))
 //  When c ← color_at(w, r)
 //  Then c = inner.material.color
-//
+TEST(World, ColorAtBehind) {
+	World w;
+	std::vector<Sphere>& spheres = w.shapes();
+	Sphere& outer = spheres[0];
+	outer.material.ambient = 1;
+
+	Sphere& inner = spheres[1];
+	inner.material.ambient = 1;
+
+	Ray r(Point3(0, 0, 0.75f), Vec3(0, 0, -1));
+	Color c = w.color_at(r);
+
+	EXPECT_EQ(c, inner.material.color);
+}
+
 //Scenario: There is no shadow when nothing is collinear with point and light
 //  Given w ← default_world()
 //    And p ← point(0, 10, 0)

@@ -23,7 +23,7 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
-		Color lighting(const PointLight& light, const Point3& point, const Vec3& eyev, const Vec3& normalv) {
+		Color lighting(const PointLight& light, const Point3& point, const Vec3& eyev, const Vec3& normalv) const {
 			Color effcolor = color * light.intensity;
 			Vec3 lightv = (light.position - point).norm();
 			Color ambcolor = effcolor * ambient;
