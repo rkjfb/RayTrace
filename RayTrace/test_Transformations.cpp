@@ -284,21 +284,42 @@ TEST(Transform, Sequence2) {
 //    And up ← vector(0, 1, 0)
 //  When t ← view_transform(from, to, up)
 //  Then t = identity_matrix
-//
+TEST(Transform, ViewDefault) {
+	Point3 from(0, 0, 0);
+	Point3 to(0, 0, -1);
+	Vec3 up(0, 1, 0);
+	Matrix4 view = Matrix4::view(from, to, up);
+	EXPECT_EQ(view, Matrix4::identity());
+}
+
 //Scenario: A view transformation matrix looking in positive z direction
 //  Given from ← point(0, 0, 0)
 //    And to ← point(0, 0, 1)
 //    And up ← vector(0, 1, 0)
 //  When t ← view_transform(from, to, up)
 //  Then t = scaling(-1, 1, -1)
-//
+TEST(Transform, ViewPosZ) {
+	Point3 from(0, 0, 0);
+	Point3 to(0, 0, 1);
+	Vec3 up(0, 1, 0);
+	Matrix4 view = Matrix4::view(from, to, up);
+	EXPECT_EQ(view, Matrix4::scale(-1,1,-1));
+}
+
 //Scenario: The view transformation moves the world
 //  Given from ← point(0, 0, 8)
 //    And to ← point(0, 0, 0)
 //    And up ← vector(0, 1, 0)
 //  When t ← view_transform(from, to, up)
 //  Then t = translation(0, 0, -8)
-//
+TEST(Transform, ViewTranslate) {
+	Point3 from(0, 0, 8);
+	Point3 to(0, 0, 0);
+	Vec3 up(0, 1, 0);
+	Matrix4 view = Matrix4::view(from, to, up);
+	EXPECT_EQ(view, Matrix4::translate(0,0,-8));
+}
+
 //Scenario: An arbitrary view transformation
 //  Given from ← point(1, 3, 2)
 //    And to ← point(4, -2, 8)
@@ -309,3 +330,18 @@ TEST(Transform, Sequence2) {
 //      |  0.76772 | 0.60609 |  0.12122 | -2.82843 |
 //      | -0.35857 | 0.59761 | -0.71714 |  0.00000 |
 //      |  0.00000 | 0.00000 |  0.00000 |  1.00000 |
+TEST(Transform, ViewComplex) {
+	Point3 from(1, 3, 2);
+	Point3 to(4, -2, 8);
+	Vec3 up(1, 1, 0);
+	Matrix4 view = Matrix4::view(from, to, up);
+	std::array<float, 16> expectArray = {
+		- 0.50709f, 0.50709f, 0.67612f, -2.36643f,
+		0.76772f, 0.60609f, 0.12122f, -2.82843f,
+		-0.35857f, 0.59761f, -0.71714f, 0.00000f,
+		0.00000f, 0.00000f, 0.00000f, 1.00000
+	};
+	Matrix4 expect(expectArray);
+
+	EXPECT_EQ(view, expect);
+}

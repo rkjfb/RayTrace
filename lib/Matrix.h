@@ -481,6 +481,21 @@ namespace ray {
 			m.m21 = zy;
 			return m;
 		}
+
+		static Matrix4 view(const Point3& from, const Point3& to, const Vec3& up) {
+			Vec3 forward = (to - from).norm();
+			Vec3 upn = up.norm();
+			Vec3 left = forward.cross(upn);
+			Vec3 true_up = left.cross(forward);
+			std::array<float, 16> a = {
+				left.x, left.y, left.z, 0,
+					true_up.x, true_up.y, true_up.z, 0,
+					-forward.x, -forward.y, -forward.z, 0,
+					0,0,0,1
+			};
+			Matrix4 rotate(a);
+			return rotate * translate(-from.x, -from.y, -from.z);
+		}
 	};
 } // namespace ray
 
