@@ -28,7 +28,18 @@ TEST(Intersect, Ctor) {
 //    And comps.point = point(0, 0, -1)
 //    And comps.eyev = vector(0, 0, -1)
 //    And comps.normalv = vector(0, 0, -1)
-//
+TEST(Intersect, Info) {
+	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
+	Sphere s;
+	Intersection i(4, s);
+	IntersectionInfo info = i.info(ray);
+	EXPECT_EQ(info.t, 4);
+	EXPECT_EQ(info.object, &s);
+	EXPECT_EQ(info.point, Point3(0,0,-1));
+	EXPECT_EQ(info.eye, Vec3(0,0,-1));
+	EXPECT_EQ(info.normal, Vec3(0,0,-1));
+}
+
 //Scenario: Precomputing the reflection vector
 //  Given shape ← plane()
 //    And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2)) 
@@ -42,7 +53,14 @@ TEST(Intersect, Ctor) {
 //    And i ← intersection(4, shape)
 //  When comps ← prepare_computations(i, r)
 //  Then comps.inside = false
-//
+TEST(Intersect, Inside) {
+	Ray ray(Point3(0, 0,-5), Vec3(0, 0,1));
+	Sphere s;
+	Intersection i(4, s);
+	IntersectionInfo info = i.info(ray);
+	EXPECT_EQ(info.inside, false);
+}
+
 //Scenario: The hit, when an intersection occurs on the inside
 //  Given r ← ray(point(0, 0, 0), vector(0, 0, 1))
 //    And shape ← sphere()

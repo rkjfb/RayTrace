@@ -11,7 +11,7 @@ public:
 	Ray() = default;
 	Ray(const Point3& o, const Vec3& d) :origin(o), direction(d) {}
 
-	Point3 position(float t) {
+	Point3 position(float t) const {
 		return origin + direction * t;
 	}
 };

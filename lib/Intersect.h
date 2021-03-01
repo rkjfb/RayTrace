@@ -4,6 +4,16 @@
 #include <algorithm>
 
 namespace ray {
+	class IntersectionInfo {
+	public:
+		float t = 0;
+		const Sphere* object = nullptr;
+		Point3 point;
+		Vec3 eye;
+		Vec3 normal;
+		bool inside = false;
+	};
+
 	class Intersection
 	{
 	public:
@@ -56,6 +66,16 @@ namespace ray {
 				}
 			} customLess;
 			std::sort(v.begin(), v.end(), customLess);
+		}
+
+		IntersectionInfo info(const Ray& ray) const {
+			IntersectionInfo info;
+			info.t = t;
+			info.object = object;
+			info.point = ray.position(info.t);
+			info.eye = -ray.direction;
+			info.normal = info.object->normal_at(info.point);
+			return info;
 		}
 	};
 }
