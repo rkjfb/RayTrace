@@ -537,12 +537,16 @@ namespace ray {
 			inv[15] = m00 * m11 * m22 - m00 * m12 * m21 - m10 * m01 * m22 + m10 * m02 * m21 + m20 * m01 * m12 - m20 * m02 * m11;
 
 			det = m00 * inv[0] + m01 * inv[4] + m02 * inv[8] + m03 * inv[12];
-			assert(det != 0);
+			if (det != 0) {
+				det = 1.0 / det;
 
-			det = 1.0 / det;
-
-			for (i = 0; i < 16; i++) {
-				inv[i] = static_cast<float>(inv[i] * det);
+				for (i = 0; i < 16; i++) {
+					inv[i] = static_cast<float>(inv[i] * det);
+				}
+			}
+			else
+			{
+				inv = Matrix4::identity().to_array();
 			}
 		}
 	};
