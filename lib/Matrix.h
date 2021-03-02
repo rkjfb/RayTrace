@@ -167,10 +167,6 @@ namespace ray {
 	class Matrix4
 	{
 	public:
-		float m00 = 0, m01 = 0, m02 = 0, m03 = 0;
-		float m10 = 0, m11 = 0, m12 = 0, m13 = 0;
-		float m20 = 0, m21 = 0, m22 = 0, m23 = 0;
-		float m30 = 0, m31 = 0, m32 = 0, m33 = 0;
 		Matrix4() {
 			m00 = m11 = m22 = m33 = 1;
 		}
@@ -496,6 +492,11 @@ namespace ray {
 			Matrix4 rotate(a);
 			return rotate * translate(-from.x, -from.y, -from.z);
 		}
+	private:
+		float m00 = 0, m01 = 0, m02 = 0, m03 = 0;
+		float m10 = 0, m11 = 0, m12 = 0, m13 = 0;
+		float m20 = 0, m21 = 0, m22 = 0, m23 = 0;
+		float m30 = 0, m31 = 0, m32 = 0, m33 = 0;
 	};
 } // namespace ray
 

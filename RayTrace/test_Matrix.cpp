@@ -20,20 +20,23 @@ using namespace ray;
 //    And M[3,2] = 15.5
 TEST(Matrix, Ctor4) {
 	Matrix4 m1;
-	EXPECT_EQ(m1.m00, 1);
+	std::array<float, 16> a1 = m1.to_array();
+	EXPECT_EQ(a1[0], 1);
+
 	Matrix4 m2(std::array<float,16>{ 
 		1,2,3,4,
 			5.5, 6.5, 7.5,  8.5,
 			9, 10, 11, 12,
 			13.5, 14.5, 15.5,16.5 
 	});
-	EXPECT_EQ(m2.m00, 1);
-	EXPECT_EQ(m2.m03, 4);
-	EXPECT_EQ(m2.m10, 5.5);
-	EXPECT_EQ(m2.m12, 7.5);
-	EXPECT_EQ(m2.m22, 11);
-	EXPECT_EQ(m2.m30, 13.5);
-	EXPECT_EQ(m2.m32, 15.5);
+	std::array<float, 16> a2 = m2.to_array();
+	EXPECT_EQ(a2[0], 1);
+	EXPECT_EQ(a2[3], 4);
+	EXPECT_EQ(a2[4], 5.5);
+	EXPECT_EQ(a2[6], 7.5);
+	EXPECT_EQ(a2[10], 11);
+	EXPECT_EQ(a2[12], 13.5);
+	EXPECT_EQ(a2[14], 15.5);
 }
 
 //Scenario: A 2x2 matrix ought to be representable
@@ -470,9 +473,10 @@ TEST(Matrix, Inverse4) {
 	Matrix4 b = a.inverse();
 	EXPECT_EQ(a.det(), 532);
 	EXPECT_EQ(a.cofactor(2, 3), -160);
-	EXPECT_NEAR(b.m32, -160.0 / 532.0, RAY_EPISILON);
+	std::array<float, 16> array_b = b.to_array();
+	EXPECT_NEAR(array_b[14], -160.0 / 532.0, RAY_EPISILON);
 	EXPECT_EQ(a.cofactor(3, 2), 105);
-	EXPECT_NEAR(b.m23, 105.0 / 532.0, RAY_EPISILON);
+	EXPECT_NEAR(array_b[11], 105.0 / 532.0, RAY_EPISILON);
 	Matrix4 expect(std::array<float, 16>{
 		0.21805f, 0.45113f, 0.24060f, -0.04511f,
 		-0.80827f , -1.45677f , -0.44361f ,  0.52068f,
