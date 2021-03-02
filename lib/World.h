@@ -55,7 +55,8 @@ namespace ray {
 
 		Color shade(const IntersectionInfo& info) const {
 			const Material& material = info.object->material;
-			return material.lighting(_light, info.point, info.eye, info.normal);
+			bool in_shadow = false;// is_shadowed(info.point);
+			return material.lighting(_light, info.point, info.eye, info.normal, in_shadow);
 		}
 
 		Color color_at_slow(const Ray& ray) const {
@@ -72,6 +73,23 @@ namespace ray {
 			}
 			IntersectionInfo info = Intersection::hit(intersections)->info(ray);
 			return shade(info);
+		}
+
+		bool is_shadowed(const Point3& point) const {
+			Vec3 v = _light.position - point;
+			double distance = v.magnitude();
+			Vec3 direction = v.norm();
+			// aim from point to light
+			Ray r(point, direction);
+			// see what you hit
+			std::vector<Intersection> intersections;
+			intersect(r, intersections);
+			const Intersection* hit = Intersection::hit(intersections);
+			// if you hit something and its closer than the light, you're in the shadows.
+			if (hit != nullptr && hit->t < distance) {
+				return true;
+			}
+			return false;
 		}
 
 	private:

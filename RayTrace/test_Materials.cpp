@@ -48,7 +48,7 @@ TEST(Material, Lighting) {
 	Vec3 eyev(0, 0, -1);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv);
+	Color result = mat.lighting(light, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(1.9f, 1.9f, 1.9f));
 }
 
@@ -65,7 +65,7 @@ TEST(Material, Lighting45deg) {
 	Vec3 eyev(0, st, -st);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv);
+	Color result = mat.lighting(light, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(1, 1, 1));
 }
 
@@ -81,7 +81,7 @@ TEST(Material, Lighting45degEyeBack) {
 	Vec3 eyev(0, 0, -1);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 10, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv);
+	Color result = mat.lighting(light, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(0.7364f, 0.7364f, 0.7364f));
 }
 
@@ -98,7 +98,7 @@ TEST(Material, LightingReflectPath) {
 	Vec3 eyev(0, -st, -st);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 10, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv);
+	Color result = mat.lighting(light, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(1.6364f, 1.6364f, 1.6364f));
 }
 
@@ -114,7 +114,7 @@ TEST(Material, LightingEyeSurfLight) {
 	Vec3 eyev(0, 0, -1);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 0, 10), Color(1, 1, 1)); 
-	Color result = mat.lighting(light, position, eyev, normalv);
+	Color result = mat.lighting(light, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(0.1f, 0.1f, 0.1f));
 }
 
@@ -125,7 +125,17 @@ TEST(Material, LightingEyeSurfLight) {
 //    And in_shadow ← true
 //  When result ← lighting(m, light, position, eyev, normalv, in_shadow)
 //  Then result = color(0.1, 0.1, 0.1)
-//
+TEST(Material, InShadow) {
+	Material mat;
+	Point3 position;
+	Vec3 eye(0, 0, -1);
+	Vec3 normal(0, 0, -1);
+	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
+	bool in_shadow = true;
+	Color result = mat.lighting(light, position, eye, normal, in_shadow);
+	EXPECT_EQ(result, Color(0.1f, 0.1f, 0.1f));
+}
+
 //Scenario: Lighting with a pattern applied
 //  Given m.pattern ← stripe_pattern(color(1, 1, 1), color(0, 0, 0))
 //    And m.ambient ← 1

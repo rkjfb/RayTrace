@@ -168,22 +168,46 @@ TEST(World, ColorAtBehind) {
 //  Given w ← default_world()
 //    And p ← point(0, 10, 0)
 //   Then is_shadowed(w, p) is false
-//
+TEST(World, ShadowColinear) {
+	World w;
+	Point3 p(0, 10, 0);
+
+	EXPECT_EQ(w.is_shadowed(p), false);
+}
+
 //Scenario: The shadow when an object is between the point and the light
 //  Given w ← default_world()
 //    And p ← point(10, -10, 10)
 //   Then is_shadowed(w, p) is true
-//
+TEST(World, ShadowBlocked) {
+	World w;
+	Point3 p(10, -10, 10);
+
+	EXPECT_EQ(w.is_shadowed(p), true);
+}
+
 //Scenario: There is no shadow when an object is behind the light
 //  Given w ← default_world()
 //    And p ← point(-20, 20, -20)
 //   Then is_shadowed(w, p) is false
-//
+TEST(World, ShadowBehindLight) {
+	World w;
+	Point3 p(-20, 20, -20);
+
+	EXPECT_EQ(w.is_shadowed(p), false);
+}
+
 //Scenario: There is no shadow when an object is behind the point
 //  Given w ← default_world()
 //    And p ← point(-2, 2, -2)
 //   Then is_shadowed(w, p) is false
-//
+TEST(World, ShadowBehindPoint) {
+	World w;
+	Point3 p(-2, 2, -2);
+
+	EXPECT_EQ(w.is_shadowed(p), false); 
+}
+
 //Scenario: shade_hit() is given an intersection in shadow
 //  Given w ← world()
 //    And w.light ← point_light(point(0, 0, -10), color(1, 1, 1))
@@ -197,7 +221,20 @@ TEST(World, ColorAtBehind) {
 //  When comps ← prepare_computations(i, r)
 //    And c ← shade_hit(w, comps)
 //  Then c = color(0.1, 0.1, 0.1)
-//
+TEST(World, ShadowWorld) {
+	Sphere s1;
+	Sphere s2;
+	s2.transform = Matrix4::translate(0, 0, 10);
+	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
+	World w(light, { s1, s2 });
+	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
+	Intersection i(4, s2);
+	IntersectionInfo info = i.info(r);
+	Color c = w.shade(info);
+
+	EXPECT_EQ(c, Color(0.1f, 0.1f, 0.1f));
+}
+
 //Scenario: The reflected color for a nonreflective material
 //  Given w ← default_world()
 //    And r ← ray(point(0, 0, 0), vector(0, 0, 1))

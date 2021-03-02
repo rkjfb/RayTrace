@@ -23,22 +23,26 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
-		Color lighting(const PointLight& light, const Point3& point, const Vec3& eyev, const Vec3& normalv) const {
+		Color lighting(const PointLight& light, const Point3& point, const Vec3& eye, const Vec3& normal, bool in_shadow) const {
 			Color effcolor = color * light.intensity;
-			Vec3 lightv = (light.position - point).norm();
 			Color ambcolor = effcolor * ambient;
-			double dotlight = lightv.dot(normalv);
 			Color diffcolor = Color::black();
 			Color speccolor = Color::black();
-			if (dotlight > 0) {
-				diffcolor = effcolor * static_cast<float>(diffuse * dotlight);
-				Vec3 reflectv = (-lightv).reflect(normalv);
-				double doteye = reflectv.dot(eyev);
-				if (doteye > 0) {
-					double factor = pow(doteye, shininess);
-					speccolor = light.intensity * static_cast<float>(specular * factor);
+
+			if (!in_shadow) {
+				Vec3 lightv = (light.position - point).norm();
+				double dotlight = lightv.dot(normal);
+				if (dotlight > 0) {
+					diffcolor = effcolor * static_cast<float>(diffuse * dotlight);
+					Vec3 reflectv = (-lightv).reflect(normal);
+					double doteye = reflectv.dot(eye);
+					if (doteye > 0) {
+						double factor = pow(doteye, shininess);
+						speccolor = light.intensity * static_cast<float>(specular * factor);
+					}
 				}
 			}
+
 			return ambcolor + diffcolor + speccolor;
 		}
 
