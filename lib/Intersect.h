@@ -80,7 +80,7 @@ namespace ray {
 				info.inside = true;
 				info.normal = -info.normal;
 			}
-			info.over_point = info.point + info.normal * 10* ray::RAY_EPSILON;
+			info.over_point = info.point + info.normal * 2 * ray::RAY_EPSILON;
 			return info;
 		}
 	};

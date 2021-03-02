@@ -56,6 +56,9 @@ namespace ray {
 		Color shade(const IntersectionInfo& info) const {
 			const Material& material = info.object->material;
 			bool in_shadow = is_shadowed(info.over_point);
+			if (in_shadow) {
+				return Color::red();
+			}
 			return material.lighting(_light, info.over_point, info.eye, info.normal, in_shadow);
 		}
 
