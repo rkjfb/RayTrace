@@ -36,7 +36,7 @@ TEST(World, Ctor) {
 	Sphere s1;
 	s1.material = m;
 
-	auto shapes = w.shapes();
+	const auto& shapes = w.shapes();
 	EXPECT_EQ(shapes[0], s1);
 
 	Sphere s2(Matrix4::scale(0.5f, 0.5f, 0.5f));
@@ -139,18 +139,29 @@ TEST(World, ColorAt) {
 //  When c ← color_at(w, r)
 //  Then c = inner.material.color
 TEST(World, ColorAtBehind) {
-	World w;
-	std::vector<Sphere>& spheres = w.shapes();
-	Sphere& outer = spheres[0];
-	outer.material.ambient = 1;
 
-	Sphere& inner = spheres[1];
-	inner.material.ambient = 1;
+	std::vector<Sphere> shapes;
+
+	Material m;
+	m.color = Color(0.8f, 1, 0.6f);
+	m.diffuse = 0.7f;
+	m.specular = 0.2f;
+	m.ambient = 1;
+
+	Sphere s1;
+	s1.material = m;
+	shapes.emplace_back(s1);
+
+	Sphere s2(Matrix4::scale(0.5f, 0.5f, 0.5f));
+	s2.material.ambient = 1;
+	shapes.emplace_back(s2);
+
+	World w(PointLight(Point3(-10, 10, -10), Color::white()), shapes);
 
 	Ray r(Point3(0, 0, 0.75f), Vec3(0, 0, -1));
 	Color c = w.color_at_slow(r);
 
-	EXPECT_EQ(c, inner.material.color);
+	EXPECT_EQ(c, s2.material.color);
 }
 
 //Scenario: There is no shadow when nothing is collinear with point and light

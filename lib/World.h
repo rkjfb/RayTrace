@@ -20,8 +20,6 @@ namespace ray {
 		World(const PointLight& light) :
 			_light(light)
 		{
-			std::vector<Sphere> shapes;
-
 			Material m;
 			m.color = Color(0.8f, 1, 0.6f);
 			m.diffuse = 0.7f;
@@ -29,10 +27,10 @@ namespace ray {
 
 			Sphere s1;
 			s1.material = m;
-			shapes.emplace_back(s1);
+			_spheres.emplace_back(s1);
 
 			Sphere s2(Matrix4::scale(0.5f, 0.5f, 0.5f));
-			shapes.emplace_back(s2);
+			_spheres.emplace_back(s2);
 		}
 
 		// default: get light + 2 stock shapes
@@ -40,8 +38,7 @@ namespace ray {
 		{
 		}
 
-		// TODO: return const.
-		std::vector<Sphere>& shapes() {
+		const std::vector<Sphere>& shapes() const {
 			return _spheres;
 		}
 
