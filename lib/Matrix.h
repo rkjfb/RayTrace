@@ -169,6 +169,7 @@ namespace ray {
 	public:
 		Matrix4() {
 			m00 = m11 = m22 = m33 = 1;
+			update_inverse_cache();
 		}
 		Matrix4(std::array<float, 16>& i) {
 			m00 = i[0];
@@ -190,7 +191,35 @@ namespace ray {
 			m31 = i[13];
 			m32 = i[14];
 			m33 = i[15];
+
+			update_inverse_cache();
 		}
+
+		Matrix4(const std::array<float, 16>& a, const std::array<float, 16>& inv) {
+			m00 = a[0];
+			m01 = a[1];
+			m02 = a[2];
+			m03 = a[3];
+
+			m10 = a[4];
+			m11 = a[5];
+			m12 = a[6];
+			m13 = a[7];
+
+			m20 = a[8];
+			m21 = a[9];
+			m22 = a[10];
+			m23 = a[11];
+
+			m30 = a[12];
+			m31 = a[13];
+			m32 = a[14];
+			m33 = a[15];
+
+			inverse_cache = inv;
+		}
+
+
 		friend std::ostream& operator<<(std::ostream& os, const Matrix4& m) {
 			return os << "Matrix4("
 				<< m.m00 << ", "
@@ -301,14 +330,20 @@ namespace ray {
 			return Matrix4(ret);
 		}
 
+		// returns the transpose of a.
+		static std::array<float, 16> transpose_array(const std::array<float, 16>& a) {
+			return std::array<float, 16>{
+				a[0], a[4], a[8], a[12],
+				a[1], a[5], a[9], a[13],
+				a[2], a[6], a[10], a[14],
+				a[3], a[7], a[11], a[15]
+			};
+		}
+
 		Matrix4 transpose() const {
-			auto a = std::array<float, 16>{
-				m00, m10, m20, m30,
-				m01, m11, m21, m31,
-				m02, m12, m22, m32,
-				m03, m13, m23, m33
-				};
-			return Matrix4(a);
+			auto at = transpose_array(to_array());
+			auto invt = transpose_array(inverse_cache);
+			return Matrix4(at, invt);
 		}
 
 		Matrix3 submatrix(int droprow, int dropcol) const {
@@ -384,13 +419,103 @@ namespace ray {
 				m30, m31,m32,m33 };
 		}
 
+		Matrix4 inverse() const
+		{
+			return Matrix4(inverse_cache, to_array());
+		}
+
+		static Matrix4 identity() {
+			// currently initialize to identity, so no-op.
+			return Matrix4();
+		}
+
+		static Matrix4 translate(float x, float y, float z) {
+			Matrix4 m;
+			m.m03 = x;
+			m.m13 = y;
+			m.m23 = z;
+			m.update_inverse_cache();
+			return m;
+		}
+
+		static Matrix4 scale(float x, float y, float z) {
+			Matrix4 m;
+			m.m00 = x;
+			m.m11 = y;
+			m.m22 = z;
+			m.update_inverse_cache();
+			return m;
+		}
+
+		static Matrix4 rotateX(float r) {
+			Matrix4 m;
+			m.m11 = m.m22 = cos(r);
+			m.m21 = sin(r);
+			m.m12 = -m.m21;
+			m.update_inverse_cache();
+			return m;
+		}
+
+		static Matrix4 rotateY(float r) {
+			Matrix4 m;
+			m.m00 = m.m22 = cos(r);
+			m.m02 = sin(r);
+			m.m20 = -m.m02;
+			m.update_inverse_cache();
+			return m;
+		}
+
+		static Matrix4 rotateZ(float r) {
+			Matrix4 m;
+			m.m00 = m.m11 = cos(r);
+			m.m10 = sin(r);
+			m.m01 = -m.m10;
+			m.update_inverse_cache();
+			return m;
+		}
+
+		static Matrix4 shear(float xy, float xz, float yx, float yz, float zx, float zy) {
+			Matrix4 m;
+			m.m01 = xy;
+			m.m02 = xz;
+			m.m10 = yx;
+			m.m12 = yz;
+			m.m20 = zx;
+			m.m21 = zy;
+			m.update_inverse_cache();
+			return m;
+		}
+
+		static Matrix4 view(const Point3& from, const Point3& to, const Vec3& up) {
+			Vec3 forward = (to - from).norm();
+			Vec3 upn = up.norm();
+			Vec3 left = forward.cross(upn);
+			Vec3 true_up = left.cross(forward);
+			std::array<float, 16> a = {
+				left.x, left.y, left.z, 0,
+					true_up.x, true_up.y, true_up.z, 0,
+					-forward.x, -forward.y, -forward.z, 0,
+					0,0,0,1
+			};
+			Matrix4 rotate(a);
+			return rotate * translate(-from.x, -from.y, -from.z);
+		}
+		
+	private:
+
+		float m00 = 0, m01 = 0, m02 = 0, m03 = 0;
+		float m10 = 0, m11 = 0, m12 = 0, m13 = 0;
+		float m20 = 0, m21 = 0, m22 = 0, m23 = 0;
+		float m30 = 0, m31 = 0, m32 = 0, m33 = 0;
+
+		// cache of inverse of this matrix, needed because inverting is high frequency.
+		std::array<float, 16> inverse_cache;
 		// Much faster invert than the book version.
 		// Copied from https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
 		// Which copied from https://glm.g-truc.net/0.9.9/index.html
-		//bool InverseMat44(Matrix4& out)
-		Matrix4 inverse() const
-		{
-			std::array<float, 16> inv;
+
+		void update_inverse_cache() {
+			std::array<float, 16>& inv = inverse_cache;
 			double det;
 			int i;
 
@@ -411,92 +536,15 @@ namespace ray {
 			inv[11] = -m00 * m11 * m23 + m00 * m13 * m21 + m10 * m01 * m23 - m10 * m03 * m21 - m20 * m01 * m13 + m20 * m03 * m11;
 			inv[15] = m00 * m11 * m22 - m00 * m12 * m21 - m10 * m01 * m22 + m10 * m02 * m21 + m20 * m01 * m12 - m20 * m02 * m11;
 
-			det = m00 * inv[0] + m01 * inv[4] + m02 * inv[8] + m03 * inv[12]; 
+			det = m00 * inv[0] + m01 * inv[4] + m02 * inv[8] + m03 * inv[12];
 			assert(det != 0);
 
 			det = 1.0 / det;
 
-			for (i = 0; i < 16; i++)
+			for (i = 0; i < 16; i++) {
 				inv[i] = static_cast<float>(inv[i] * det);
-
-			return Matrix4(inv);
+			}
 		}
-
-		static Matrix4 identity() {
-			// currently initialize to identity, so no-op.
-			return Matrix4();
-		}
-
-		static Matrix4 translate(float x, float y, float z) {
-			Matrix4 m;
-			m.m03 = x;
-			m.m13 = y;
-			m.m23 = z;
-			return m;
-		}
-
-		static Matrix4 scale(float x, float y, float z) {
-			Matrix4 m;
-			m.m00 = x;
-			m.m11 = y;
-			m.m22 = z;
-			return m;
-		}
-
-		static Matrix4 rotateX(float r) {
-			Matrix4 m;
-			m.m11 = m.m22 = cos(r);
-			m.m21 = sin(r);
-			m.m12 = -m.m21;
-			return m;
-		}
-
-		static Matrix4 rotateY(float r) {
-			Matrix4 m;
-			m.m00 = m.m22 = cos(r);
-			m.m02 = sin(r);
-			m.m20 = -m.m02;
-			return m;
-		}
-
-		static Matrix4 rotateZ(float r) {
-			Matrix4 m;
-			m.m00 = m.m11 = cos(r);
-			m.m10 = sin(r);
-			m.m01 = -m.m10;
-			return m;
-		}
-
-		static Matrix4 shear(float xy, float xz, float yx, float yz, float zx, float zy) {
-			Matrix4 m;
-			m.m01 = xy;
-			m.m02 = xz;
-			m.m10 = yx;
-			m.m12 = yz;
-			m.m20 = zx;
-			m.m21 = zy;
-			return m;
-		}
-
-		static Matrix4 view(const Point3& from, const Point3& to, const Vec3& up) {
-			Vec3 forward = (to - from).norm();
-			Vec3 upn = up.norm();
-			Vec3 left = forward.cross(upn);
-			Vec3 true_up = left.cross(forward);
-			std::array<float, 16> a = {
-				left.x, left.y, left.z, 0,
-					true_up.x, true_up.y, true_up.z, 0,
-					-forward.x, -forward.y, -forward.z, 0,
-					0,0,0,1
-			};
-			Matrix4 rotate(a);
-			return rotate * translate(-from.x, -from.y, -from.z);
-		}
-	private:
-		float m00 = 0, m01 = 0, m02 = 0, m03 = 0;
-		float m10 = 0, m11 = 0, m12 = 0, m13 = 0;
-		float m20 = 0, m21 = 0, m22 = 0, m23 = 0;
-		float m30 = 0, m31 = 0, m32 = 0, m33 = 0;
 	};
 } // namespace ray
 

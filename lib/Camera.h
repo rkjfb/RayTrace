@@ -36,7 +36,6 @@ public:
 		float wx = half_width - x;
 		float wy = half_height - y;
 
-		// TODO: inverse on fire?
 		Matrix4 inv = transform.inverse();
 		Point3 pixel = inv * Point3(wx, wy, -1);
 		Point3 origin = inv * Point3(0, 0, 0);
