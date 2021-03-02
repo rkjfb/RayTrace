@@ -30,7 +30,7 @@ TEST(Camera, Ctor) {
 //  Then c.pixel_size = 0.01
 TEST(Camera, HorizontalCanvas) {
 	Camera c(200,125, pi / 2);
-	EXPECT_EQ(c.pixel_size, 0.01f);
+	EXPECT_NEAR(c.pixel_size, 0.01, RAY_EPSILON);
 }
 
 //Scenario: The pixel size for a vertical canvas
@@ -38,7 +38,7 @@ TEST(Camera, HorizontalCanvas) {
 //  Then c.pixel_size = 0.01
 TEST(Camera, VerticalCanvas) {
 	Camera c(125, 200, pi / 2);
-	EXPECT_EQ(c.pixel_size, 0.01f); 
+	EXPECT_NEAR(c.pixel_size, 0.01f, RAY_EPSILON); 
 }
 
 //Scenario: Constructing a ray through the center of the canvas

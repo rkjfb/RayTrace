@@ -335,7 +335,7 @@ TEST(Transform, ViewComplex) {
 	Point3 to(4, -2, 8);
 	Vec3 up(1, 1, 0);
 	Matrix4 view = Matrix4::view(from, to, up);
-	std::array<float, 16> expectArray = {
+	std::array<double, 16> expectArray = {
 		- 0.50709f, 0.50709f, 0.67612f, -2.36643f,
 		0.76772f, 0.60609f, 0.12122f, -2.82843f,
 		-0.35857f, 0.59761f, -0.71714f, 0.00000f,

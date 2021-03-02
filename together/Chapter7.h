@@ -58,8 +58,7 @@ public:
 		left.material.diffuse = 0.7f;
 		left.material.specular = 0.3f;
 
-		//std::vector<Sphere> vec = { floor, left_wall, right_wall, middle, right, left };
-		std::vector<Sphere> vec = { right_wall};
+		std::vector<Sphere> vec = { floor, left_wall, right_wall, middle, right, left };
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
 
