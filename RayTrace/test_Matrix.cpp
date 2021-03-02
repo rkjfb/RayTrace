@@ -474,9 +474,9 @@ TEST(Matrix, Inverse4) {
 	EXPECT_EQ(a.det(), 532);
 	EXPECT_EQ(a.cofactor(2, 3), -160);
 	std::array<float, 16> array_b = b.to_array();
-	EXPECT_NEAR(array_b[14], -160.0 / 532.0, RAY_EPISILON);
+	EXPECT_NEAR(array_b[14], -160.0 / 532.0, RAY_EPSILON);
 	EXPECT_EQ(a.cofactor(3, 2), 105);
-	EXPECT_NEAR(array_b[11], 105.0 / 532.0, RAY_EPISILON);
+	EXPECT_NEAR(array_b[11], 105.0 / 532.0, RAY_EPSILON);
 	Matrix4 expect(std::array<float, 16>{
 		0.21805f, 0.45113f, 0.24060f, -0.04511f,
 		-0.80827f , -1.45677f , -0.44361f ,  0.52068f,

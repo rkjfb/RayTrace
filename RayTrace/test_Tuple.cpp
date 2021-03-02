@@ -201,7 +201,7 @@ TEST(Vector, MagnitudeZ) {
 TEST(Vector, Magnitude123) {
 	Vec3 v(1, 2, 3);
 	double mag = v.magnitude();
-	EXPECT_NEAR(mag, sqrt(14), RAY_EPISILON);
+	EXPECT_NEAR(mag, sqrt(14), RAY_EPSILON);
 }
 
 //Scenario : Computing the magnitude of vector(-1, -2, -3)
@@ -210,7 +210,7 @@ TEST(Vector, Magnitude123) {
 TEST(Vector, MagnitudeNeg) {
 	Vec3 v(-1, -2, -3);
 	double mag = v.magnitude();
-	EXPECT_NEAR(mag, sqrt(14), RAY_EPISILON);
+	EXPECT_NEAR(mag, sqrt(14), RAY_EPSILON);
 }
 
 //Scenario : Normalizing vector(4, 0, 0) gives(1, 0, 0)
@@ -241,7 +241,7 @@ TEST(Vector, MagNorm) {
 	Vec3 norm = v.norm(); 
 	double mag = norm.magnitude();
 
-	EXPECT_NEAR(mag, 1, RAY_EPISILON);
+	EXPECT_NEAR(mag, 1, RAY_EPSILON);
 }
 
 //Scenario : The dot product of two tuples
@@ -253,7 +253,7 @@ TEST(Vector, Dot) {
 	Vec3 b(2, 3, 4);
 	double dot = a.dot(b);
 
-	EXPECT_NEAR(dot, 20, RAY_EPISILON);
+	EXPECT_NEAR(dot, 20, RAY_EPSILON);
 }
 
 //Scenario : The cross product of two vectors

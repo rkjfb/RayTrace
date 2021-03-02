@@ -90,7 +90,16 @@ TEST(Intersect, Inside) {
 //  When comps ← prepare_computations(i, r)
 //  Then comps.over_point.z < -EPSILON/2
 //    And comps.point.z > comps.over_point.z
-//
+TEST(Intersect, OffsetPoint) {
+	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
+	Sphere shape;
+	shape.transform = Matrix4::translate(0, 0, 1);
+	Intersection i(5, shape);
+	IntersectionInfo info = i.info(ray);
+	EXPECT_GT(ray::RAY_EPSILON / 2, info.point.z);
+	EXPECT_GT(info.point.z, info.over_point.z);
+}
+
 //Scenario: The under point is offset below the surface
 //  Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
 //    And shape ← glass_sphere() with:
@@ -123,7 +132,7 @@ TEST(Intersect, HitPositive) {
 	intersections.push_back(Intersection(1, s));
 	intersections.push_back(Intersection(2, s));
 	const Intersection* hit = Intersection::hit(intersections);
-	EXPECT_NEAR(hit->t, 1, RAY_EPISILON);
+	EXPECT_NEAR(hit->t, 1, RAY_EPSILON);
 }
 
 //
@@ -140,7 +149,7 @@ TEST(Intersect, HitSkipNegative) {
 	intersections.push_back(Intersection(-1, s));
 	intersections.push_back(Intersection(1, s));
 	const Intersection* hit = Intersection::hit(intersections);
-	EXPECT_NEAR(hit->t, 1, RAY_EPISILON);
+	EXPECT_NEAR(hit->t, 1, RAY_EPSILON);
 }
 
 //Scenario: The hit, when all intersections have negative t
@@ -176,7 +185,7 @@ TEST(Intersect, HitLowest) {
 	intersections.push_back(Intersection(-3, s));
 	intersections.push_back(Intersection(2, s));
 	const Intersection* hit = Intersection::hit(intersections);
-	EXPECT_NEAR(hit->t, 2, RAY_EPISILON);
+	EXPECT_NEAR(hit->t, 2, RAY_EPSILON);
 }
 
 //Scenario Outline: Finding n1 and n2 at various intersections

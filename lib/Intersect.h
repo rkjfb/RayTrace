@@ -9,6 +9,7 @@ namespace ray {
 		float t = 0;
 		const Sphere* object = nullptr;
 		Point3 point;
+		Point3 over_point;
 		Vec3 eye;
 		Vec3 normal;
 		bool inside = false;
@@ -79,6 +80,7 @@ namespace ray {
 				info.inside = true;
 				info.normal = -info.normal;
 			}
+			info.over_point = info.point + info.normal * 10* ray::RAY_EPSILON;
 			return info;
 		}
 	};

@@ -3,6 +3,6 @@
 
 namespace ray {
 	bool IsEqual(float left, float right) {
-		return abs(left - right) < RAY_EPISILON;
+		return abs(left - right) < RAY_EPSILON;
 	}
 } // namespace ray
