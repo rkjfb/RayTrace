@@ -6,14 +6,16 @@
 #include "Chapter4.h"
 #include "Chapter5.h"
 #include "Chapter6.h"
+#include "Chapter7.h"
 
 int main()
 {
     std::cout << "Hello World!\n";
-    //Chapter2 chap;
-    //Chapter4 chap;
-    //Chapter5 chap;
-    Chapter6 chap;
+    // Chapter2 chap;
+    // Chapter4 chap;
+    // Chapter5 chap;
+    // Chapter6 chap;
+    Chapter7 chap;
     chap.run();
 }
 

@@ -8,10 +8,20 @@ namespace ray {
 	class World
 	{
 	public:
+		World(const PointLight& light, const std::vector<Sphere>& shapes) :
+			_light(light)
+		{
+			for (const auto& s : shapes) {
+				_spheres.push_back(s);
+			}
+		}
 
+		// only light: get 2 stock shapes
 		World(const PointLight& light) :
 			_light(light)
 		{
+			std::vector<Sphere> shapes;
+
 			Material m;
 			m.color = Color(0.8f, 1, 0.6f);
 			m.diffuse = 0.7f;
@@ -19,13 +29,13 @@ namespace ray {
 
 			Sphere s1;
 			s1.material = m;
-			_spheres.emplace_back(s1);
+			shapes.emplace_back(s1);
 
 			Sphere s2(Matrix4::scale(0.5f, 0.5f, 0.5f));
-			_spheres.emplace_back(s2);
+			shapes.emplace_back(s2);
 		}
 
-
+		// default: get light + 2 stock shapes
 		World() : World(PointLight(Point3(-10, 10, -10), Color(1, 1, 1)))
 		{
 		}
@@ -51,9 +61,14 @@ namespace ray {
 			return material.lighting(_light, info.point, info.eye, info.normal);
 		}
 
-		Color color_at(const Ray& ray) const {
-			// TODO: if this becomes hot, the list is not currently needed..
+		Color color_at_slow(const Ray& ray) const {
 			std::vector<Intersection> intersections;
+			return color_at(ray, intersections);
+		}
+
+		// intersections is supplied to dodge the allocation, no functional value.
+		Color color_at(const Ray& ray, std::vector<Intersection>& intersections) const {
+			intersections.clear();
 			intersect(ray, intersections);
 			if (intersections.size() == 0) {
 				return Color::black();

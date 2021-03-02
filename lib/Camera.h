@@ -48,11 +48,12 @@ public:
 	Canvas render(const World& world) {
 		Canvas image(hsize, vsize);
 		auto& pixels = image.pixels();
+		std::vector<Intersection> intersections;
 
 		for (int y = 0; y < vsize; y++) {
 			for (int x = 0; x < hsize; x++) {
 				Ray r = ray(x, y);
-				Color c = world.color_at(r);
+				Color c = world.color_at(r, intersections);
 				pixels[x][y] = c;
 			}
 		}

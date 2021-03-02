@@ -111,7 +111,7 @@ TEST(World, ShadeInside) {
 TEST(World, ColorAtMiss) {
 	World w;
 	Ray r(Point3(0, 0, -5), Vec3(0, 1, 0));
-	Color c = w.color_at(r);
+	Color c = w.color_at_slow(r);
 
 	EXPECT_EQ(c, Color::black());
 }
@@ -124,7 +124,7 @@ TEST(World, ColorAtMiss) {
 TEST(World, ColorAt) {
 	World w;
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
-	Color c = w.color_at(r);
+	Color c = w.color_at_slow(r);
 
 	EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f));
 }
@@ -148,7 +148,7 @@ TEST(World, ColorAtBehind) {
 	inner.material.ambient = 1;
 
 	Ray r(Point3(0, 0, 0.75f), Vec3(0, 0, -1));
-	Color c = w.color_at(r);
+	Color c = w.color_at_slow(r);
 
 	EXPECT_EQ(c, inner.material.color);
 }
