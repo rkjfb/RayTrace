@@ -9,11 +9,11 @@ namespace ray {
 class Camera
 {
 public:
-	Camera(int h, int v, float field) :
+	Camera(int h, int v, double field) :
 		hsize(h), vsize(v), fov(field) {
 
-		float half_view = tanf(field / 2.0f);
-		float aspect = (float)h / v;
+		double half_view = tan(field / 2.0f);
+		double aspect = (double)h / v;
 		
 		if (aspect >= 1) {
 			half_width = half_view;
@@ -29,12 +29,12 @@ public:
 
 	Ray ray(int px, int py) const {
 		// offset from edge of canvas to center of pixel
-		float x = (px + 0.5f) * pixel_size;
-		float y = (py + 0.5f) * pixel_size;
+		double x = (px + 0.5f) * pixel_size;
+		double y = (py + 0.5f) * pixel_size;
 
 		// pixel in world space. note that camera is facing -z, so +x is left.
-		float wx = half_width - x;
-		float wy = half_height - y;
+		double wx = half_width - x;
+		double wy = half_height - y;
 
 		Matrix4 inv = transform.inverse();
 		Point3 pixel = inv * Point3(wx, wy, -1);
@@ -61,12 +61,12 @@ public:
 	}
 
 	int hsize;
-	float half_width;
+	double half_width;
 	int vsize;
-	float half_height;
-	float fov;
+	double half_height;
+	double fov;
 	Matrix4 transform;
-	float pixel_size;
+	double pixel_size;
 };
 
 } // namespace ray

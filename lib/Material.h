@@ -7,10 +7,10 @@ namespace ray {
 	{
 	public:
 		Color color = Color(1,1,1);
-		float ambient = 0.1f;
-		float diffuse = 0.9f;
-		float specular = 0.9f;
-		float shininess = 200.0f;
+		double ambient = 0.1f;
+		double diffuse = 0.9f;
+		double specular = 0.9f;
+		double shininess = 200.0f;
 
 		friend std::ostream& operator<<(std::ostream& os, const Material& m) {
 			return os << "Material(" << m.ambient << ", " << m.diffuse << ", " << m.specular << ", " << m.shininess << ")";
@@ -33,12 +33,12 @@ namespace ray {
 				Vec3 lightv = (light.position - point).norm();
 				double dotlight = lightv.dot(normal);
 				if (dotlight > 0) {
-					diffcolor = effcolor * static_cast<float>(diffuse * dotlight);
+					diffcolor = effcolor * static_cast<double>(diffuse * dotlight);
 					Vec3 reflectv = (-lightv).reflect(normal);
 					double doteye = reflectv.dot(eye);
 					if (doteye > 0) {
 						double factor = pow(doteye, shininess);
-						speccolor = light.intensity * static_cast<float>(specular * factor);
+						speccolor = light.intensity * static_cast<double>(specular * factor);
 					}
 				}
 			}

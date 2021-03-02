@@ -8,12 +8,12 @@ namespace ray {
 	class Matrix2
 	{
 	public:
-		float m00 = 0, m01 = 0;
-		float m10 = 0, m11 = 0;
+		double m00 = 0, m01 = 0;
+		double m10 = 0, m11 = 0;
 		Matrix2() {
 			m00 = m11 = 1;
 		}
-		Matrix2(std::array<float, 4>& i) {
+		Matrix2(std::array<double, 4>& i) {
 			m00 = i[0];
 			m01 = i[1];
 
@@ -38,7 +38,7 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
-		float det() const {
+		double det() const {
 			return m00 * m11 - m01 * m10;
 		}
 
@@ -47,13 +47,13 @@ namespace ray {
 	class Matrix3
 	{
 	public:
-		float m00 = 0, m01 = 0, m02 = 0;
-		float m10 = 0, m11 = 0, m12 = 0;
-		float m20 = 0, m21 = 0, m22 = 0;
+		double m00 = 0, m01 = 0, m02 = 0;
+		double m10 = 0, m11 = 0, m12 = 0;
+		double m20 = 0, m21 = 0, m22 = 0;
 		Matrix3() {
 			m00 = m11 = m22 = 1;
 		}
-		Matrix3(std::array<float, 9>& i) {
+		Matrix3(std::array<double, 9>& i) {
 			m00 = i[0];
 			m01 = i[1];
 			m02 = i[2];
@@ -96,7 +96,7 @@ namespace ray {
 		}
 
 		// returns supplied row as array
-		std::array<float, 3> row(int i) const {
+		std::array<double, 3> row(int i) const {
 			switch (i) {
 			case 0:
 				return { m00, m01, m02 };
@@ -111,7 +111,7 @@ namespace ray {
 		}
 
 		// returns supplied column as array
-		std::array<float, 3> col(int i) const {
+		std::array<double, 3> col(int i) const {
 			switch (i) {
 			case 0:
 				return { m00, m10, m20 };
@@ -126,11 +126,11 @@ namespace ray {
 		}
 
 		Matrix2 submatrix(int droprow, int dropcol) const {
-			std::array<float, 4> m2;
+			std::array<double, 4> m2;
 			int index = 0;
 			for (int i = 0; i < 3; i++) {
 				if (i == droprow) continue;
-				std::array<float, 3> r = row(i);
+				std::array<double, 3> r = row(i);
 				for (int j = 0; j < 3; j++) {
 					if (j == dropcol) continue;
 					m2[index] = r[j];
@@ -141,22 +141,22 @@ namespace ray {
 			return Matrix2(m2);
 		}
 
-		float minor(int row, int col) const {
+		double minor(int row, int col) const {
 			Matrix2 m = submatrix(row, col);
 			return m.det();
 		}
 
-		float cofactor(int row, int col) const {
-			float f = minor(row, col);
+		double cofactor(int row, int col) const {
+			double f = minor(row, col);
 			if ((row + col) % 2 == 1) {
 				f = -f;
 			}
 			return f;
 		}
 
-		float det() const {
-			float det = 0;
-			std::array<float, 3> r = row(0);
+		double det() const {
+			double det = 0;
+			std::array<double, 3> r = row(0);
 			for (int i = 0; i < r.size(); i++) {
 				det += r[i] * cofactor(0, i);
 			}
@@ -171,7 +171,7 @@ namespace ray {
 			m00 = m11 = m22 = m33 = 1;
 			update_inverse_cache();
 		}
-		Matrix4(std::array<float, 16>& i) {
+		Matrix4(std::array<double, 16>& i) {
 			m00 = i[0];
 			m01 = i[1];
 			m02 = i[2];
@@ -195,7 +195,7 @@ namespace ray {
 			update_inverse_cache();
 		}
 
-		Matrix4(const std::array<float, 16>& a, const std::array<float, 16>& inv) {
+		Matrix4(const std::array<double, 16>& a, const std::array<double, 16>& inv) {
 			m00 = a[0];
 			m01 = a[1];
 			m02 = a[2];
@@ -263,7 +263,7 @@ namespace ray {
 		}
 
 		// returns supplied row as array
-		std::array<float, 4> row(int i) const {
+		std::array<double, 4> row(int i) const {
 			switch (i) {
 			case 0:
 				return { m00, m01, m02, m03 };
@@ -280,7 +280,7 @@ namespace ray {
 		}
 
 		// returns supplied column as array
-		std::array<float, 4> col(int i) const {
+		std::array<double, 4> col(int i) const {
 			switch (i) {
 			case 0:
 				return { m00, m10, m20, m30 };
@@ -318,11 +318,11 @@ namespace ray {
 		}
 
 		Matrix4 operator*(const Matrix4& rhs) const {
-			std::array<float, 16> ret;
+			std::array<double, 16> ret;
 			for (int i = 0; i < 4; i++) {
-				std::array<float, 4> r = row(i);
+				std::array<double, 4> r = row(i);
 				for (int j = 0; j < 4; j++) {
-					std::array<float, 4> c = rhs.col(j);
+					std::array<double, 4> c = rhs.col(j);
 					ret[i*4 + j] = c[0] * r[0] + c[1] * r[1] + c[2] * r[2] + c[3] * r[3];
 				}
 			}
@@ -330,8 +330,8 @@ namespace ray {
 		}
 
 		// returns the transpose of a.
-		static std::array<float, 16> transpose_array(const std::array<float, 16>& a) {
-			return std::array<float, 16>{
+		static std::array<double, 16> transpose_array(const std::array<double, 16>& a) {
+			return std::array<double, 16>{
 				a[0], a[4], a[8], a[12],
 				a[1], a[5], a[9], a[13],
 				a[2], a[6], a[10], a[14],
@@ -346,11 +346,11 @@ namespace ray {
 		}
 
 		Matrix3 submatrix(int droprow, int dropcol) const {
-			std::array<float, 9> m3;
+			std::array<double, 9> m3;
 			int index = 0;
 			for (int i = 0; i < 4; i++) {
 				if (i == droprow) continue;
-				std::array<float, 4> r = row(i);
+				std::array<double, 4> r = row(i);
 				for (int j = 0; j < 4; j++) {
 					if (j == dropcol) continue;
 					m3[index] = r[j];
@@ -361,22 +361,22 @@ namespace ray {
 			return Matrix3(m3);
 		}
 
-		float minor(int row, int col) const {
+		double minor(int row, int col) const {
 			Matrix3 m = submatrix(row, col);
 			return m.det();
 		}
 
-		float cofactor(int row, int col) const {
-			float f = minor(row, col);
+		double cofactor(int row, int col) const {
+			double f = minor(row, col);
 			if ((row + col) % 2 == 1) {
 				f = -f;
 			}
 			return f;
 		}
 
-		float det() const {
-			float det = 0;
-			std::array<float, 4> r = row(0);
+		double det() const {
+			double det = 0;
+			std::array<double, 4> r = row(0);
 			for (int i = 0; i < r.size(); i++) {
 				det += r[i] * cofactor(0, i);
 			}
@@ -397,11 +397,11 @@ namespace ray {
 			// We're trying to skip the transpose and intermediate storage steps here.
 			assert(invertible());
 
-			std::array<float, 16> m4;
-			float mul = 1 / det();
+			std::array<double, 16> m4;
+			double mul = 1 / det();
 			for (int row = 0; row < 4; row++) {
 				for (int col = 0; col < 4; col++) {
-					float c = cofactor(row, col);
+					double c = cofactor(row, col);
 					// (column, row) to transpose
 					m4[col * 4 + row] = mul * c;
 				}
@@ -410,7 +410,7 @@ namespace ray {
 			return Matrix4(m4);
 		}
 
-		std::array<float, 16> to_array() const {
+		std::array<double, 16> to_array() const {
 			return {
 				m00, m01,m02,m03,
 				m10, m11,m12,m13,
@@ -428,7 +428,7 @@ namespace ray {
 			return Matrix4();
 		}
 
-		static Matrix4 translate(float x, float y, float z) {
+		static Matrix4 translate(double x, double y, double z) {
 			Matrix4 m;
 			m.m03 = x;
 			m.m13 = y;
@@ -437,7 +437,7 @@ namespace ray {
 			return m;
 		}
 
-		static Matrix4 scale(float x, float y, float z) {
+		static Matrix4 scale(double x, double y, double z) {
 			Matrix4 m;
 			m.m00 = x;
 			m.m11 = y;
@@ -446,7 +446,7 @@ namespace ray {
 			return m;
 		}
 
-		static Matrix4 rotateX(float r) {
+		static Matrix4 rotateX(double r) {
 			Matrix4 m;
 			m.m11 = m.m22 = cos(r);
 			m.m21 = sin(r);
@@ -455,7 +455,7 @@ namespace ray {
 			return m;
 		}
 
-		static Matrix4 rotateY(float r) {
+		static Matrix4 rotateY(double r) {
 			Matrix4 m;
 			m.m00 = m.m22 = cos(r);
 			m.m02 = sin(r);
@@ -464,7 +464,7 @@ namespace ray {
 			return m;
 		}
 
-		static Matrix4 rotateZ(float r) {
+		static Matrix4 rotateZ(double r) {
 			Matrix4 m;
 			m.m00 = m.m11 = cos(r);
 			m.m10 = sin(r);
@@ -473,7 +473,7 @@ namespace ray {
 			return m;
 		}
 
-		static Matrix4 shear(float xy, float xz, float yx, float yz, float zx, float zy) {
+		static Matrix4 shear(double xy, double xz, double yx, double yz, double zx, double zy) {
 			Matrix4 m;
 			m.m01 = xy;
 			m.m02 = xz;
@@ -490,7 +490,7 @@ namespace ray {
 			Vec3 upn = up.norm();
 			Vec3 left = forward.cross(upn);
 			Vec3 true_up = left.cross(forward);
-			std::array<float, 16> a = {
+			std::array<double, 16> a = {
 				left.x, left.y, left.z, 0,
 					true_up.x, true_up.y, true_up.z, 0,
 					-forward.x, -forward.y, -forward.z, 0,
@@ -502,19 +502,19 @@ namespace ray {
 		
 	private:
 
-		float m00 = 0, m01 = 0, m02 = 0, m03 = 0;
-		float m10 = 0, m11 = 0, m12 = 0, m13 = 0;
-		float m20 = 0, m21 = 0, m22 = 0, m23 = 0;
-		float m30 = 0, m31 = 0, m32 = 0, m33 = 0;
+		double m00 = 0, m01 = 0, m02 = 0, m03 = 0;
+		double m10 = 0, m11 = 0, m12 = 0, m13 = 0;
+		double m20 = 0, m21 = 0, m22 = 0, m23 = 0;
+		double m30 = 0, m31 = 0, m32 = 0, m33 = 0;
 
 		// cache of inverse of this matrix, needed because inverting is high frequency.
-		std::array<float, 16> inverse_cache;
+		std::array<double, 16> inverse_cache;
 		// Much faster invert than the book version.
 		// Copied from https://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
 		// Which copied from https://glm.g-truc.net/0.9.9/index.html
 
 		void update_inverse_cache() {
-			std::array<float, 16>& inv = inverse_cache;
+			std::array<double, 16>& inv = inverse_cache;
 			double det;
 			int i;
 
@@ -540,7 +540,7 @@ namespace ray {
 				det = 1.0 / det;
 
 				for (i = 0; i < 16; i++) {
-					inv[i] = static_cast<float>(inv[i] * det);
+					inv[i] = static_cast<double>(inv[i] * det);
 				}
 			}
 			else

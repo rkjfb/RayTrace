@@ -2,7 +2,7 @@
 #include "Tuple.h"
 
 namespace ray {
-	bool IsEqual(float left, float right) {
+	bool IsEqual(double left, double right) {
 		return abs(left - right) < RAY_EPSILON;
 	}
 } // namespace ray

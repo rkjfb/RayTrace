@@ -1,17 +1,17 @@
 #pragma once
 
-namespace ray {
+#include "Tuple.h"
 
-	bool IsEqual(float left, float right);
+namespace ray {
 
 	class Color
 	{
 	public:
-		float r = 0.0f;
-		float g = 0.0f;
-		float b = 0.0f;
+		double r = 0.0f;
+		double g = 0.0f;
+		double b = 0.0f;
 
-		Color(float inr, float ing, float inb) {
+		Color(double inr, double ing, double inb) {
 			r = inr;
 			g = ing;
 			b = inb;
@@ -37,7 +37,7 @@ namespace ray {
 		Color operator*(const Color& rhs) const {
 			return Color(r * rhs.r, g * rhs.g, b * rhs.b);
 		}
-		Color operator*(float s) const {
+		Color operator*(double s) const {
 			return Color(s * r, s * g, s * b);
 		}
 		static Color white() {

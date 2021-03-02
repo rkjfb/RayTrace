@@ -22,7 +22,7 @@ public:
 		return !operator==(rhs);
 	}
 
-	Point3 position(float t) const {
+	Point3 position(double t) const {
 		return origin + direction * t;
 	}
 };

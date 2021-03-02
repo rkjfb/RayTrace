@@ -16,10 +16,10 @@ namespace ray {
 			std::string line;
 			for (size_t x = 0; x < width(); x++) {
 				auto& pixel = grid[x][y];
-				std::array<float, 3> colors = { pixel.r, pixel.g, pixel.b };
+				std::array<double, 3> colors = { pixel.r, pixel.g, pixel.b };
 
 				for (size_t i = 0; i < colors.size(); i++) {
-					float c = std::clamp(colors[i], 0.0f, 1.0f);
+					double c = std::clamp(colors[i], 0.0, 1.0);
 					std::string num = std::to_string(std::lround(c * range));
 					// 70 character line length limit.
 					if (line.size() + 1 + num.size() > 70) {

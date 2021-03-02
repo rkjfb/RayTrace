@@ -5,30 +5,30 @@
 
 namespace ray {
 
-	static constexpr float RAY_EPSILON = 0.00001f;
+	static constexpr double RAY_EPSILON = 0.00001f;
 	// available in c++20 as std::number::pi
-	static constexpr float pi = 3.14159265358979323846f;
+	static constexpr double pi = 3.14159265358979323846f;
 // Equality
-bool IsEqual(float left, float right);
+bool IsEqual(double left, double right);
 
 class Vec3
 {
 public:
-	float x = 0.0f;
-	float y = 0.0f;
-	float z = 0.0f;
-	float w = 0.0f;
+	double x = 0.0f;
+	double y = 0.0f;
+	double z = 0.0f;
+	double w = 0.0f;
 
 	Vec3() = default;
 
-	Vec3(float inx, float iny, float inz, float inw = 0.0f) {
+	Vec3(double inx, double iny, double inz, double inw = 0.0f) {
 		x = inx;
 		y = iny;
 		z = inz;
 		w = inw;
 	}
 
-	Vec3(std::array<float, 4> a) {
+	Vec3(std::array<double, 4> a) {
 		x = a[0];
 		y = a[1];
 		z = a[2];
@@ -57,7 +57,7 @@ public:
 		return Vec3(-x, -y, -z);
 	}
 
-	Vec3 operator*(float s) const {
+	Vec3 operator*(double s) const {
 		return Vec3(s* x, s* y, s* z, s*w);
 	}
 
@@ -67,7 +67,7 @@ public:
 
 	Vec3 norm() const {
 		double magmul = 1 / magnitude();
-		return Vec3(static_cast<float>(x * magmul), static_cast<float>(y * magmul), static_cast<float>(z * magmul));
+		return Vec3(static_cast<double>(x * magmul), static_cast<double>(y * magmul), static_cast<double>(z * magmul));
 	}
 
 	double dot(const Vec3& v) const {
@@ -81,7 +81,7 @@ public:
 	// n should be normalized.
     Vec3 reflect(const Vec3& n) const {
 		assert(n == n.norm());
-		float d = static_cast<float>(dot(n));
+		double d = static_cast<double>(dot(n));
 		return *this - n * 2 * d;
 	}
 
@@ -93,18 +93,18 @@ public:
 class Point3
 {
 public:
-	float x = 0.0f;
-	float y = 0.0f;
-	float z = 0.0f;
+	double x = 0.0f;
+	double y = 0.0f;
+	double z = 0.0f;
 
 	Point3() = default;
-	Point3(float inx, float iny, float inz)
+	Point3(double inx, double iny, double inz)
 	{
 		x = inx;
 		y = iny;
 		z = inz;
 	}
-	Point3(std::array<float, 3> a) {
+	Point3(std::array<double, 3> a) {
 		x = a[0];
 		y = a[1];
 		z = a[2];
@@ -136,7 +136,7 @@ public:
 		return Point3(x - rhs.x, y - rhs.y, z - rhs.z);
 	}
 
-	Point3 operator*(const float& s) const {
+	Point3 operator*(const double& s) const {
 		return Point3(s * x, s * y, s * z);
 	}
 
