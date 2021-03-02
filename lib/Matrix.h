@@ -297,21 +297,20 @@ namespace ray {
 		}
 
 		Vec3 operator*(const Vec3& rhs) const {
-			std::array<float, 4> ret;
-			for (int i = 0; i < 4; i++) {
-				std::array<float, 4> r = row(i);
-				ret[i] = rhs.x * r[0] + rhs.y * r[1] + rhs.z * r[2] + rhs.w * r[3];
-			}
-			return Vec3(ret);
+			return Vec3(
+				rhs.x * m00 + rhs.y * m01 + rhs.z * m02 + rhs.w * m03,
+				rhs.x * m10 + rhs.y * m11 + rhs.z * m12 + rhs.w * m13,
+				rhs.x * m20 + rhs.y * m21 + rhs.z * m22 + rhs.w * m23,
+				rhs.x * m30 + rhs.y * m31 + rhs.z * m32 + rhs.w * m33
+				);
 		}
 
 		Point3 operator*(const Point3& rhs) const {
-			std::array<float, 3> ret;
-			for (int i = 0; i < ret.size(); i++) {
-				std::array<float, 4> r = row(i);
-				ret[i] = rhs.x * r[0] + rhs.y * r[1] + rhs.z * r[2] + r[3];
-			}
-			return Point3(ret);
+			return Point3(
+				rhs.x * m00 + rhs.y * m01 + rhs.z * m02 + m03,
+				rhs.x * m10 + rhs.y * m11 + rhs.z * m12 + m13,
+				rhs.x * m20 + rhs.y * m21 + rhs.z * m22 + m23
+			);
 		}
 
 		Ray operator*(const Ray& rhs) const {
