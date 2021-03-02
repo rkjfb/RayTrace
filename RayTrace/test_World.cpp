@@ -78,7 +78,7 @@ TEST(World, Shade) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Intersection i(4, w.shapes()[0]);
 	IntersectionInfo info = i.info(r);
-	Color c = w.shade(info);
+	Color c = w.shade_slow(info);
 
 	EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f)); 
 }
@@ -98,7 +98,7 @@ TEST(World, ShadeInside) {
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
 	Intersection i(0.5, w.shapes()[1]);
 	IntersectionInfo info = i.info(r);
-	Color c = w.shade(info);
+	Color c = w.shade_slow(info);
 
 	EXPECT_EQ(c, Color(0.90498f, 0.90498f, 0.90498f));
 }
@@ -172,7 +172,7 @@ TEST(World, ShadowColinear) {
 	World w;
 	Point3 p(0, 10, 0);
 
-	EXPECT_EQ(w.is_shadowed(p), false);
+	EXPECT_EQ(w.is_shadowed_slow(p), false);
 }
 
 //Scenario: The shadow when an object is between the point and the light
@@ -183,7 +183,7 @@ TEST(World, ShadowBlocked) {
 	World w;
 	Point3 p(10, -10, 10);
 
-	EXPECT_EQ(w.is_shadowed(p), true);
+	EXPECT_EQ(w.is_shadowed_slow(p), true);
 }
 
 //Scenario: There is no shadow when an object is behind the light
@@ -194,7 +194,7 @@ TEST(World, ShadowBehindLight) {
 	World w;
 	Point3 p(-20, 20, -20);
 
-	EXPECT_EQ(w.is_shadowed(p), false);
+	EXPECT_EQ(w.is_shadowed_slow(p), false);
 }
 
 //Scenario: There is no shadow when an object is behind the point
@@ -205,7 +205,7 @@ TEST(World, ShadowBehindPoint) {
 	World w;
 	Point3 p(-2, 2, -2);
 
-	EXPECT_EQ(w.is_shadowed(p), false); 
+	EXPECT_EQ(w.is_shadowed_slow(p), false); 
 }
 
 //Scenario: shade_hit() is given an intersection in shadow
@@ -230,7 +230,7 @@ TEST(World, ShadowWorld) {
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
 	Intersection i(4, s2);
 	IntersectionInfo info = i.info(r);
-	Color c = w.shade(info);
+	Color c = w.shade_slow(info);
 
 	EXPECT_EQ(c, Color(0.1f, 0.1f, 0.1f));
 }
