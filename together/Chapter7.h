@@ -64,7 +64,7 @@ public:
 
 		World world(light, vec);
 
-		Camera camera(1000, 500, pi / 3);
+		Camera camera(4000, 2000, pi / 3);
 		Point3 from(0, 1.5, -5);
 		Point3 to(0, 1, 0);
 		Vec3 up(0, 1, 0);

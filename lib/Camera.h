@@ -1,5 +1,8 @@
 #pragma once
 
+#include <chrono>
+#include <iostream>
+#include <iomanip>
 #include "Matrix.h"
 #include "World.h"
 #include "Canvas.h"
@@ -45,6 +48,7 @@ public:
 	}
 
 	Canvas render(const World& world) {
+		auto start = std::chrono::steady_clock::now();
 		Canvas image(hsize, vsize);
 		auto& pixels = image.pixels();
 		std::vector<Intersection> intersections;
@@ -56,6 +60,11 @@ public:
 				pixels[x][y] = c;
 			}
 		}
+		auto end = std::chrono::steady_clock::now();
+		std::chrono::duration<double> durdiff = end - start;
+		double diff = durdiff.count();
+		double megapixels_per_sec = hsize * vsize / diff / 1000000;
+		std::cout << std::setw(9) << hsize << "x" << vsize <<" render time: " << diff << "s " << megapixels_per_sec << " megapixels/sec" << std::endl;
 
 		return image;
 	}
