@@ -73,6 +73,32 @@ namespace ray {
 		void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override;
 	};
 
+	class Plane : public Shape
+	{
+	public:
+		Plane() = default;
+		Plane(const Matrix4& t) : Shape(t) {}
+
+		friend std::ostream& operator<<(std::ostream& os, const Plane& rhs) {
+			return os << "Sphere(" << rhs.transform << ", " << rhs.material << ")";
+		}
+
+		bool operator==(const Plane& rhs) const {
+			return Shape::operator==(rhs);
+		}
+
+		bool operator!=(const Plane& rhs) const {
+			return !operator==(rhs);
+		}
+
+		Vec3 local_normal_at(const Point3& local_point) const override {
+			return Vec3(0,1,0);
+		}
+
+		void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override;
+	};
+
+
 	// Used for unit testing Shape.
 	class TestShape : public Shape
 	{

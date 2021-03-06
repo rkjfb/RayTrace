@@ -21,3 +21,13 @@ void Sphere::local_intersect(const Ray& local_ray, std::vector<Intersection>& ou
 	double t2 = static_cast<double>((-b + sqrtdisc) * mul);
 	out.emplace_back(Intersection(t2, this));
 }
+
+void Plane::local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const {
+	if (IsEqual(local_ray.direction.y, 0)) {
+		// Ray is perpendicular to plane, no intersection.
+		return;
+	}
+
+	double t = -local_ray.origin.y / local_ray.direction.y;
+	out.emplace_back(Intersection(t, this));
+}
