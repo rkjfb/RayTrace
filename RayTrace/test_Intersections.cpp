@@ -184,6 +184,7 @@ TEST(Intersect, HitLowest) {
 	intersections.push_back(Intersection(7, s));
 	intersections.push_back(Intersection(-3, s));
 	intersections.push_back(Intersection(2, s));
+	Intersection::sort(intersections);
 	const Intersection* hit = Intersection::hit(intersections);
 	EXPECT_NEAR(hit->t, 2, RAY_EPSILON);
 }
