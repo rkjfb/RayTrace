@@ -10,7 +10,7 @@ namespace ray {
 		Matrix4 transform;
 		Material material;
 		Shape() = default;
-		Shape(const Matrix4 & t) : transform(t) {}
+		Shape(const Matrix4& t) : transform(t) {}
 
 		friend std::ostream& operator<<(std::ostream& os, const Shape& rhs) {
 			return os << "Shape(" << rhs.transform << ", " << rhs.material << ")";
@@ -48,29 +48,63 @@ namespace ray {
 
 	};
 
-class Sphere : public Shape
-{
-public:
-	Sphere() = default;
-	Sphere(const Matrix4& t) : Shape(t) {}
+	class Sphere : public Shape
+	{
+	public:
+		Sphere() = default;
+		Sphere(const Matrix4& t) : Shape(t) {}
 
-	friend std::ostream& operator<<(std::ostream& os, const Sphere& rhs) {
-		return os << "Sphere(" << rhs.transform << ", " << rhs.material << ")";
-	}
+		friend std::ostream& operator<<(std::ostream& os, const Sphere& rhs) {
+			return os << "Sphere(" << rhs.transform << ", " << rhs.material << ")";
+		}
 
-	bool operator==(const Sphere& rhs) const {
-		return Shape::operator==(rhs);
-	}
+		bool operator==(const Sphere& rhs) const {
+			return Shape::operator==(rhs);
+		}
 
-	bool operator!=(const Sphere& rhs) const {
-		return !operator==(rhs);
-	}
+		bool operator!=(const Sphere& rhs) const {
+			return !operator==(rhs);
+		}
 
-	Vec3 local_normal_at(const Point3& local_point) const override {
-		return local_point - Point3(0, 0, 0);
-	}
+		Vec3 local_normal_at(const Point3& local_point) const override {
+			return local_point - Point3(0, 0, 0);
+		}
 
-	void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override;
-};
+		void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override;
+	};
+
+	// Used for unit testing Shape.
+	class TestShape : public Shape
+	{
+	public:
+		TestShape() = default;
+		TestShape(const Matrix4& t) : Shape(t) {}
+
+		// unit test intermediate info
+		mutable Point3 saved_point;
+		mutable Ray saved_ray;
+
+		friend std::ostream& operator<<(std::ostream& os, const TestShape& rhs) {
+			return os << "TestShape(" << rhs.transform << ", " << rhs.material << ")";
+		}
+
+		bool operator==(const TestShape& rhs) const {
+			return Shape::operator==(rhs);
+		}
+
+		bool operator!=(const TestShape& rhs) const {
+			return !operator==(rhs);
+		}
+
+		Vec3 local_normal_at(const Point3& local_point) const override {
+			saved_point = local_point;
+			return Vec3(local_point.x, local_point.y, local_point.z);
+		}
+
+		void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override
+		{
+			saved_ray = local_ray;
+		}
+	};
 
 } // namespace ray
