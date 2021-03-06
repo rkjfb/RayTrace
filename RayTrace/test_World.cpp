@@ -37,10 +37,10 @@ TEST(World, Ctor) {
 	s1.material = m;
 
 	const auto& shapes = w.shapes();
-	EXPECT_EQ(shapes[0], s1);
+	EXPECT_EQ(*shapes[0].get(), s1);
 
 	Sphere s2(Matrix4::scale(0.5f, 0.5f, 0.5f));
-	EXPECT_EQ(shapes[1], s2);
+	EXPECT_EQ(*shapes[1].get(), s2);
 }
 
 //Scenario: Intersect a world with a ray
@@ -76,7 +76,7 @@ TEST(World, Intersect) {
 TEST(World, Shade) {
 	World w;
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
-	Intersection i(4, &w.shapes()[0]);
+	Intersection i(4, w.shapes()[0].get());
 	IntersectionInfo info = i.info(r);
 	Color c = w.shade_slow(info);
 
@@ -96,7 +96,7 @@ TEST(World, ShadeInside) {
 	PointLight light(Point3(0, 0.25f, 0), Color(1, 1, 1));
 	World w(light);
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
-	Intersection i(0.5, &w.shapes()[1]);
+	Intersection i(0.5, w.shapes()[1].get());
 	IntersectionInfo info = i.info(r);
 	Color c = w.shade_slow(info);
 
@@ -140,7 +140,7 @@ TEST(World, ColorAt) {
 //  Then c = inner.material.color
 TEST(World, ColorAtBehind) {
 
-	std::vector<Sphere> shapes;
+	std::vector<std::unique_ptr<Shape>> shapes;
 
 	Material m;
 	m.color = Color(0.8f, 1, 0.6f);
@@ -148,20 +148,21 @@ TEST(World, ColorAtBehind) {
 	m.specular = 0.2f;
 	m.ambient = 1;
 
-	Sphere s1;
-	s1.material = m;
-	shapes.emplace_back(s1);
+	auto s1 = std::make_unique<Sphere>();
+	s1->material = m;
+	shapes.emplace_back(std::move(s1));
 
-	Sphere s2(Matrix4::scale(0.5f, 0.5f, 0.5f));
-	s2.material.ambient = 1;
-	shapes.emplace_back(s2);
+	auto s2 = std::make_unique<Sphere>(Matrix4::scale(0.5f, 0.5f, 0.5f));
+	auto weak_s2 = s2.get();
+	s2->material.ambient = 1;
+	shapes.emplace_back(std::move(s2));
 
-	World w(PointLight(Point3(-10, 10, -10), Color::white()), shapes);
+	World w(PointLight(Point3(-10, 10, -10), Color::white()), std::move(shapes));
 
 	Ray r(Point3(0, 0, 0.75f), Vec3(0, 0, -1));
 	Color c = w.color_at_slow(r);
 
-	EXPECT_EQ(c, s2.material.color);
+	EXPECT_EQ(c, weak_s2->material.color);
 }
 
 //Scenario: There is no shadow when nothing is collinear with point and light
@@ -222,13 +223,17 @@ TEST(World, ShadowBehindPoint) {
 //    And c ← shade_hit(w, comps)
 //  Then c = color(0.1, 0.1, 0.1)
 TEST(World, ShadowWorld) {
-	Sphere s1;
-	Sphere s2;
-	s2.transform = Matrix4::translate(0, 0, 10);
+	auto s1 = std::make_unique<Sphere>();
+	auto s2 = std::make_unique<Sphere>();
+	Shape* weak_s2 = s2.get();
+	s2->transform = Matrix4::translate(0, 0, 10);
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
-	World w(light, { s1, s2 });
+	std::vector<std::unique_ptr<Shape>> vec;
+	vec.push_back(std::move(s1));
+	vec.push_back(std::move(s2));
+	World w(light, std::move(vec));
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
-	Intersection i(4, &s2);
+	Intersection i(4, weak_s2);
 	IntersectionInfo info = i.info(r);
 	Color c = w.shade_slow(info);
 

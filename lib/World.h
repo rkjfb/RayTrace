@@ -8,12 +8,10 @@ namespace ray {
 	class World
 	{
 	public:
-		World(const PointLight& light, const std::vector<Sphere>& shapes) :
-			_light(light)
+		World(const PointLight& light, std::vector<std::unique_ptr<Shape>>&& shapes) :
+			_light(light),
+			_shapes(std::move(shapes))
 		{
-			for (const auto& s : shapes) {
-				_spheres.push_back(s);
-			}
 		}
 
 		// only light: get 2 stock shapes
@@ -25,12 +23,12 @@ namespace ray {
 			m.diffuse = 0.7f;
 			m.specular = 0.2f;
 
-			Sphere s1;
-			s1.material = m;
-			_spheres.emplace_back(s1);
+			auto s1 = std::make_unique<Sphere>();
+			s1->material = m;
+			_shapes.emplace_back(std::move(s1));
 
-			Sphere s2(Matrix4::scale(0.5f, 0.5f, 0.5f));
-			_spheres.emplace_back(s2);
+			auto s2 = std::make_unique<Sphere>(Matrix4::scale(0.5f, 0.5f, 0.5f));
+			_shapes.emplace_back(std::move(s2));
 		}
 
 		// default: get light + 2 stock shapes
@@ -38,8 +36,8 @@ namespace ray {
 		{
 		}
 
-		const std::vector<Sphere>& shapes() const {
-			return _spheres;
+		const std::vector<std::unique_ptr<Shape>>& shapes() const {
+			return _shapes;
 		}
 
 		const PointLight& light() {
@@ -48,8 +46,8 @@ namespace ray {
 
 		void intersect(const Ray& r, std::vector<Intersection>& intersections) const {
 			intersections.clear();
-			for (const auto& s : _spheres) {
-				s.intersect(r, intersections);
+			for (const auto& s : _shapes) {
+				s->intersect(r, intersections);
 			}
 			Intersection::sort(intersections);
 		}
@@ -74,10 +72,11 @@ namespace ray {
 		// intersections is supplied to dodge the allocation, no functional value.
 		Color color_at(const Ray& ray, std::vector<Intersection>& intersections) const {
 			intersect(ray, intersections);
-			if (intersections.size() == 0) {
+			const Intersection* hit = Intersection::hit(intersections);
+			if (hit == nullptr) {
 				return Color::black();
 			}
-			IntersectionInfo info = Intersection::hit(intersections)->info(ray);
+			IntersectionInfo info = hit->info(ray);
 			return shade(info, intersections);
 		}
 
@@ -104,7 +103,7 @@ namespace ray {
 		}
 
 	private:
-		std::vector<Sphere> _spheres;
+		std::vector<std::unique_ptr<Shape>> _shapes;
 		PointLight _light;
 	};
 } // namespace ray
