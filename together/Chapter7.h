@@ -19,6 +19,9 @@ class Chapter7
 
 public:
 	void run() {
+		/*
+		* BUGBUG: copy7 chapter9.h edits to make work.
+		* 
 		Sphere floor;
 		floor.transform = Matrix4::scale(10, 0.01f, 10);
 		floor.material.color = Color(1, 0.9f, 0.9f);
@@ -58,11 +61,13 @@ public:
 		left.material.diffuse = 0.7f;
 		left.material.specular = 0.3f;
 
-		std::vector<Sphere> vec = { floor, left_wall, right_wall, middle, right, left };
+		std::vector<std::unique_ptr<Shape>> vec = { floor, left_wall, right_wall, middle, right, left };
+		*/
+		std::vector<std::unique_ptr<Shape>> vec;
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
 
-		World world(light, vec);
+		World world(light, std::move(vec));
 
 		Camera camera(4000, 2000, pi / 3);
 		Point3 from(0, 1.5, -5);
