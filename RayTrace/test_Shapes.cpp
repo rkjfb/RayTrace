@@ -94,7 +94,14 @@ TEST(Shape, NormalTranslated) {
 //  When set_transform(s, m)
 //    And n ← normal_at(s, point(0, √2/2, -√2/2))
 //  Then n = vector(0, 0.97014, -0.24254)
-//
+TEST(Shape, NormalTransformed) {
+	TestShape shape;
+	shape.transform = Matrix4::scale(1, 0.5, 1) * Matrix4::rotateZ(pi / 5);
+	double ss = sqrt(2);
+	Vec3 n = shape.normal_at(Point3(0, ss/2,-ss/2));
+	EXPECT_EQ(n, Vec3(0, 0.97014, -0.24254));
+}
+
 //Scenario: A shape has a parent attribute
 //  Given s ← test_shape()
 //  Then s.parent is nothing
