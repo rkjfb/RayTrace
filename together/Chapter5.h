@@ -26,7 +26,7 @@ public:
 				float fly = 2.0f * y / height - 1.0f;
 
 				ray::Ray r(ray::Point3(flx, fly, 1), ray::Vec3(0, 0, -1));
-				ray::Intersection::intersect(sphere, r, intersections);
+				sphere.intersect(r, intersections);
 				if (intersections.size() > 0) {
 					pixels[x][y] = ray::Color::red();
 				}

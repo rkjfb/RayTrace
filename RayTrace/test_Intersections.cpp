@@ -13,7 +13,7 @@ using namespace ray;
 //    And i.object = s
 TEST(Intersect, Ctor) {
 	Sphere s;
-	Intersection i(3.5, s);
+	Intersection i(3.5, &s);
 	EXPECT_EQ(i.t, 3.5);
 	EXPECT_EQ(i.object, &s);
 }
@@ -31,7 +31,7 @@ TEST(Intersect, Ctor) {
 TEST(Intersect, Info) {
 	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s;
-	Intersection i(4, s);
+	Intersection i(4, &s);
 	IntersectionInfo info = i.info(ray);
 	EXPECT_EQ(info.t, 4);
 	EXPECT_EQ(info.object, &s);
@@ -56,7 +56,7 @@ TEST(Intersect, Info) {
 TEST(Intersect, Outside) {
 	Ray ray(Point3(0, 0,-5), Vec3(0, 0,1));
 	Sphere s;
-	Intersection i(4, s);
+	Intersection i(4, &s);
 	IntersectionInfo info = i.info(ray);
 	EXPECT_EQ(info.inside, false);
 }
@@ -74,7 +74,7 @@ TEST(Intersect, Outside) {
 TEST(Intersect, Inside) {
 	Ray ray(Point3(0, 0, 0), Vec3(0, 0, 1));
 	Sphere s;
-	Intersection i(1, s);
+	Intersection i(1, &s);
 	IntersectionInfo info = i.info(ray);
 	EXPECT_EQ(info.point, Point3(0,0,1));
 	EXPECT_EQ(info.eye, Vec3(0,0,-1));
@@ -94,7 +94,7 @@ TEST(Intersect, OffsetPoint) {
 	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere shape;
 	shape.transform = Matrix4::translate(0, 0, 1);
-	Intersection i(5, shape);
+	Intersection i(5, &shape);
 	IntersectionInfo info = i.info(ray);
 	EXPECT_GT(ray::RAY_EPSILON / 2, info.point.z);
 	EXPECT_GT(info.point.z, info.over_point.z);
@@ -129,8 +129,8 @@ TEST(Intersect, OffsetPoint) {
 TEST(Intersect, HitPositive) {
 	Sphere s;
 	std::vector<Intersection> intersections;
-	intersections.push_back(Intersection(1, s));
-	intersections.push_back(Intersection(2, s));
+	intersections.push_back(Intersection(1, &s));
+	intersections.push_back(Intersection(2, &s));
 	const Intersection* hit = Intersection::hit(intersections);
 	EXPECT_NEAR(hit->t, 1, RAY_EPSILON);
 }
@@ -146,8 +146,8 @@ TEST(Intersect, HitPositive) {
 TEST(Intersect, HitSkipNegative) {
 	Sphere s;
 	std::vector<Intersection> intersections;
-	intersections.push_back(Intersection(-1, s));
-	intersections.push_back(Intersection(1, s));
+	intersections.push_back(Intersection(-1, &s));
+	intersections.push_back(Intersection(1, &s));
 	const Intersection* hit = Intersection::hit(intersections);
 	EXPECT_NEAR(hit->t, 1, RAY_EPSILON);
 }
@@ -162,8 +162,8 @@ TEST(Intersect, HitSkipNegative) {
 TEST(Intersect, HitMiss) {
 	Sphere s;
 	std::vector<Intersection> intersections;
-	intersections.push_back(Intersection(-2, s));
-	intersections.push_back(Intersection(-1, s));
+	intersections.push_back(Intersection(-2, &s));
+	intersections.push_back(Intersection(-1, &s));
 	const Intersection* hit = Intersection::hit(intersections);
 	EXPECT_EQ(hit, nullptr);
 }
@@ -180,10 +180,10 @@ TEST(Intersect, HitMiss) {
 TEST(Intersect, HitLowest) {
 	Sphere s;
 	std::vector<Intersection> intersections;
-	intersections.push_back(Intersection(5, s));
-	intersections.push_back(Intersection(7, s));
-	intersections.push_back(Intersection(-3, s));
-	intersections.push_back(Intersection(2, s));
+	intersections.push_back(Intersection(5, &s));
+	intersections.push_back(Intersection(7, &s));
+	intersections.push_back(Intersection(-3, &s));
+	intersections.push_back(Intersection(2, &s));
 	Intersection::sort(intersections);
 	const Intersection* hit = Intersection::hit(intersections);
 	EXPECT_NEAR(hit->t, 2, RAY_EPSILON);

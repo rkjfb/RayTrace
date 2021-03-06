@@ -49,7 +49,7 @@ namespace ray {
 		void intersect(const Ray& r, std::vector<Intersection>& intersections) const {
 			intersections.clear();
 			for (const auto& s : _spheres) {
-				Intersection::intersect(s, r, intersections);
+				s.intersect(r, intersections);
 			}
 			Intersection::sort(intersections);
 		}

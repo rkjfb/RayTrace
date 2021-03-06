@@ -76,7 +76,7 @@ TEST(World, Intersect) {
 TEST(World, Shade) {
 	World w;
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
-	Intersection i(4, w.shapes()[0]);
+	Intersection i(4, &w.shapes()[0]);
 	IntersectionInfo info = i.info(r);
 	Color c = w.shade_slow(info);
 
@@ -96,7 +96,7 @@ TEST(World, ShadeInside) {
 	PointLight light(Point3(0, 0.25f, 0), Color(1, 1, 1));
 	World w(light);
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
-	Intersection i(0.5, w.shapes()[1]);
+	Intersection i(0.5, &w.shapes()[1]);
 	IntersectionInfo info = i.info(r);
 	Color c = w.shade_slow(info);
 
@@ -228,7 +228,7 @@ TEST(World, ShadowWorld) {
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
 	World w(light, { s1, s2 });
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
-	Intersection i(4, s2);
+	Intersection i(4, &s2);
 	IntersectionInfo info = i.info(r);
 	Color c = w.shade_slow(info);
 
