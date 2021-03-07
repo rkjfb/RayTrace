@@ -7,30 +7,43 @@ namespace ray {
 	class Material
 	{
 	public:
-		Color color = Color(1,1,1);
-		Pattern pattern;
+		std::unique_ptr<Pattern> pattern;
 		double ambient = 0.1f;
 		double diffuse = 0.9f;
 		double specular = 0.9f;
 		double shininess = 200.0f;
 
+		Material() : pattern(std::make_unique<Solid>(Color::white())) {}
+
 		friend std::ostream& operator<<(std::ostream& os, const Material& m) {
-			return os << "Material(" << m.ambient << ", " << m.diffuse << ", " << m.specular << ", " << m.shininess << ")";
+			return os << "Material(" << m.pattern << ", " << m.ambient << ", " << m.diffuse << ", " << m.specular << ", " << m.shininess << ")";
 		}
 
 		bool operator==(const Material& rhs) const {
-			return pattern == rhs.pattern && IsEqual(ambient, rhs.ambient) && IsEqual(diffuse, rhs.diffuse) && IsEqual(specular, rhs.specular) && IsEqual(shininess, rhs.shininess);
+			return *pattern == *rhs.pattern && IsEqual(ambient, rhs.ambient) && IsEqual(diffuse, rhs.diffuse) && IsEqual(specular, rhs.specular) && IsEqual(shininess, rhs.shininess);
 		}
 		bool operator!=(const Material& rhs) const {
 			return !operator==(rhs);
 		}
 
+		// copy assignment
+		Material& operator=(const Material& other)
+		{
+			if (this == &other)
+				return *this;
+
+			pattern = other.pattern->clone();
+			ambient = other.ambient;
+			diffuse = other.diffuse;
+			specular = other.specular;
+			shininess = other.shininess;
+
+			return *this;
+		}
+
 		Color lighting(const PointLight& light, const Shape& shape, const Point3& point, const Vec3& eye, const Vec3& normal, bool in_shadow) const {
-			Color patColor = color;
-			if (pattern.a != Color(0.123, 0.123, 0.123)) {
-				patColor = pattern.stripe_at_object(shape, point);
-			}
-			Color effcolor = patColor * light.intensity;
+			Color baseColor = pattern->pattern_at_shape(shape, point);
+			Color effcolor = baseColor * light.intensity;
 			Color ambcolor = effcolor * ambient;
 			Color diffcolor = Color::black();
 			Color speccolor = Color::black();

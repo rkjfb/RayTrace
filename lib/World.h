@@ -8,33 +8,16 @@ namespace ray {
 	class World
 	{
 	public:
+		// specify all the things, nothing added.
 		World(const PointLight& light, std::vector<std::unique_ptr<Shape>>&& shapes) :
 			_light(light),
-			_shapes(std::move(shapes))
-		{
-		}
+			_shapes(std::move(shapes)) {}
 
-		// only light: get 2 stock shapes
-		World(const PointLight& light) :
-			_light(light)
-		{
-			Material m;
-			m.color = Color(0.8f, 1, 0.6f);
-			m.diffuse = 0.7f;
-			m.specular = 0.2f;
+		// default: get default light + 2 stock shapes
+		World() : World(PointLight(Point3(-10, 10, -10), Color(1, 1, 1))) {}
 
-			auto s1 = std::make_unique<Sphere>();
-			s1->material = m;
-			_shapes.emplace_back(std::move(s1));
-
-			auto s2 = std::make_unique<Sphere>(Matrix4::scale(0.5f, 0.5f, 0.5f));
-			_shapes.emplace_back(std::move(s2));
-		}
-
-		// default: get light + 2 stock shapes
-		World() : World(PointLight(Point3(-10, 10, -10), Color(1, 1, 1)))
-		{
-		}
+		// supply light + get 2 stock shapes
+		World(const PointLight& light);
 
 		const std::vector<std::unique_ptr<Shape>>& shapes() const {
 			return _shapes;
