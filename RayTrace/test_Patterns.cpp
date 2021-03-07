@@ -15,7 +15,7 @@ using namespace ray;
 //  Then pattern.a = white
 //    And pattern.b = black
 TEST(Pattern, StripeCtor) {
-	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
+	Stripe pattern(Color::white(), Color::black());
 	EXPECT_EQ(pattern.a, Color::white());
 	EXPECT_EQ(pattern.b, Color::black());
 }
@@ -26,10 +26,10 @@ TEST(Pattern, StripeCtor) {
 //    And stripe_at(pattern, point(0, 1, 0)) = white
 //    And stripe_at(pattern, point(0, 2, 0)) = white
 TEST(Pattern, StripeConstantY) {
-	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
-	EXPECT_EQ(pattern.stripe_at(Point3(0, 0, 0)), Color::white());
-	EXPECT_EQ(pattern.stripe_at(Point3(0, 1, 0)), Color::white());
-	EXPECT_EQ(pattern.stripe_at(Point3(0, 2, 0)), Color::white());
+	Stripe pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 1, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 2, 0)), Color::white());
 }
 
 //Scenario: A stripe pattern is constant in z
@@ -38,10 +38,10 @@ TEST(Pattern, StripeConstantY) {
 //    And stripe_at(pattern, point(0, 0, 1)) = white
 //    And stripe_at(pattern, point(0, 0, 2)) = white
 TEST(Pattern, StripeConstantZ) {
-	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
-	EXPECT_EQ(pattern.stripe_at(Point3(0, 0, 0)), Color::white());
-	EXPECT_EQ(pattern.stripe_at(Point3(0, 0, 1)), Color::white());
-	EXPECT_EQ(pattern.stripe_at(Point3(0, 0, 2)), Color::white());
+	Stripe pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 1)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 2)), Color::white());
 }
 
 //Scenario: A stripe pattern alternates in x
@@ -53,13 +53,13 @@ TEST(Pattern, StripeConstantZ) {
 //    And stripe_at(pattern, point(-1, 0, 0)) = black
 //    And stripe_at(pattern, point(-1.1, 0, 0)) = white
 TEST(Pattern, StripeAlternateX) {
-	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
-	EXPECT_EQ(pattern.stripe_at(Point3(0, 0, 0)), Color::white());
-	EXPECT_EQ(pattern.stripe_at(Point3(0.9, 0, 0)), Color::white());
-	EXPECT_EQ(pattern.stripe_at(Point3(1, 0, 0)), Color::black());
-	EXPECT_EQ(pattern.stripe_at(Point3(-0.1, 0, 0)), Color::black());
-	EXPECT_EQ(pattern.stripe_at(Point3(-1, 0, 0)), Color::black());
-	EXPECT_EQ(pattern.stripe_at(Point3(-1.1, 0, 0)), Color::white());
+	Stripe pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0.9, 0, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(1, 0, 0)), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(-0.1, 0, 0)), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(-1, 0, 0)), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(-1.1, 0, 0)), Color::white());
 }
 
 //Scenario: Stripes with an object transformation
@@ -71,8 +71,8 @@ TEST(Pattern, StripeAlternateX) {
 TEST(Pattern, StripeObjectTransform) {
 	Sphere sphere;
 	sphere.transform = Matrix4::scale(2, 2, 2);
-	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
-	Color result = pattern.stripe_at_object(sphere, Point3(1.5, 0, 0));
+	Stripe pattern(Color::white(), Color::black());
+	Color result = pattern.pattern_at_shape(sphere, Point3(1.5, 0, 0));
 
 	EXPECT_EQ(result, Color::white());
 }
@@ -85,10 +85,10 @@ TEST(Pattern, StripeObjectTransform) {
 //  Then c = white
 TEST(Pattern, StripePatternTransform) {
 	Sphere sphere;
-	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
+	Stripe pattern(Color::white(), Color::black());
 	pattern.transform = Matrix4::scale(2, 2, 2);
 
-	Color result = pattern.stripe_at_object(sphere, Point3(1.5, 0, 0));
+	Color result = pattern.pattern_at_shape(sphere, Point3(1.5, 0, 0));
 
 	EXPECT_EQ(result, Color::white());
 }
@@ -103,10 +103,10 @@ TEST(Pattern, StripePatternTransform) {
 TEST(Pattern, StripeDoubleTransform) {
 	Sphere sphere;
 	sphere.transform = Matrix4::scale(2, 2, 2);
-	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
+	Stripe pattern(Color::white(), Color::black());
 	pattern.transform = Matrix4::translate(0.5, 0, 0);
 
-	Color result = pattern.stripe_at_object(sphere, Point3(2.5, 0, 0));
+	Color result = pattern.pattern_at_shape(sphere, Point3(2.5, 0, 0));
 
 	EXPECT_EQ(result, Color::white());
 }
@@ -115,8 +115,8 @@ TEST(Pattern, StripeDoubleTransform) {
 //  Given pattern ← test_pattern()
 //  Then pattern.transform = identity_matrix
 TEST(Pattern, PatternCtorTransform) {
-	Pattern pattern;
-	EXPECT_EQ(pattern.transform, Matrix4::identity());
+	std::unique_ptr<Pattern> pattern = std::make_unique<Solid>();
+	EXPECT_EQ(pattern->transform, Matrix4::identity());
 }
 
 //Scenario: Assigning a transformation
@@ -124,9 +124,9 @@ TEST(Pattern, PatternCtorTransform) {
 //  When set_pattern_transform(pattern, translation(1, 2, 3))
 //  Then pattern.transform = translation(1, 2, 3)
 TEST(Pattern, PatternTransformAssign) {
-	Pattern pattern;
-	pattern.transform = Matrix4::translate(1, 2, 3);
-	EXPECT_EQ(pattern.transform, Matrix4::translate(1,2,3));
+	std::unique_ptr<Pattern> pattern = std::make_unique<Solid>();
+	pattern->transform = Matrix4::translate(1, 2, 3);
+	EXPECT_EQ(pattern->transform, Matrix4::translate(1,2,3));
 }
 
 //Scenario: A pattern with an object transformation
@@ -135,14 +135,28 @@ TEST(Pattern, PatternTransformAssign) {
 //    And pattern ← test_pattern()
 //  When c ← pattern_at_shape(pattern, shape, point(2, 3, 4))
 //  Then c = color(1, 1.5, 2)
-//
+TEST(Pattern, PatternObjectTransform) {
+	Sphere shape;
+	shape.transform = Matrix4::scale(2, 2, 2);
+	std::unique_ptr<Pattern> pattern = std::make_unique<TestPattern>();
+	Color result = pattern->pattern_at_shape(shape, Point3(2, 3, 4));
+	EXPECT_EQ(result, Color(1,1.5,2));
+}
+
 //Scenario: A pattern with a pattern transformation
 //  Given shape ← sphere()
 //    And pattern ← test_pattern()
 //    And set_pattern_transform(pattern, scaling(2, 2, 2))
 //  When c ← pattern_at_shape(pattern, shape, point(2, 3, 4))
 //  Then c = color(1, 1.5, 2)
-//
+TEST(Pattern, PatternPatternTransform) {
+	Sphere shape;
+	std::unique_ptr<Pattern> pattern = std::make_unique<TestPattern>();
+	pattern->transform = Matrix4::scale(2, 2, 2);
+	Color result = pattern->pattern_at_shape(shape, Point3(2, 3, 4));
+	EXPECT_EQ(result, Color(1, 1.5, 2));
+}
+
 //Scenario: A pattern with both an object and a pattern transformation
 //  Given shape ← sphere()
 //    And set_transform(shape, scaling(2, 2, 2))
@@ -150,14 +164,30 @@ TEST(Pattern, PatternTransformAssign) {
 //    And set_pattern_transform(pattern, translation(0.5, 1, 1.5))
 //  When c ← pattern_at_shape(pattern, shape, point(2.5, 3, 3.5))
 //  Then c = color(0.75, 0.5, 0.25)
-//
+TEST(Pattern, PatternDoubleTransform) {
+	Sphere shape;
+	shape.transform = Matrix4::scale(2, 2, 2);
+	std::unique_ptr<Pattern> pattern = std::make_unique<TestPattern>();
+	pattern->transform = Matrix4::translate(0.5, 1, 1.5);
+	Color result = pattern->pattern_at_shape(shape, Point3(2.5, 3, 3.5));
+	EXPECT_EQ(result, Color(0.75, 0.5, 0.25));
+}
+
 //Scenario: A gradient linearly interpolates between colors
 //  Given pattern ← gradient_pattern(white, black)
 //  Then pattern_at(pattern, point(0, 0, 0)) = white
 //    And pattern_at(pattern, point(0.25, 0, 0)) = color(0.75, 0.75, 0.75)
 //    And pattern_at(pattern, point(0.5, 0, 0)) = color(0.5, 0.5, 0.5)
 //    And pattern_at(pattern, point(0.75, 0, 0)) = color(0.25, 0.25, 0.25)
-//
+TEST(Pattern, GradientPatternAt) {
+	Gradient pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	Color result = pattern.pattern_at(Point3(0.25, 0, 0));
+	EXPECT_EQ(result, Color(0.75, 0.75, 0.75));
+	EXPECT_EQ(pattern.pattern_at(Point3(0.5, 0, 0)), Color(0.5, 0.5, 0.5));
+	EXPECT_EQ(pattern.pattern_at(Point3(0.75, 0, 0)), Color(0.25, 0.25, 0.25));
+}
+
 //Scenario: A ring should extend in both x and z
 //  Given pattern ← ring_pattern(white, black)
 //  Then pattern_at(pattern, point(0, 0, 0)) = white

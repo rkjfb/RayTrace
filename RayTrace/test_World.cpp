@@ -29,7 +29,7 @@ TEST(World, Ctor) {
 	EXPECT_EQ(w.light(), PointLight(Point3(-10,10,-10), Color::white()));
 
 	Material m;
-	m.color = Color(0.8f, 1, 0.6f);
+	m.pattern = std::make_unique<Solid>(0.8f, 1, 0.6f);
 	m.diffuse = 0.7f;
 	m.specular = 0.2f;
 
@@ -143,7 +143,7 @@ TEST(World, ColorAtBehind) {
 	std::vector<std::unique_ptr<Shape>> shapes;
 
 	Material m;
-	m.color = Color(0.8f, 1, 0.6f);
+	m.pattern = std::make_unique<Solid>(0.8f, 1, 0.6f);
 	m.diffuse = 0.7f;
 	m.specular = 0.2f;
 	m.ambient = 1;
@@ -162,7 +162,7 @@ TEST(World, ColorAtBehind) {
 	Ray r(Point3(0, 0, 0.75f), Vec3(0, 0, -1));
 	Color c = w.color_at_slow(r);
 
-	EXPECT_EQ(c, weak_s2->material.color);
+	EXPECT_EQ(c, weak_s2->material.pattern->pattern_at(Point3()));
 }
 
 //Scenario: There is no shadow when nothing is collinear with point and light

@@ -126,4 +126,41 @@ namespace ray {
 		}
 	};
 
+	class Gradient : public Pattern {
+	public:
+		Gradient(const Color& ina, const Color& inb) :a(ina), b(inb) {}
+		Color a;
+		Color b;
+
+		friend std::ostream& operator<<(std::ostream& os, const Gradient& p) {
+			return os << "Gradient(" << p.a << ", " << p.b << ")";
+		}
+
+		bool equals(const Pattern& rhs) const override {
+			const Gradient* rhs_gradient = dynamic_cast<const Gradient*>(&rhs);
+			if (rhs_gradient == nullptr) {
+				return false;
+			}
+			return a == rhs_gradient->a && b == rhs_gradient->b;
+		}
+
+		bool operator==(const Gradient& rhs) const {
+			return equals(rhs);
+		}
+
+		bool operator!=(const Gradient& rhs) const {
+			return !operator==(rhs);
+		}
+
+		std::unique_ptr<Pattern> clone() const override {
+			return std::make_unique<Gradient>(*this);
+		}
+
+		Color pattern_at(const Point3& p) const override {
+			double lerp = p.x - floor(p.x);
+			return a + (b - a) * lerp;
+		}
+	};
+
+
 };

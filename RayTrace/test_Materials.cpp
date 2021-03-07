@@ -19,7 +19,7 @@ using namespace ray;
 //    And m.shininess = 200.0
 TEST(Material, Ctor) {
 	Material mat;
-	EXPECT_EQ(mat.color, Color(1, 1, 1));
+	EXPECT_EQ(mat.pattern->pattern_at(Point3()), Color::white());
 	EXPECT_EQ(mat.ambient, 0.1f);
 	EXPECT_EQ(mat.diffuse, 0.9f);
 	EXPECT_EQ(mat.specular, 0.9f);
@@ -157,7 +157,7 @@ TEST(Material, InShadow) {
 //    And c2 = color(0, 0, 0)
 TEST(Material, Pattern) {
 	Material mat;
-	mat.pattern = Pattern::Stripe(Color::white(), Color::black());
+	mat.pattern = std::make_unique<Stripe>(Color::white(), Color::black());
 	mat.ambient = 1;
 	mat.diffuse = 0;
 	mat.specular = 0;

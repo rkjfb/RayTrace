@@ -22,7 +22,7 @@ public:
 		for (int i = 0; i < 6; i++) {
 			auto wall = std::make_unique<Plane>();
 			wall->transform = Matrix4::rotateY(i * 2 * pi / 6) * Matrix4::translate(0, 0, 12) * Matrix4::rotateX(pi / 2);
-			wall->material.color = Color(.5, 0.9f, 0.9f);
+			wall->material.pattern = std::make_unique<Solid>(.5, 0.9, 0.9);
 			wall->material.specular = 0;
 			vec.push_back(std::move(wall));
 		}
@@ -30,24 +30,24 @@ public:
 
 	void run() {
 		std::unique_ptr<Plane> floor = std::make_unique<Plane>();
-		floor->material.color = Color(1, 0.9f, 0.9f);
+		floor->material.pattern = std::make_unique<Solid>(1, 0.9, 0.9);
 		floor->material.specular = 0;
 
 		std::unique_ptr<Sphere> middle = std::make_unique<Sphere>();
 		middle->transform = Matrix4::translate(-0.5, .5, 0.5f);
-		middle->material.color = Color(0.1f, 1, 0.5f);
+		middle->material.pattern = std::make_unique<Gradient>(Color::red(), Color::lime());
 		middle->material.diffuse = 0.7f;
 		middle->material.specular = 0.3f;
 
 		std::unique_ptr<Sphere> right = std::make_unique<Sphere>();
 		right->transform = Matrix4::translate(1.5f, 0.5f, -0.5f) * Matrix4::scale(0.5f, 0.5f, 0.5f);
-		right->material.color = Color(0.5f, 1, 0.1f);
+		right->material.pattern = std::make_unique<Solid>(0.5, 1, 0.1);
 		right->material.diffuse = 0.7f;
 		right->material.specular = 0.3f;
 
 		std::unique_ptr<Sphere> left = std::make_unique<Sphere>();
 		left->transform = Matrix4::translate(-1.5f, 0.333f, -0.75f) * Matrix4::scale(0.333f, 0.333f, 0.333f);
-		left->material.color = Color(1, 0.8f, 0.1f);
+		left->material.pattern = std::make_unique<Solid>(1, 0.8, 0.1);
 		left->material.diffuse = 0.7f;
 		left->material.specular = 0.3f;
 

@@ -20,20 +20,8 @@ public:
 	double w = 0.0f;
 
 	Vec3() = default;
-
-	Vec3(double inx, double iny, double inz, double inw = 0.0f) {
-		x = inx;
-		y = iny;
-		z = inz;
-		w = inw;
-	}
-
-	Vec3(std::array<double, 4> a) {
-		x = a[0];
-		y = a[1];
-		z = a[2];
-		w = a[3];
-	}
+	Vec3(double inx, double iny, double inz, double inw = 0.0f) :x(inx), y(iny), z(inz), w(inw) {}
+	Vec3(std::array<double, 4> a) :x(a[0]), y(a[1]), z(a[2]), w(a[3]) {}
 
 	friend std::ostream& operator<<(std::ostream& os, const Vec3& v) {
 		return os << "Vec3(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
@@ -98,17 +86,8 @@ public:
 	double z = 0.0f;
 
 	Point3() = default;
-	Point3(double inx, double iny, double inz)
-	{
-		x = inx;
-		y = iny;
-		z = inz;
-	}
-	Point3(std::array<double, 3> a) {
-		x = a[0];
-		y = a[1];
-		z = a[2];
-	}
+	Point3(double inx, double iny, double inz) : x(inx), y(iny), z(inz) {}
+	Point3(std::array<double, 3> a) : x(a[0]), y(a[1]), z(a[2]) {}
 
 	friend std::ostream& operator<<(std::ostream& os, const Point3& rhs) {
 		return os << "Point3(" << rhs.x << ", " << rhs.y << ", " << rhs.z << ")";

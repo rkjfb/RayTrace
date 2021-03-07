@@ -19,7 +19,7 @@ public:
 		auto& pixels = canvas.pixels();
 
 		ray::Sphere sphere;
-		sphere.material.color = ray::Color(1, 0.2f, 1);
+		sphere.material.pattern = std::make_unique<ray::Solid>(1, 0.2, 1);
 
 		ray::PointLight light(ray::Point3(-10, 10, -10), ray::Color(1, 1, 1));
 
