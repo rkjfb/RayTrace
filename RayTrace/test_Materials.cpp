@@ -148,3 +148,18 @@ TEST(Material, InShadow) {
 //    And c2 ← lighting(m, light, point(1.1, 0, 0), eyev, normalv, false)
 //  Then c1 = color(1, 1, 1)
 //    And c2 = color(0, 0, 0)
+TEST(Material, Pattern) {
+	Material mat;
+	mat.pattern = Pattern::Stripe(Color::white(), Color::black());
+	mat.ambient = 1;
+	mat.diffuse = 0;
+	mat.specular = 0;
+	Vec3 eye(0, 0, -1);
+	Vec3 normal(0, 0, -1);
+	PointLight light(Point3(0, 0, -10), Color::white());
+	Color c1 = mat.lighting(light, Point3(0.9, 0, 0), eye, normal, false);
+	EXPECT_EQ(c1, Color::white());
+
+	Color c2 = mat.lighting(light, Point3(1.1, 0, 0), eye, normal, false);
+	EXPECT_EQ(c2, Color::black());
+}

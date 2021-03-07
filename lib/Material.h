@@ -1,12 +1,14 @@
 #pragma once
 #include "Color.h"
 #include "Light.h"
+#include "Pattern.h"
 
 namespace ray {
 	class Material
 	{
 	public:
 		Color color = Color(1,1,1);
+		Pattern pattern;
 		double ambient = 0.1f;
 		double diffuse = 0.9f;
 		double specular = 0.9f;
@@ -17,14 +19,18 @@ namespace ray {
 		}
 
 		bool operator==(const Material& rhs) const {
-			return color == rhs.color && IsEqual(ambient, rhs.ambient) && IsEqual(diffuse, rhs.diffuse) && IsEqual(specular, rhs.specular) && IsEqual(shininess, rhs.shininess);
+			return pattern == rhs.pattern && IsEqual(ambient, rhs.ambient) && IsEqual(diffuse, rhs.diffuse) && IsEqual(specular, rhs.specular) && IsEqual(shininess, rhs.shininess);
 		}
 		bool operator!=(const Material& rhs) const {
 			return !operator==(rhs);
 		}
 
 		Color lighting(const PointLight& light, const Point3& point, const Vec3& eye, const Vec3& normal, bool in_shadow) const {
-			Color effcolor = color * light.intensity;
+			Color patColor = color;
+			if (pattern.a != Color(0.123, 0.123, 0.123)) {
+				patColor = pattern.stripe_at(point);
+			}
+			Color effcolor = patColor * light.intensity;
 			Color ambcolor = effcolor * ambient;
 			Color diffcolor = Color::black();
 			Color speccolor = Color::black();

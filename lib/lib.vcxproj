@@ -169,6 +169,7 @@
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Pattern.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Shape.h" />
@@ -184,6 +185,7 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

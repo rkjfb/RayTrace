@@ -49,6 +49,7 @@
     <ClCompile Include="test_Lights.cpp" />
     <ClCompile Include="test_Materials.cpp" />
     <ClCompile Include="test_Matrix.cpp" />
+    <ClCompile Include="test_Patterns.cpp" />
     <ClCompile Include="test_Planes.cpp" />
     <ClCompile Include="test_Rays.cpp" />
     <ClCompile Include="test_Shapes.cpp" />

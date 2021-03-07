@@ -19,51 +19,55 @@ class Chapter7
 
 public:
 	void run() {
-		/*
-		* BUGBUG: copy7 chapter9.h edits to make work.
-		* 
-		Sphere floor;
-		floor.transform = Matrix4::scale(10, 0.01f, 10);
-		floor.material.color = Color(1, 0.9f, 0.9f);
-		floor.material.specular = 0;
+		auto floor = std::make_unique<Sphere>();
+		floor->transform = Matrix4::scale(10, 0.01f, 10);
+		floor->material.color = Color(1, 0.9f, 0.9f);
+		floor->material.specular = 0;
 
-		Sphere left_wall;
-		left_wall.transform = 
-			Matrix4::translate(0,0,5)*
-			Matrix4::rotateY(-pi/4) *
-			Matrix4::rotateX(pi/2) *
+		auto left_wall = std::make_unique<Sphere>();
+		left_wall->transform =
+			Matrix4::translate(0, 0, 5) *
+			Matrix4::rotateY(-pi / 4) *
+			Matrix4::rotateX(pi / 2) *
 			Matrix4::scale(10, 0.01f, 10);
-		left_wall.material = floor.material;
+		left_wall->material = floor->material;
 
-		Sphere right_wall;
-		right_wall.transform =
+		auto right_wall = std::make_unique<Sphere>();
+		right_wall->transform =
 			Matrix4::translate(0, 0, 5) *
 			Matrix4::rotateY(pi / 4) *
 			Matrix4::rotateX(pi / 2) *
 			Matrix4::scale(10, 0.01f, 10);
-		right_wall.material = floor.material;
+		right_wall->material = floor->material;
 
-		Sphere middle;
-		middle.transform = Matrix4::translate(-0.5,1,0.5f);
-		middle.material.color = Color(0.1f, 1, 0.5f);
-		middle.material.diffuse = 0.7f;
-		middle.material.specular = 0.3f;
+		std::unique_ptr<Sphere> middle = std::make_unique<Sphere>();
+		middle->transform = Matrix4::translate(-0.5, 1, 0.5f);
+		middle->material.color = Color(0.1f, 1, 0.5f);
+		middle->material.pattern = Pattern::Stripe(Color::blue(), Color::red());
+		middle->material.diffuse = 0.7f;
+		middle->material.specular = 0.3f;
 
-		Sphere right;
-		right.transform = Matrix4::translate(1.5f, 0.5f, -0.5f) * Matrix4::scale(0.5f,0.5f, 0.5f);
-		right.material.color = Color(0.5f, 1, 0.1f);
-		right.material.diffuse = 0.7f;
-		right.material.specular = 0.3f;
+		std::unique_ptr<Sphere> right = std::make_unique<Sphere>();
+		right->transform = Matrix4::translate(1.5f, 0.5f, -0.5f);// *Matrix4::scale(0.5f, 0.5f, 0.5f);
+		right->material.color = Color(0.5f, 1, 0.1f);
+		right->material.pattern = Pattern::Stripe(Color::white(), Color::red());
+		right->material.diffuse = 0.7f;
+		right->material.specular = 0.3f;
 
-		Sphere left;
-		left.transform = Matrix4::translate(-1.5f, 0.333f, -0.75f) * Matrix4::scale(0.333f, 0.333f, 0.333f);
-		left.material.color = Color(1, 0.8f, 0.1f);
-		left.material.diffuse = 0.7f;
-		left.material.specular = 0.3f;
+		std::unique_ptr<Sphere> left = std::make_unique<Sphere>();
+		left->transform = Matrix4::translate(-1.5f, 0.333f, -0.75f); // *Matrix4::scale(0.333f, 0.333f, 0.333f);
+		left->material.color = Color(1, 0.8f, 0.1f);
+		left->material.pattern = Pattern::Stripe(Color::lime(), Color::red());
+		left->material.diffuse = 0.7f;
+		left->material.specular = 0.3f;
 
-		std::vector<std::unique_ptr<Shape>> vec = { floor, left_wall, right_wall, middle, right, left };
-		*/
 		std::vector<std::unique_ptr<Shape>> vec;
+		vec.push_back(std::move(floor));
+		vec.push_back(std::move(left_wall));
+		vec.push_back(std::move(right_wall));
+		vec.push_back(std::move(middle));
+		vec.push_back(std::move(right));
+		vec.push_back(std::move(left));
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
 
