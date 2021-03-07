@@ -195,7 +195,14 @@ TEST(Pattern, GradientPatternAt) {
 //    And pattern_at(pattern, point(0, 0, 1)) = black
 //    # 0.708 = just slightly more than √2/2
 //    And pattern_at(pattern, point(0.708, 0, 0.708)) = black
-//
+TEST(Pattern, RingPatternAt) {
+	Ring pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(1,0,0)), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 1)), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3(0.708,0,0.708)), Color::black());
+}
+
 //Scenario: Checkers should repeat in x
 //  Given pattern ← checkers_pattern(white, black)
 //  Then pattern_at(pattern, point(0, 0, 0)) = white

@@ -9,6 +9,6 @@
 int main()
 {
     std::cout << "Hello World!\n";
-    Chapter9 chap;
+    Chapter7 chap;
     chap.run();
 }

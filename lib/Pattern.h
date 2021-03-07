@@ -162,5 +162,42 @@ namespace ray {
 		}
 	};
 
+	class Ring : public Pattern {
+	public:
+		Ring(const Color& ina, const Color& inb) :a(ina), b(inb) {}
+		Color a;
+		Color b;
 
+		friend std::ostream& operator<<(std::ostream& os, const Ring& p) {
+			return os << "Ring(" << p.a << ", " << p.b << ")";
+		}
+
+		bool equals(const Pattern& rhs) const override {
+			const Ring* rhs_gradient = dynamic_cast<const Ring*>(&rhs);
+			if (rhs_gradient == nullptr) {
+				return false;
+			}
+			return a == rhs_gradient->a && b == rhs_gradient->b;
+		}
+
+		bool operator==(const Ring& rhs) const {
+			return equals(rhs);
+		}
+
+		bool operator!=(const Ring& rhs) const {
+			return !operator==(rhs);
+		}
+
+		std::unique_ptr<Pattern> clone() const override {
+			return std::make_unique<Ring>(*this);
+		}
+
+		Color pattern_at(const Point3& p) const override {
+			double radius = sqrt(p.x * p.x + p.z + p.z);
+			if ((int)floor(radius) % 2 == 0) {
+				return a;
+			}
+			return b;
+		}
+	};
 };
