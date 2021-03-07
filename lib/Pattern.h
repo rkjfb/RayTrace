@@ -73,6 +73,21 @@ namespace ray {
 		}
 	};
 
+	class TestPattern : public Pattern {
+		bool equals(const Pattern& rhs) const override {
+			const TestPattern* rhs_test = dynamic_cast<const TestPattern*>(&rhs);
+			return rhs_test != nullptr;
+		}
+
+		std::unique_ptr<Pattern> clone() const override {
+			return std::make_unique<TestPattern>(*this);
+		}
+
+		Color pattern_at(const Point3& p) const override {
+			return Color(p.x, p.y, p.z);
+		}
+	};
+
 	class Stripe : public Pattern {
 	public:
 		Stripe(const Color& ina, const Color& inb) :a(ina), b(inb) {}
