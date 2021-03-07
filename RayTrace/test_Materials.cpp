@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Material.h"
+#include "Shape.h"
 
 using namespace ray;
 
@@ -48,7 +49,8 @@ TEST(Material, Lighting) {
 	Vec3 eyev(0, 0, -1);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv, false);
+	Sphere sphere;
+	Color result = mat.lighting(light, sphere, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(1.9f, 1.9f, 1.9f));
 }
 
@@ -65,7 +67,8 @@ TEST(Material, Lighting45deg) {
 	Vec3 eyev(0, st, -st);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv, false);
+	Sphere sphere;
+	Color result = mat.lighting(light, sphere, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(1, 1, 1));
 }
 
@@ -81,7 +84,8 @@ TEST(Material, Lighting45degEyeBack) {
 	Vec3 eyev(0, 0, -1);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 10, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv, false);
+	Sphere sphere;
+	Color result = mat.lighting(light, sphere, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(0.7364f, 0.7364f, 0.7364f));
 }
 
@@ -98,7 +102,8 @@ TEST(Material, LightingReflectPath) {
 	Vec3 eyev(0, -st, -st);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 10, -10), Color(1, 1, 1));
-	Color result = mat.lighting(light, position, eyev, normalv, false);
+	Sphere sphere;
+	Color result = mat.lighting(light, sphere, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(1.6364f, 1.6364f, 1.6364f));
 }
 
@@ -114,7 +119,8 @@ TEST(Material, LightingEyeSurfLight) {
 	Vec3 eyev(0, 0, -1);
 	Vec3 normalv(0, 0, -1);
 	PointLight light(Point3(0, 0, 10), Color(1, 1, 1)); 
-	Color result = mat.lighting(light, position, eyev, normalv, false);
+	Sphere sphere;
+	Color result = mat.lighting(light, sphere, position, eyev, normalv, false);
 	EXPECT_EQ(result, Color(0.1f, 0.1f, 0.1f));
 }
 
@@ -132,7 +138,8 @@ TEST(Material, InShadow) {
 	Vec3 normal(0, 0, -1);
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
 	bool in_shadow = true;
-	Color result = mat.lighting(light, position, eye, normal, in_shadow);
+	Sphere sphere;
+	Color result = mat.lighting(light, sphere, position, eye, normal, in_shadow);
 	EXPECT_EQ(result, Color(0.1f, 0.1f, 0.1f));
 }
 
@@ -157,9 +164,11 @@ TEST(Material, Pattern) {
 	Vec3 eye(0, 0, -1);
 	Vec3 normal(0, 0, -1);
 	PointLight light(Point3(0, 0, -10), Color::white());
-	Color c1 = mat.lighting(light, Point3(0.9, 0, 0), eye, normal, false);
+	Sphere sphere;
+
+	Color c1 = mat.lighting(light, sphere, Point3(0.9, 0, 0), eye, normal, false);
 	EXPECT_EQ(c1, Color::white());
 
-	Color c2 = mat.lighting(light, Point3(1.1, 0, 0), eye, normal, false);
+	Color c2 = mat.lighting(light, sphere, Point3(1.1, 0, 0), eye, normal, false);
 	EXPECT_EQ(c2, Color::black());
 }

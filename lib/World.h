@@ -61,7 +61,7 @@ namespace ray {
 		Color shade(const IntersectionInfo& info, std::vector<Intersection>& intersections) const {
 			const Material& material = info.object->material;
 			bool in_shadow = is_shadowed(info.over_point, intersections);
-			return material.lighting(_light, info.over_point, info.eye, info.normal, in_shadow);
+			return material.lighting(_light, *info.object, info.over_point, info.eye, info.normal, in_shadow);
 		}
 
 		Color color_at_slow(const Ray& ray) const {

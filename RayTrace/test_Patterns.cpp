@@ -68,17 +68,14 @@ TEST(Pattern, StripeAlternateX) {
 //    And pattern ← stripe_pattern(white, black)
 //  When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
 //  Then c = white
-/*
-TODO
-TEST(Pattern, StripeAlternateX) {
+TEST(Pattern, StripeObjectTransform) {
 	Sphere sphere;
 	sphere.transform = Matrix4::scale(2, 2, 2);
 	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
-	Color result = pattern.stripe_at(sphere, Point3(1.5, 0, 0));
+	Color result = pattern.stripe_at_object(sphere, Point3(1.5, 0, 0));
 
 	EXPECT_EQ(result, Color::white());
 }
-*/
 
 //Scenario: Stripes with a pattern transformation
 //  Given object ← sphere()
@@ -86,7 +83,16 @@ TEST(Pattern, StripeAlternateX) {
 //    And set_pattern_transform(pattern, scaling(2, 2, 2))
 //  When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
 //  Then c = white
-//
+TEST(Pattern, StripePatternTransform) {
+	Sphere sphere;
+	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
+	pattern.transform = Matrix4::scale(2, 2, 2);
+
+	Color result = pattern.stripe_at_object(sphere, Point3(1.5, 0, 0));
+
+	EXPECT_EQ(result, Color::white());
+}
+
 //Scenario: Stripes with both an object and a pattern transformation
 //  Given object ← sphere()
 //    And set_transform(object, scaling(2, 2, 2))
@@ -94,16 +100,35 @@ TEST(Pattern, StripeAlternateX) {
 //    And set_pattern_transform(pattern, translation(0.5, 0, 0))
 //  When c ← stripe_at_object(pattern, object, point(2.5, 0, 0))
 //  Then c = white
-//
+TEST(Pattern, StripeDoubleTransform) {
+	Sphere sphere;
+	sphere.transform = Matrix4::scale(2, 2, 2);
+	Pattern pattern = Pattern::Stripe(Color::white(), Color::black());
+	pattern.transform = Matrix4::translate(0.5, 0, 0);
+
+	Color result = pattern.stripe_at_object(sphere, Point3(2.5, 0, 0));
+
+	EXPECT_EQ(result, Color::white());
+}
+
 //Scenario: The default pattern transformation
 //  Given pattern ← test_pattern()
 //  Then pattern.transform = identity_matrix
-//
+TEST(Pattern, PatternCtorTransform) {
+	Pattern pattern;
+	EXPECT_EQ(pattern.transform, Matrix4::identity());
+}
+
 //Scenario: Assigning a transformation
 //  Given pattern ← test_pattern()
 //  When set_pattern_transform(pattern, translation(1, 2, 3))
 //  Then pattern.transform = translation(1, 2, 3)
-//
+TEST(Pattern, PatternTransformAssign) {
+	Pattern pattern;
+	pattern.transform = Matrix4::translate(1, 2, 3);
+	EXPECT_EQ(pattern.transform, Matrix4::translate(1,2,3));
+}
+
 //Scenario: A pattern with an object transformation
 //  Given shape ← sphere()
 //    And set_transform(shape, scaling(2, 2, 2))

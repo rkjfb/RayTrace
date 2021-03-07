@@ -1,8 +1,11 @@
 #pragma once
-#include "Color.h"
 #include <cmath>
 
+#include "Color.h"
+#include "Matrix.h"
+
 namespace ray {
+	class Shape;
 	class Pattern
 	{
 	public:
@@ -13,6 +16,7 @@ namespace ray {
 		Pattern(const Color& ina, const Color& inb) :a(ina), b(inb) {}
 		Color a;
 		Color b;
+		Matrix4 transform;
 
 		friend std::ostream& operator<<(std::ostream& os, const Pattern& p) {
 			return os << "Pattern(" << p.a << ", " << p.b << ")";
@@ -37,15 +41,7 @@ namespace ray {
 			return b;
 		}
 
-		/*
-		TODO
-		Color stripe_at(const Shape& shape, const Point3& p) const {
-			if ((int)floor(p.x) % 2 == 0) {
-				return a;
-			}
-			return b;
-		}
-		*/
+		Color stripe_at_object(const Shape& shape, const Point3& p) const;
 	};
 
 };

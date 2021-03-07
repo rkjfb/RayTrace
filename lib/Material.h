@@ -25,10 +25,10 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
-		Color lighting(const PointLight& light, const Point3& point, const Vec3& eye, const Vec3& normal, bool in_shadow) const {
+		Color lighting(const PointLight& light, const Shape& shape, const Point3& point, const Vec3& eye, const Vec3& normal, bool in_shadow) const {
 			Color patColor = color;
 			if (pattern.a != Color(0.123, 0.123, 0.123)) {
-				patColor = pattern.stripe_at(point);
+				patColor = pattern.stripe_at_object(shape, point);
 			}
 			Color effcolor = patColor * light.intensity;
 			Color ambcolor = effcolor * ambient;

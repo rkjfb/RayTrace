@@ -35,7 +35,7 @@ public:
 					const ray::Intersection* i = ray::Intersection::hit(intersections);
 					ray::Point3 point = r.position(i->t);
 					ray::Vec3 normal = sphere.normal_at(point);
-					ray::Color c = sphere.material.lighting(light, point, -r.direction, normal, false);
+					ray::Color c = sphere.material.lighting(light, sphere, point, -r.direction, normal, false);
 					pixels[x][y] = c;
 				}
 			}
