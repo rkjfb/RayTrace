@@ -63,7 +63,7 @@ public:
 
 		World world(light, std::move(vec));
 
-		Camera camera(3840, 2160, pi / 3);
+		Camera camera(1000, 500, pi / 3);
 		Point3 from(0, 8, -1);
 		Point3 to(0, 1, 0);
 		Vec3 up(0, 1, 0);

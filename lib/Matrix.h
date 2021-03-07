@@ -8,38 +8,38 @@ namespace ray {
 	class Matrix2
 	{
 	public:
-		double m00 = 0, m01 = 0;
-		double m10 = 0, m11 = 0;
+		double m[0] = 0, m[1] = 0;
+		double m[4] = 0, m[5] = 0;
 		Matrix2() {
-			m00 = m11 = 1;
+			m[0] = m[5] = 1;
 		}
 		Matrix2(std::array<double, 4>& i) {
-			m00 = i[0];
-			m01 = i[1];
+			m[0] = i[0];
+			m[1] = i[1];
 
-			m10 = i[2];
-			m11 = i[3];
+			m[4] = i[2];
+			m[5] = i[3];
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Matrix2& m) {
 			return os << "Matrix2("
-				<< m.m00 << ", "
-				<< m.m01 << ", "
-				<< m.m10 << ", "
-				<< m.m11 << ")";
+				<< m.m[0] << ", "
+				<< m.m[1] << ", "
+				<< m.m[4] << ", "
+				<< m.m[5] << ")";
 		}
 
 		bool operator==(const Matrix2& rhs) const {
-			return IsEqual(m00, rhs.m00) &&
-				IsEqual(m01, rhs.m01) &&
-				IsEqual(m10, rhs.m10) &&
-				IsEqual(m11, rhs.m11);
+			return IsEqual(m[0], rhs.m[0]) &&
+				IsEqual(m[1], rhs.m[1]) &&
+				IsEqual(m[4], rhs.m[4]) &&
+				IsEqual(m[5], rhs.m[5]);
 		}
 		bool operator!=(const Matrix2& rhs) const {
 			return !operator==(rhs);
 		}
 
 		double det() const {
-			return m00 * m11 - m01 * m10;
+			return m[0] * m[5] - m[1] * m[4];
 		}
 
 	};
@@ -47,49 +47,49 @@ namespace ray {
 	class Matrix3
 	{
 	public:
-		double m00 = 0, m01 = 0, m02 = 0;
-		double m10 = 0, m11 = 0, m12 = 0;
-		double m20 = 0, m21 = 0, m22 = 0;
+		double m[0] = 0, m[1] = 0, m[2] = 0;
+		double m[4] = 0, m[5] = 0, m[6] = 0;
+		double m[8] = 0, m[9] = 0, m[10] = 0;
 		Matrix3() {
-			m00 = m11 = m22 = 1;
+			m[0] = m[5] = m[10] = 1;
 		}
 		Matrix3(std::array<double, 9>& i) {
-			m00 = i[0];
-			m01 = i[1];
-			m02 = i[2];
+			m[0] = i[0];
+			m[1] = i[1];
+			m[2] = i[2];
 
-			m10 = i[3];
-			m11 = i[4];
-			m12 = i[5];
+			m[4] = i[3];
+			m[5] = i[4];
+			m[6] = i[5];
 
-			m20 = i[6];
-			m21 = i[7];
-			m22 = i[8];
+			m[8] = i[6];
+			m[9] = i[7];
+			m[10] = i[8];
 		}
 
 		friend std::ostream& operator<<(std::ostream& os, const Matrix3& m) {
 			return os << "Matrix3("
-				<< m.m00 << ", "
-				<< m.m01 << ", "
-				<< m.m02 << ", "
-				<< m.m10 << ", "
-				<< m.m11 << ", "
-				<< m.m12 << ", "
-				<< m.m20 << ", "
-				<< m.m21 << ", "
-				<< m.m22 << ")";
+				<< m.m[0] << ", "
+				<< m.m[1] << ", "
+				<< m.m[2] << ", "
+				<< m.m[4] << ", "
+				<< m.m[5] << ", "
+				<< m.m[6] << ", "
+				<< m.m[8] << ", "
+				<< m.m[9] << ", "
+				<< m.m[10] << ")";
 		}
 
 		bool operator==(const Matrix3& rhs) const {
-			return IsEqual(m00, rhs.m00) &&
-				IsEqual(m01, rhs.m01) &&
-				IsEqual(m02, rhs.m02) &&
-				IsEqual(m10, rhs.m10) &&
-				IsEqual(m11, rhs.m11) &&
-				IsEqual(m12, rhs.m12) &&
-				IsEqual(m20, rhs.m20) &&
-				IsEqual(m21, rhs.m21) &&
-				IsEqual(m22, rhs.m22);
+			return IsEqual(m[0], rhs.m[0]) &&
+				IsEqual(m[1], rhs.m[1]) &&
+				IsEqual(m[2], rhs.m[2]) &&
+				IsEqual(m[4], rhs.m[4]) &&
+				IsEqual(m[5], rhs.m[5]) &&
+				IsEqual(m[6], rhs.m[6]) &&
+				IsEqual(m[8], rhs.m[8]) &&
+				IsEqual(m[9], rhs.m[9]) &&
+				IsEqual(m[10], rhs.m[10]);
 		}
 		bool operator!=(const Matrix3& rhs) const {
 			return !operator==(rhs);
@@ -99,30 +99,30 @@ namespace ray {
 		std::array<double, 3> row(int i) const {
 			switch (i) {
 			case 0:
-				return { m00, m01, m02 };
+				return { m[0], m[1], m[2] };
 			case 1:
-				return { m10, m11, m12 };
+				return { m[4], m[5], m[6] };
 			case 2:
 				break;
 			default:
 				assert(false);
 			}
-			return { m20, m21, m22 };
+			return { m[8], m[9], m[10] };
 		}
 
 		// returns supplied column as array
 		std::array<double, 3> col(int i) const {
 			switch (i) {
 			case 0:
-				return { m00, m10, m20 };
+				return { m[0], m[4], m[8] };
 			case 1:
-				return { m01, m11, m21};
+				return { m[1], m[5], m[9]};
 			case 2:
 				break;
 			default:
 				assert(false);
 			}
-			return { m02, m12, m22 };
+			return { m[2], m[6], m[10] };
 		}
 
 		Matrix2 submatrix(int droprow, int dropcol) const {
@@ -168,53 +168,53 @@ namespace ray {
 	{
 	public:
 		Matrix4() {
-			m00 = m11 = m22 = m33 = 1;
+			m[0] = m[5] = m[10] = m[15] = 1;
 			update_inverse_cache();
 		}
 		Matrix4(std::array<double, 16>& i) {
-			m00 = i[0];
-			m01 = i[1];
-			m02 = i[2];
-			m03 = i[3];
+			m[0] = i[0];
+			m[1] = i[1];
+			m[2] = i[2];
+			m[3] = i[3];
 
-			m10 = i[4];
-			m11 = i[5];
-			m12 = i[6];
-			m13 = i[7];
+			m[4] = i[4];
+			m[5] = i[5];
+			m[6] = i[6];
+			m[7] = i[7];
 
-			m20 = i[8];
-			m21 = i[9];
-			m22 = i[10];
-			m23 = i[11];
+			m[8] = i[8];
+			m[9] = i[9];
+			m[10] = i[10];
+			m[11] = i[11];
 
-			m30 = i[12];
-			m31 = i[13];
-			m32 = i[14];
-			m33 = i[15];
+			m[12] = i[12];
+			m[13] = i[13];
+			m[14] = i[14];
+			m[15] = i[15];
 
 			update_inverse_cache();
 		}
 
 		Matrix4(const std::array<double, 16>& a, const std::array<double, 16>& inv) {
-			m00 = a[0];
-			m01 = a[1];
-			m02 = a[2];
-			m03 = a[3];
+			m[0] = a[0];
+			m[1] = a[1];
+			m[2] = a[2];
+			m[3] = a[3];
 
-			m10 = a[4];
-			m11 = a[5];
-			m12 = a[6];
-			m13 = a[7];
+			m[4] = a[4];
+			m[5] = a[5];
+			m[6] = a[6];
+			m[7] = a[7];
 
-			m20 = a[8];
-			m21 = a[9];
-			m22 = a[10];
-			m23 = a[11];
+			m[8] = a[8];
+			m[9] = a[9];
+			m[10] = a[10];
+			m[11] = a[11];
 
-			m30 = a[12];
-			m31 = a[13];
-			m32 = a[14];
-			m33 = a[15];
+			m[12] = a[12];
+			m[13] = a[13];
+			m[14] = a[14];
+			m[15] = a[15];
 
 			inverse_cache = inv;
 		}
@@ -222,41 +222,41 @@ namespace ray {
 
 		friend std::ostream& operator<<(std::ostream& os, const Matrix4& m) {
 			return os << "Matrix4("
-				<< m.m00 << ", "
-				<< m.m01 << ", "
-				<< m.m02 << ", "
-				<< m.m03 << ", "
-				<< m.m10 << ", "
-				<< m.m11 << ", "
-				<< m.m12 << ", "
-				<< m.m13 << ", "
-				<< m.m20 << ", "
-				<< m.m21 << ", "
-				<< m.m22 << ", "
-				<< m.m23 << ", "
-				<< m.m30 << ", "
-				<< m.m31 << ", "
-				<< m.m32 << ", "
-				<< m.m33 << ")";
+				<< m.m[0] << ", "
+				<< m.m[1] << ", "
+				<< m.m[2] << ", "
+				<< m.m[3] << ", "
+				<< m.m[4] << ", "
+				<< m.m[5] << ", "
+				<< m.m[6] << ", "
+				<< m.m[7] << ", "
+				<< m.m[8] << ", "
+				<< m.m[9] << ", "
+				<< m.m[10] << ", "
+				<< m.m[11] << ", "
+				<< m.m[12] << ", "
+				<< m.m[13] << ", "
+				<< m.m[14] << ", "
+				<< m.m[15] << ")";
 		}
 
 		bool operator==(const Matrix4& rhs) const {
-			return IsEqual(m00, rhs.m00) &&
-				IsEqual(m01, rhs.m01) &&
-				IsEqual(m02, rhs.m02) &&
-				IsEqual(m03, rhs.m03) &&
-				IsEqual(m10, rhs.m10) &&
-				IsEqual(m11, rhs.m11) &&
-				IsEqual(m12, rhs.m12) &&
-				IsEqual(m13, rhs.m13) &&
-				IsEqual(m20, rhs.m20) &&
-				IsEqual(m21, rhs.m21) &&
-				IsEqual(m22, rhs.m22) &&
-				IsEqual(m23, rhs.m23) &&
-				IsEqual(m30, rhs.m30) &&
-				IsEqual(m31, rhs.m31) &&
-				IsEqual(m32, rhs.m32) &&
-				IsEqual(m33, rhs.m33);
+			return IsEqual(m[0], rhs.m[0]) &&
+				IsEqual(m[1], rhs.m[1]) &&
+				IsEqual(m[2], rhs.m[2]) &&
+				IsEqual(m[3], rhs.m[3]) &&
+				IsEqual(m[4], rhs.m[4]) &&
+				IsEqual(m[5], rhs.m[5]) &&
+				IsEqual(m[6], rhs.m[6]) &&
+				IsEqual(m[7], rhs.m[7]) &&
+				IsEqual(m[8], rhs.m[8]) &&
+				IsEqual(m[9], rhs.m[9]) &&
+				IsEqual(m[10], rhs.m[10]) &&
+				IsEqual(m[11], rhs.m[11]) &&
+				IsEqual(m[12], rhs.m[12]) &&
+				IsEqual(m[13], rhs.m[13]) &&
+				IsEqual(m[14], rhs.m[14]) &&
+				IsEqual(m[15], rhs.m[15]);
 		}
 		bool operator!=(const Matrix4& rhs) const {
 			return !operator==(rhs);
@@ -266,56 +266,64 @@ namespace ray {
 		std::array<double, 4> row(int i) const {
 			switch (i) {
 			case 0:
-				return { m00, m01, m02, m03 };
+				return { m[0], m[1], m[2], m[3] };
 			case 1:
-				return { m10, m11, m12, m13 };
+				return { m[4], m[5], m[6], m[7] };
 			case 2:
-				return { m20, m21, m22, m23 };
+				return { m[8], m[9], m[10], m[11] };
 			case 3:
 				break;
 			default:
 				assert(false);
 			}
-			return { m30, m31, m32, m33 };
+			return { m[12], m[13], m[14], m[15] };
 		}
 
 		// returns supplied column as array
 		std::array<double, 4> col(int i) const {
 			switch (i) {
 			case 0:
-				return { m00, m10, m20, m30 };
+				return { m[0], m[4], m[8], m[12] };
 			case 1:
-				return { m01, m11, m21, m31 };
+				return { m[1], m[5], m[9], m[13] };
 			case 2:
-				return { m02, m12, m22, m32 };
+				return { m[2], m[6], m[10], m[14] };
 			case 3:
 				break;
 			default:
 				assert(false);
 			}
-			return { m03, m13, m23, m33 };
+			return { m[3], m[7], m[11], m[15] };
 		}
 
 		Vec3 operator*(const Vec3& rhs) const {
 			return Vec3(
-				rhs.x * m00 + rhs.y * m01 + rhs.z * m02 + rhs.w * m03,
-				rhs.x * m10 + rhs.y * m11 + rhs.z * m12 + rhs.w * m13,
-				rhs.x * m20 + rhs.y * m21 + rhs.z * m22 + rhs.w * m23,
-				rhs.x * m30 + rhs.y * m31 + rhs.z * m32 + rhs.w * m33
+				rhs.x * m[0] + rhs.y * m[1] + rhs.z * m[2] + rhs.w * m[3],
+				rhs.x * m[4] + rhs.y * m[5] + rhs.z * m[6] + rhs.w * m[7],
+				rhs.x * m[8] + rhs.y * m[9] + rhs.z * m[10] + rhs.w * m[11],
+				rhs.x * m[12] + rhs.y * m[13] + rhs.z * m[14] + rhs.w * m[15]
 				);
 		}
 
 		Point3 operator*(const Point3& rhs) const {
 			return Point3(
-				rhs.x * m00 + rhs.y * m01 + rhs.z * m02 + m03,
-				rhs.x * m10 + rhs.y * m11 + rhs.z * m12 + m13,
-				rhs.x * m20 + rhs.y * m21 + rhs.z * m22 + m23
+				rhs.x * m[0] + rhs.y * m[1] + rhs.z * m[2] + m[3],
+				rhs.x * m[4] + rhs.y * m[5] + rhs.z * m[6] + m[7],
+				rhs.x * m[8] + rhs.y * m[9] + rhs.z * m[10] + m[11]
 			);
 		}
 
 		Ray operator*(const Ray& rhs) const {
 			return Ray(operator*(rhs.origin), operator*(rhs.direction));
 		}
+
+		/*
+		Goal: create this function.
+		// Returns this.inverse() * rhs, using fewer cycles.
+		Ray inverseMul(const Ray& rhs) const {
+			return Ray(inverseMul(rhs.origin), inverseMul(rhs.direction));
+		}
+		*/
 
 		Matrix4 operator*(const Matrix4& rhs) const {
 			std::array<double, 16> ret;
@@ -412,10 +420,10 @@ namespace ray {
 
 		std::array<double, 16> to_array() const {
 			return {
-				m00, m01,m02,m03,
-				m10, m11,m12,m13,
-				m20, m21,m22,m23,
-				m30, m31,m32,m33 };
+				m[0], m[1],m[2],m[3],
+				m[4], m[5],m[6],m[7],
+				m[8], m[9],m[10],m[11],
+				m[12], m[13],m[14],m[15] };
 		}
 
 		Matrix4 inverse() const
@@ -430,57 +438,57 @@ namespace ray {
 
 		static Matrix4 translate(double x, double y, double z) {
 			Matrix4 m;
-			m.m03 = x;
-			m.m13 = y;
-			m.m23 = z;
+			m.m[3] = x;
+			m.m[7] = y;
+			m.m[11] = z;
 			m.update_inverse_cache();
 			return m;
 		}
 
 		static Matrix4 scale(double x, double y, double z) {
 			Matrix4 m;
-			m.m00 = x;
-			m.m11 = y;
-			m.m22 = z;
+			m.m[0] = x;
+			m.m[5] = y;
+			m.m[10] = z;
 			m.update_inverse_cache();
 			return m;
 		}
 
 		static Matrix4 rotateX(double r) {
 			Matrix4 m;
-			m.m11 = m.m22 = cos(r);
-			m.m21 = sin(r);
-			m.m12 = -m.m21;
+			m.m[5] = m.m[10] = cos(r);
+			m.m[9] = sin(r);
+			m.m[6] = -m.m[9];
 			m.update_inverse_cache();
 			return m;
 		}
 
 		static Matrix4 rotateY(double r) {
 			Matrix4 m;
-			m.m00 = m.m22 = cos(r);
-			m.m02 = sin(r);
-			m.m20 = -m.m02;
+			m.m[0] = m.m[10] = cos(r);
+			m.m[2] = sin(r);
+			m.m[8] = -m.m[2];
 			m.update_inverse_cache();
 			return m;
 		}
 
 		static Matrix4 rotateZ(double r) {
 			Matrix4 m;
-			m.m00 = m.m11 = cos(r);
-			m.m10 = sin(r);
-			m.m01 = -m.m10;
+			m.m[0] = m.m[5] = cos(r);
+			m.m[4] = sin(r);
+			m.m[1] = -m.m[4];
 			m.update_inverse_cache();
 			return m;
 		}
 
 		static Matrix4 shear(double xy, double xz, double yx, double yz, double zx, double zy) {
 			Matrix4 m;
-			m.m01 = xy;
-			m.m02 = xz;
-			m.m10 = yx;
-			m.m12 = yz;
-			m.m20 = zx;
-			m.m21 = zy;
+			m.m[1] = xy;
+			m.m[2] = xz;
+			m.m[4] = yx;
+			m.m[6] = yz;
+			m.m[8] = zx;
+			m.m[9] = zy;
 			m.update_inverse_cache();
 			return m;
 		}
@@ -502,10 +510,7 @@ namespace ray {
 		
 	private:
 
-		double m00 = 0, m01 = 0, m02 = 0, m03 = 0;
-		double m10 = 0, m11 = 0, m12 = 0, m13 = 0;
-		double m20 = 0, m21 = 0, m22 = 0, m23 = 0;
-		double m30 = 0, m31 = 0, m32 = 0, m33 = 0;
+		std::array<double, 16> m;
 
 		// cache of inverse of this matrix, needed because inverting is high frequency.
 		std::array<double, 16> inverse_cache;
@@ -518,24 +523,24 @@ namespace ray {
 			double det;
 			int i;
 
-			inv[0] = m11 * m22 * m33 - m11 * m23 * m32 - m21 * m12 * m33 + m21 * m13 * m32 + m31 * m12 * m23 - m31 * m13 * m22;
-			inv[4] = -m10 * m22 * m33 + m10 * m23 * m32 + m20 * m12 * m33 - m20 * m13 * m32 - m30 * m12 * m23 + m30 * m13 * m22;
-			inv[8] = m10 * m21 * m33 - m10 * m23 * m31 - m20 * m11 * m33 + m20 * m13 * m31 + m30 * m11 * m23 - m30 * m13 * m21;
-			inv[12] = -m10 * m21 * m32 + m10 * m22 * m31 + m20 * m11 * m32 - m20 * m12 * m31 - m30 * m11 * m22 + m30 * m12 * m21;
-			inv[1] = -m01 * m22 * m33 + m01 * m23 * m32 + m21 * m02 * m33 - m21 * m03 * m32 - m31 * m02 * m23 + m31 * m03 * m22;
-			inv[5] = m00 * m22 * m33 - m00 * m23 * m32 - m20 * m02 * m33 + m20 * m03 * m32 + m30 * m02 * m23 - m30 * m03 * m22;
-			inv[9] = -m00 * m21 * m33 + m00 * m23 * m31 + m20 * m01 * m33 - m20 * m03 * m31 - m30 * m01 * m23 + m30 * m03 * m21;
-			inv[13] = m00 * m21 * m32 - m00 * m22 * m31 - m20 * m01 * m32 + m20 * m02 * m31 + m30 * m01 * m22 - m30 * m02 * m21;
-			inv[2] = m01 * m12 * m33 - m01 * m13 * m32 - m11 * m02 * m33 + m11 * m03 * m32 + m31 * m02 * m13 - m31 * m03 * m12;
-			inv[6] = -m00 * m12 * m33 + m00 * m13 * m32 + m10 * m02 * m33 - m10 * m03 * m32 - m30 * m02 * m13 + m30 * m03 * m12;
-			inv[10] = m00 * m11 * m33 - m00 * m13 * m31 - m10 * m01 * m33 + m10 * m03 * m31 + m30 * m01 * m13 - m30 * m03 * m11;
-			inv[14] = -m00 * m11 * m32 + m00 * m12 * m31 + m10 * m01 * m32 - m10 * m02 * m31 - m30 * m01 * m12 + m30 * m02 * m11;
-			inv[3] = -m01 * m12 * m23 + m01 * m13 * m22 + m11 * m02 * m23 - m11 * m03 * m22 - m21 * m02 * m13 + m21 * m03 * m12;
-			inv[7] = m00 * m12 * m23 - m00 * m13 * m22 - m10 * m02 * m23 + m10 * m03 * m22 + m20 * m02 * m13 - m20 * m03 * m12;
-			inv[11] = -m00 * m11 * m23 + m00 * m13 * m21 + m10 * m01 * m23 - m10 * m03 * m21 - m20 * m01 * m13 + m20 * m03 * m11;
-			inv[15] = m00 * m11 * m22 - m00 * m12 * m21 - m10 * m01 * m22 + m10 * m02 * m21 + m20 * m01 * m12 - m20 * m02 * m11;
+			inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
+			inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
+			inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
+			inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
+			inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] - m[9] * m[3] * m[14] - m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
+			inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] + m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
+			inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] - m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
+			inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] + m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
+			inv[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] + m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
+			inv[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] - m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
+			inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] + m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
+			inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] - m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
+			inv[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] - m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
+			inv[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] + m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
+			inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
+			inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
 
-			det = m00 * inv[0] + m01 * inv[4] + m02 * inv[8] + m03 * inv[12];
+			det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 			if (det != 0) {
 				det = 1.0 / det;
 
