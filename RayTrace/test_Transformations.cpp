@@ -30,6 +30,8 @@ TEST(Transform, InverseTranslate) {
 	Point3 p(-3, 4, 5);
 	Point3 result = inv * p;
 	EXPECT_EQ(result, Point3(-8,7,3));
+	Point3 result_fast = t.inverse_multiply(p);
+	EXPECT_EQ(result_fast, Point3(-8, 7, 3));
 }
 
 //Scenario: Translation does not affect vectors
@@ -76,6 +78,8 @@ TEST(Transform, InverseScaleVector) {
 	Vec3 v(-4, 6, 8);
 	Vec3 result = inv * v;
 	EXPECT_EQ(result, Vec3(-2,2,2));
+	Vec3 result_fast = t.inverse_multiply(v);
+	EXPECT_EQ(result_fast, Vec3(-2, 2, 2));
 }
 
 //Scenario: Reflection is scaling by a negative value

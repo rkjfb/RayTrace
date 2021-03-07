@@ -40,8 +40,7 @@ namespace ray {
 		virtual void local_intersect(const Ray& inr, std::vector<Intersection>& out) const = 0;
 
 		void intersect(const Ray& inr, std::vector<Intersection>& out) const {
-			Matrix4 inv = transform.inverse();
-			Ray local_ray = inv * inr;
+			Ray local_ray = transform.inverse_multiply(inr);
 
 			local_intersect(local_ray, out);
 		}

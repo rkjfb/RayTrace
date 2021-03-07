@@ -255,6 +255,24 @@ namespace ray {
 			return { m[3], m[7], m[11], m[15] };
 		}
 
+	private:
+		static Point3 multiply(std::array<double, 16> m, const Point3& p) {
+			return Point3(
+				p.x * m[0] + p.y * m[1] + p.z * m[2] + m[3],
+				p.x * m[4] + p.y * m[5] + p.z * m[6] + m[7],
+				p.x * m[8] + p.y * m[9] + p.z * m[10] + m[11]
+			);
+		}
+		static Vec3 multiply(std::array<double, 16> m, const Vec3& v) {
+			return Vec3(
+				v.x * m[0] + v.y * m[1] + v.z * m[2] + v.w * m[3],
+				v.x * m[4] + v.y * m[5] + v.z * m[6] + v.w * m[7],
+				v.x * m[8] + v.y * m[9] + v.z * m[10] + v.w * m[11],
+				v.x * m[12] + v.y * m[13] + v.z * m[14] + v.w * m[15]
+			);
+		}
+
+	public:
 		Vec3 operator*(const Vec3& rhs) const {
 			return Vec3(
 				rhs.x * m[0] + rhs.y * m[1] + rhs.z * m[2] + rhs.w * m[3],
@@ -264,25 +282,28 @@ namespace ray {
 			);
 		}
 
-		Point3 operator*(const Point3& rhs) const {
-			return Point3(
-				rhs.x * m[0] + rhs.y * m[1] + rhs.z * m[2] + m[3],
-				rhs.x * m[4] + rhs.y * m[5] + rhs.z * m[6] + m[7],
-				rhs.x * m[8] + rhs.y * m[9] + rhs.z * m[10] + m[11]
-			);
+		// Perf: Returns the this.inverse() * v
+		Vec3 inverse_multiply(const Vec3& v) const {
+			return multiply(inverse_cache, v);
+		}
+
+		Point3 operator*(const Point3& p) const {
+			return multiply(m, p);
+		}
+
+		// Perf: Returns the this.inverse() * p
+		Point3 inverse_multiply(const Point3& p) const {
+			return multiply(inverse_cache, p);
 		}
 
 		Ray operator*(const Ray& rhs) const {
 			return Ray(operator*(rhs.origin), operator*(rhs.direction));
 		}
 
-		/*
-		Goal: create this function.
-		// Returns this.inverse() * rhs, using fewer cycles.
-		Ray inverseMul(const Ray& rhs) const {
-			return Ray(inverseMul(rhs.origin), inverseMul(rhs.direction));
+		// Perf: Returns the this.inverse() * r
+		Ray inverse_multiply(const Ray& r) const {
+			return Ray(inverse_multiply(r.origin), inverse_multiply(r.direction));
 		}
-		*/
 
 		Matrix4 operator*(const Matrix4& rhs) const {
 			std::array<double, 16> ret;
