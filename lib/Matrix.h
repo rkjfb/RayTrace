@@ -8,38 +8,38 @@ namespace ray {
 	class Matrix2
 	{
 	public:
-		double m[0] = 0, m[1] = 0;
-		double m[4] = 0, m[5] = 0;
+		double m00 = 0, m01 = 0;
+		double m10 = 0, m11 = 0;
 		Matrix2() {
-			m[0] = m[5] = 1;
+			m00 = m11 = 1;
 		}
 		Matrix2(std::array<double, 4>& i) {
-			m[0] = i[0];
-			m[1] = i[1];
+			m00 = i[0];
+			m01 = i[1];
 
-			m[4] = i[2];
-			m[5] = i[3];
+			m10 = i[2];
+			m11 = i[3];
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Matrix2& m) {
 			return os << "Matrix2("
-				<< m.m[0] << ", "
-				<< m.m[1] << ", "
-				<< m.m[4] << ", "
-				<< m.m[5] << ")";
+				<< m.m00 << ", "
+				<< m.m01 << ", "
+				<< m.m10 << ", "
+				<< m.m11 << ")";
 		}
 
 		bool operator==(const Matrix2& rhs) const {
-			return IsEqual(m[0], rhs.m[0]) &&
-				IsEqual(m[1], rhs.m[1]) &&
-				IsEqual(m[4], rhs.m[4]) &&
-				IsEqual(m[5], rhs.m[5]);
+			return IsEqual(m00, rhs.m00) &&
+				IsEqual(m01, rhs.m01) &&
+				IsEqual(m10, rhs.m10) &&
+				IsEqual(m11, rhs.m11);
 		}
 		bool operator!=(const Matrix2& rhs) const {
 			return !operator==(rhs);
 		}
 
 		double det() const {
-			return m[0] * m[5] - m[1] * m[4];
+			return m00 * m11 - m01 * m10;
 		}
 
 	};
@@ -47,49 +47,49 @@ namespace ray {
 	class Matrix3
 	{
 	public:
-		double m[0] = 0, m[1] = 0, m[2] = 0;
-		double m[4] = 0, m[5] = 0, m[6] = 0;
-		double m[8] = 0, m[9] = 0, m[10] = 0;
+		double m00 = 0, m01 = 0, m02 = 0;
+		double m10 = 0, m11 = 0, m12 = 0;
+		double m20 = 0, m21 = 0, m22 = 0;
 		Matrix3() {
-			m[0] = m[5] = m[10] = 1;
+			m00 = m11 = m22 = 1;
 		}
 		Matrix3(std::array<double, 9>& i) {
-			m[0] = i[0];
-			m[1] = i[1];
-			m[2] = i[2];
+			m00 = i[0];
+			m01 = i[1];
+			m02 = i[2];
 
-			m[4] = i[3];
-			m[5] = i[4];
-			m[6] = i[5];
+			m10 = i[3];
+			m11 = i[4];
+			m12 = i[5];
 
-			m[8] = i[6];
-			m[9] = i[7];
-			m[10] = i[8];
+			m20 = i[6];
+			m21 = i[7];
+			m22 = i[8];
 		}
 
 		friend std::ostream& operator<<(std::ostream& os, const Matrix3& m) {
 			return os << "Matrix3("
-				<< m.m[0] << ", "
-				<< m.m[1] << ", "
-				<< m.m[2] << ", "
-				<< m.m[4] << ", "
-				<< m.m[5] << ", "
-				<< m.m[6] << ", "
-				<< m.m[8] << ", "
-				<< m.m[9] << ", "
-				<< m.m[10] << ")";
+				<< m.m00 << ", "
+				<< m.m01 << ", "
+				<< m.m02 << ", "
+				<< m.m10 << ", "
+				<< m.m11 << ", "
+				<< m.m12 << ", "
+				<< m.m20 << ", "
+				<< m.m21 << ", "
+				<< m.m22 << ")";
 		}
 
 		bool operator==(const Matrix3& rhs) const {
-			return IsEqual(m[0], rhs.m[0]) &&
-				IsEqual(m[1], rhs.m[1]) &&
-				IsEqual(m[2], rhs.m[2]) &&
-				IsEqual(m[4], rhs.m[4]) &&
-				IsEqual(m[5], rhs.m[5]) &&
-				IsEqual(m[6], rhs.m[6]) &&
-				IsEqual(m[8], rhs.m[8]) &&
-				IsEqual(m[9], rhs.m[9]) &&
-				IsEqual(m[10], rhs.m[10]);
+			return IsEqual(m00, rhs.m00) &&
+				IsEqual(m01, rhs.m01) &&
+				IsEqual(m02, rhs.m02) &&
+				IsEqual(m10, rhs.m10) &&
+				IsEqual(m11, rhs.m11) &&
+				IsEqual(m12, rhs.m12) &&
+				IsEqual(m20, rhs.m20) &&
+				IsEqual(m21, rhs.m21) &&
+				IsEqual(m22, rhs.m22);
 		}
 		bool operator!=(const Matrix3& rhs) const {
 			return !operator==(rhs);
@@ -99,30 +99,30 @@ namespace ray {
 		std::array<double, 3> row(int i) const {
 			switch (i) {
 			case 0:
-				return { m[0], m[1], m[2] };
+				return { m00, m01, m02 };
 			case 1:
-				return { m[4], m[5], m[6] };
+				return { m10, m11, m12 };
 			case 2:
 				break;
 			default:
 				assert(false);
 			}
-			return { m[8], m[9], m[10] };
+			return { m20, m21, m22 };
 		}
 
 		// returns supplied column as array
 		std::array<double, 3> col(int i) const {
 			switch (i) {
 			case 0:
-				return { m[0], m[4], m[8] };
+				return { m00, m10, m20 };
 			case 1:
-				return { m[1], m[5], m[9]};
+				return { m01, m11, m21 };
 			case 2:
 				break;
 			default:
 				assert(false);
 			}
-			return { m[2], m[6], m[10] };
+			return { m02, m12, m22 };
 		}
 
 		Matrix2 submatrix(int droprow, int dropcol) const {
@@ -171,52 +171,11 @@ namespace ray {
 			m[0] = m[5] = m[10] = m[15] = 1;
 			update_inverse_cache();
 		}
-		Matrix4(std::array<double, 16>& i) {
-			m[0] = i[0];
-			m[1] = i[1];
-			m[2] = i[2];
-			m[3] = i[3];
-
-			m[4] = i[4];
-			m[5] = i[5];
-			m[6] = i[6];
-			m[7] = i[7];
-
-			m[8] = i[8];
-			m[9] = i[9];
-			m[10] = i[10];
-			m[11] = i[11];
-
-			m[12] = i[12];
-			m[13] = i[13];
-			m[14] = i[14];
-			m[15] = i[15];
-
+		Matrix4(std::array<double, 16>& a) : m(a) {
 			update_inverse_cache();
 		}
 
-		Matrix4(const std::array<double, 16>& a, const std::array<double, 16>& inv) {
-			m[0] = a[0];
-			m[1] = a[1];
-			m[2] = a[2];
-			m[3] = a[3];
-
-			m[4] = a[4];
-			m[5] = a[5];
-			m[6] = a[6];
-			m[7] = a[7];
-
-			m[8] = a[8];
-			m[9] = a[9];
-			m[10] = a[10];
-			m[11] = a[11];
-
-			m[12] = a[12];
-			m[13] = a[13];
-			m[14] = a[14];
-			m[15] = a[15];
-
-			inverse_cache = inv;
+		Matrix4(const std::array<double, 16>& a, const std::array<double, 16>& inv) : m(a), inverse_cache(inv) {
 		}
 
 
@@ -302,7 +261,7 @@ namespace ray {
 				rhs.x * m[4] + rhs.y * m[5] + rhs.z * m[6] + rhs.w * m[7],
 				rhs.x * m[8] + rhs.y * m[9] + rhs.z * m[10] + rhs.w * m[11],
 				rhs.x * m[12] + rhs.y * m[13] + rhs.z * m[14] + rhs.w * m[15]
-				);
+			);
 		}
 
 		Point3 operator*(const Point3& rhs) const {
@@ -331,7 +290,7 @@ namespace ray {
 				std::array<double, 4> r = row(i);
 				for (int j = 0; j < 4; j++) {
 					std::array<double, 4> c = rhs.col(j);
-					ret[i*4 + j] = c[0] * r[0] + c[1] * r[1] + c[2] * r[2] + c[3] * r[3];
+					ret[i * 4 + j] = c[0] * r[0] + c[1] * r[1] + c[2] * r[2] + c[3] * r[3];
 				}
 			}
 			return Matrix4(ret);
@@ -341,9 +300,9 @@ namespace ray {
 		static std::array<double, 16> transpose_array(const std::array<double, 16>& a) {
 			return std::array<double, 16>{
 				a[0], a[4], a[8], a[12],
-				a[1], a[5], a[9], a[13],
-				a[2], a[6], a[10], a[14],
-				a[3], a[7], a[11], a[15]
+					a[1], a[5], a[9], a[13],
+					a[2], a[6], a[10], a[14],
+					a[3], a[7], a[11], a[15]
 			};
 		}
 
@@ -507,10 +466,11 @@ namespace ray {
 			Matrix4 rotate(a);
 			return rotate * translate(-from.x, -from.y, -from.z);
 		}
-		
+
 	private:
 
-		std::array<double, 16> m;
+		// main matrix
+		std::array<double, 16> m = {};
 
 		// cache of inverse of this matrix, needed because inverting is high frequency.
 		std::array<double, 16> inverse_cache;
