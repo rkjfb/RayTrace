@@ -188,6 +188,17 @@ TEST(Pattern, GradientPatternAt) {
 	EXPECT_EQ(pattern.pattern_at(Point3(0.75, 0, 0)), Color(0.25, 0.25, 0.25));
 }
 
+TEST(Pattern, RingGradient) {
+	RingGradient pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	double ss = sqrt(0.25 * 0.25 / 2);
+	EXPECT_EQ(pattern.pattern_at(Point3(ss, 0, ss)), Color(0.75, 0.75, 0.75));
+	ss = sqrt(0.5 * 0.5 / 2);
+	EXPECT_EQ(pattern.pattern_at(Point3(ss, 0, ss)), Color(0.5, 0.5, 0.5));
+	ss = sqrt(0.75 * 0.75 / 2);
+	EXPECT_EQ(pattern.pattern_at(Point3(ss, 0, ss)), Color(0.25, 0.25, 0.25));
+}
+
 //Scenario: A ring should extend in both x and z
 //  Given pattern ← ring_pattern(white, black)
 //  Then pattern_at(pattern, point(0, 0, 0)) = white

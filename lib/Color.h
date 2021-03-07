@@ -11,11 +11,7 @@ namespace ray {
 		double g = 0.0f;
 		double b = 0.0f;
 
-		Color(double inr, double ing, double inb) {
-			r = inr;
-			g = ing;
-			b = inb;
-		}
+		Color(double inr, double ing, double inb) : r(inr), g(ing), b(inb) {}
 
 		friend std::ostream& operator<<(std::ostream& os, const Color& c) {
 			return os << "Color(" << c.r << ", " << c.g << ", " << c.b << ")";

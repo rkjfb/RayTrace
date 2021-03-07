@@ -193,7 +193,7 @@ namespace ray {
 		}
 
 		Color pattern_at(const Point3& p) const override {
-			double radius = sqrt(p.x * p.x + p.z + p.z);
+			double radius = sqrt(p.x * p.x + p.z * p.z);
 			if ((int)floor(radius) % 2 == 0) {
 				return a;
 			}
@@ -237,6 +237,44 @@ namespace ray {
 				return a;
 			}
 			return b;
+		}
+	};
+
+	// Radial gradient
+	class RingGradient : public Pattern {
+	public:
+		RingGradient(const Color& ina, const Color& inb) :a(ina), b(inb) {}
+		Color a;
+		Color b;
+
+		friend std::ostream& operator<<(std::ostream& os, const RingGradient& p) {
+			return os << "RingGradient(" << p.a << ", " << p.b << ")";
+		}
+
+		bool equals(const Pattern& rhs) const override {
+			const RingGradient* rhs_gradient = dynamic_cast<const RingGradient*>(&rhs);
+			if (rhs_gradient == nullptr) {
+				return false;
+			}
+			return a == rhs_gradient->a && b == rhs_gradient->b;
+		}
+
+		bool operator==(const RingGradient& rhs) const {
+			return equals(rhs);
+		}
+
+		bool operator!=(const RingGradient& rhs) const {
+			return !operator==(rhs);
+		}
+
+		std::unique_ptr<Pattern> clone() const override {
+			return std::make_unique<RingGradient>(*this);
+		}
+
+		Color pattern_at(const Point3& p) const override {
+			double radius = sqrt(p.x * p.x + p.z * p.z);
+			double lerp = radius - floor(radius);
+			return a + (b - a) * lerp;
 		}
 	};
 

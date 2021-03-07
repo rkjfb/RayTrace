@@ -63,7 +63,7 @@ public:
 
 		auto left = std::make_unique<Sphere>();
 		left->transform = Matrix4::translate(-1.5f, 0.333f, -0.75f); // *Matrix4::scale(0.333f, 0.333f, 0.333f);
-		left->material.pattern = std::make_unique<Stripe>(Color::lime(), Color::red());
+		left->material.pattern = std::make_unique<RingGradient>(Color::lime(), Color::red());
 		left->material.pattern->transform = Matrix4::scale(0.1, 0.1, 0.1);
 		left->material.diffuse = 0.7f;
 		left->material.specular = 0.3f;
