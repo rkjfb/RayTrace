@@ -208,15 +208,33 @@ TEST(Pattern, RingPatternAt) {
 //  Then pattern_at(pattern, point(0, 0, 0)) = white
 //    And pattern_at(pattern, point(0.99, 0, 0)) = white
 //    And pattern_at(pattern, point(1.01, 0, 0)) = black
-//
+TEST(Pattern, CheckerX) {
+	Checker pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0.99, 0, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(1.01, 0, 0)), Color::black());
+}
+
 //Scenario: Checkers should repeat in y
 //  Given pattern ← checkers_pattern(white, black)
 //  Then pattern_at(pattern, point(0, 0, 0)) = white
 //    And pattern_at(pattern, point(0, 0.99, 0)) = white
 //    And pattern_at(pattern, point(0, 1.01, 0)) = black
-//
+TEST(Pattern, CheckerY) {
+	Checker pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0.99, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 1.01, 0)), Color::black());
+}
+
 //Scenario: Checkers should repeat in z
 //  Given pattern ← checkers_pattern(white, black)
 //  Then pattern_at(pattern, point(0, 0, 0)) = white
 //    And pattern_at(pattern, point(0, 0, 0.99)) = white
 //    And pattern_at(pattern, point(0, 0, 1.01)) = black
+TEST(Pattern, CheckerZ) {
+	Checker pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0.99)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 1.01)), Color::black());
+}

@@ -200,4 +200,44 @@ namespace ray {
 			return b;
 		}
 	};
+
+	class Checker : public Pattern {
+	public:
+		Checker(const Color& ina, const Color& inb) :a(ina), b(inb) {}
+		Color a;
+		Color b;
+
+		friend std::ostream& operator<<(std::ostream& os, const Checker& p) {
+			return os << "Checker(" << p.a << ", " << p.b << ")";
+		}
+
+		bool equals(const Pattern& rhs) const override {
+			const Checker* rhs_gradient = dynamic_cast<const Checker*>(&rhs);
+			if (rhs_gradient == nullptr) {
+				return false;
+			}
+			return a == rhs_gradient->a && b == rhs_gradient->b;
+		}
+
+		bool operator==(const Checker& rhs) const {
+			return equals(rhs);
+		}
+
+		bool operator!=(const Checker& rhs) const {
+			return !operator==(rhs);
+		}
+
+		std::unique_ptr<Pattern> clone() const override {
+			return std::make_unique<Checker>(*this);
+		}
+
+		Color pattern_at(const Point3& p) const override {
+			double floorsum = floor(p.x) + floor(p.y) + floor(p.z);
+			if ((int)floorsum % 2 == 0) {
+				return a;
+			}
+			return b;
+		}
+	};
+
 };

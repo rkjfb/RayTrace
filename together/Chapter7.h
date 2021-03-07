@@ -54,6 +54,13 @@ public:
 		right->material.diffuse = 0.7f;
 		right->material.specular = 0.3f;
 
+		auto back_right = std::make_unique<Sphere>();
+		back_right->transform = Matrix4::translate(1.5f, 1.5f, 1.5f);// *Matrix4::scale(0.5f, 0.5f, 0.5f);
+		back_right->material.pattern = std::make_unique<Checker>(Color::blue(), Color::lime());
+		back_right->material.pattern->transform = Matrix4::scale(0.1, 0.1, 0.1);
+		back_right->material.diffuse = 0.7f;
+		back_right->material.specular = 0.3f;
+
 		auto left = std::make_unique<Sphere>();
 		left->transform = Matrix4::translate(-1.5f, 0.333f, -0.75f); // *Matrix4::scale(0.333f, 0.333f, 0.333f);
 		left->material.pattern = std::make_unique<Stripe>(Color::lime(), Color::red());
@@ -67,6 +74,7 @@ public:
 		vec.push_back(std::move(right_wall));
 		vec.push_back(std::move(middle));
 		vec.push_back(std::move(right));
+		vec.push_back(std::move(back_right));
 		vec.push_back(std::move(left));
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
