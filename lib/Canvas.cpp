@@ -19,11 +19,13 @@ namespace ray {
 				std::array<double, 3> colors = { pixel.r, pixel.g, pixel.b };
 
 				for (size_t i = 0; i < colors.size(); i++) {
-					double c = std::clamp(colors[i], 0.0, 1.0);
-					std::string num = std::to_string(std::lround(c * range));
+					int c = (int)(colors[i] * range + 0.5);
+					c = std::clamp(c, 0, range);
+					std::string num = std::to_string(c);
+
 					// 70 character line length limit.
 					if (line.size() + 1 + num.size() > 70) {
-						s << line << '\n';
+						s << (line + '\n');
 						line = num;
 					}
 					else
