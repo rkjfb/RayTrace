@@ -278,4 +278,45 @@ namespace ray {
 		}
 	};
 
+	// Joins together 2 patterns, using a third pattern's r=right and b=left channels for choosing weight of join.
+	class JoinPattern : public Pattern {
+	public:
+		JoinPattern(std::unique_ptr<Pattern> injoin, std::unique_ptr<Pattern> inleft, std::unique_ptr<Pattern> inright) 
+			: join(std::move(injoin)), left(std::move(inleft)), right(std::move(inright)) {}
+		std::unique_ptr<Pattern> join;
+		std::unique_ptr<Pattern> left;
+		std::unique_ptr<Pattern> right;
+
+		friend std::ostream& operator<<(std::ostream& os, const JoinPattern& p) {
+			return os << "ChainJoinPattern()";
+		}
+
+		bool equals(const Pattern& rhs) const override {
+			const JoinPattern* rhs_join = dynamic_cast<const JoinPattern*>(&rhs);
+			if (rhs_join == nullptr) {
+				return false;
+			}
+
+			return *join == *rhs_join->join && *left == *rhs_join->left && *right == *rhs_join->right;
+		}
+
+		bool operator==(const JoinPattern& rhs) const {
+			return equals(rhs);
+		}
+
+		bool operator!=(const JoinPattern& rhs) const {
+			return !operator==(rhs);
+		}
+
+		std::unique_ptr<Pattern> clone() const override {
+			return std::make_unique<JoinPattern>(join->clone(), left->clone(), right->clone());
+		}
+
+		Color pattern_at(const Point3& p) const override {
+			Color join_color = join->pattern_at(p);
+			Color left_color = left->pattern_at(left->transform.inverse_multiply(p));
+			Color right_color = right->pattern_at(right->transform.inverse_multiply(p));
+			return left_color * join_color.b + right_color * join_color.r;
+		}
+	};
 };

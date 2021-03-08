@@ -5,10 +5,11 @@
 #include "Chapter6.h"
 #include "Chapter7.h"
 #include "Chapter9.h"
+#include "Chapter10.h"
 
 int main()
 {
     std::cout << "Hello World!\n";
-    Chapter7 chap;
+    Chapter10 chap;
     chap.run();
 }

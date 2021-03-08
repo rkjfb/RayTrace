@@ -249,3 +249,29 @@ TEST(Pattern, CheckerZ) {
 	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0.99)), Color::white());
 	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 1.01)), Color::black());
 }
+
+TEST(Pattern, JoinSolid) {
+	auto join_pattern = std::make_unique<Checker>(Color::red(), Color::blue());
+	auto left = std::make_unique<Solid>(Color::black());
+	auto right = std::make_unique<Solid>(Color::white());
+
+	JoinPattern pattern(std::move(join_pattern), std::move(left), std::move(right));
+
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0.99)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 1.01)), Color::black());
+}
+
+TEST(Pattern, JoinCheckerTransform) {
+	auto join_pattern = std::make_unique<Checker>(Color::red(), Color::blue());
+	auto left = std::make_unique<Solid>(Color::blue());
+	auto right = std::make_unique<Checker>(Color::white(), Color::black());
+	right->transform = Matrix4::scale(0.5, 0.5, 0.5);
+
+	JoinPattern pattern(std::move(join_pattern), std::move(left), std::move(right));
+
+	EXPECT_EQ(pattern.pattern_at(Point3()), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0.49)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0.51)), Color::black());
+}
+
