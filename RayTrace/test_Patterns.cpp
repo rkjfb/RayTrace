@@ -268,6 +268,7 @@ TEST(Pattern, CheckerZ) {
 	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 1.01)), Color::black());
 }
 
+// A Checker join of 2 Solid patterns should act like a regular Checker pattern.
 TEST(Pattern, JoinSolid) {
 	auto join_pattern = std::make_unique<Checker>(Color::red(), Color::blue());
 	auto left = std::make_unique<Solid>(Color::black());
@@ -280,6 +281,7 @@ TEST(Pattern, JoinSolid) {
 	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 1.01)), Color::black());
 }
 
+// Inner Checker pattern should have inner transform applied.
 TEST(Pattern, JoinCheckerTransform) {
 	auto join_pattern = std::make_unique<Checker>(Color::red(), Color::blue());
 	auto left = std::make_unique<Solid>(Color::blue());
@@ -293,3 +295,25 @@ TEST(Pattern, JoinCheckerTransform) {
 	EXPECT_EQ(pattern.pattern_at(Point3(0, 0, 0.51)), Color::black());
 }
 
+// Ensure Perlin noise is noisy.
+TEST(Pattern, Perlin) {
+	auto jitter = std::make_unique<Stripe>(Color::white(), Color::black());
+	PerlinPattern pattern(std::move(jitter), 20);
+
+	EXPECT_EQ(pattern.pattern_at(Point3(0.90, 0, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at(Point3(1.1, 0, 0)), Color::black());
+
+	bool found_black = false;
+	for (double y = 0; y < 1000; y += 1) {
+		Color c = pattern.pattern_at(Point3(0.99, y, 0));
+		if (c == Color::black()) {
+			found_black = true;
+			break;
+		}
+	}
+
+	Color d = pattern.pattern_at(Point3(0.99, 3, 0));
+
+
+	EXPECT_EQ(found_black, true);
+}

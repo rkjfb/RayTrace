@@ -57,6 +57,16 @@ namespace ray {
 		static Color lightgrey() { return cssrgb(211, 211, 211); }
 		//green	#008000	0,128,0
 		static Color green() { return cssrgb(0,128,0); }
+		//yellow	#FFFF00	255,255,0
+		static Color yellow() { return cssrgb(255, 255, 0); }
+		//darkorange	#FF8C00	255, 140, 0
+		static Color darkorange() { return cssrgb(255, 140, 0); }
+		//orchid	#DA70D6	218,112,214
+		static Color orchid() { return cssrgb(218,112,214); }
+		//powderblue	#B0E0E6	176,224,230
+		static Color powderblue() { return cssrgb(176,224,230); }
+
+
 	};
 
 } // namespace ray

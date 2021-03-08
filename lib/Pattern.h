@@ -319,4 +319,40 @@ namespace ray {
 			return left_color * join_color.b + right_color * join_color.r;
 		}
 	};
+
+	// Jitters supplied pattern using Perlin noise.
+	class PerlinPattern : public Pattern {
+	public:
+		PerlinPattern(std::unique_ptr<Pattern> in, float inscale)
+			: jitter(std::move(in)), scale(inscale) {}
+		std::unique_ptr<Pattern> jitter;
+		float scale;
+
+		friend std::ostream& operator<<(std::ostream& os, const PerlinPattern& p) {
+			return os << "PerlinPattern()";
+		}
+
+		bool equals(const Pattern& rhs) const override {
+			const PerlinPattern* rhs_join = dynamic_cast<const PerlinPattern*>(&rhs);
+			if (rhs_join == nullptr) {
+				return false;
+			}
+
+			return *jitter == *rhs_join->jitter;
+		}
+
+		bool operator==(const PerlinPattern& rhs) const {
+			return equals(rhs);
+		}
+
+		bool operator!=(const PerlinPattern& rhs) const {
+			return !operator==(rhs);
+		}
+
+		std::unique_ptr<Pattern> clone() const override {
+			return std::make_unique<PerlinPattern>(jitter->clone(), scale);
+		}
+
+		Color pattern_at(const Point3& p) const override;
+	};
 };
