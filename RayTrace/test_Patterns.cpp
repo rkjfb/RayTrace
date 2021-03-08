@@ -93,6 +93,24 @@ TEST(Pattern, StripePatternTransform) {
 	EXPECT_EQ(result, Color::white());
 }
 
+// Rotate 90 deg around Z should move pattern
+TEST(Pattern, StripeRotateZ) {
+	Sphere sphere;
+
+	// Untransformed striped orientation.
+	Stripe pattern(Color::white(), Color::black());
+	EXPECT_EQ(pattern.pattern_at_shape(sphere, Point3(0.5, 0.5, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at_shape(sphere, Point3(0.5, 1.5, 0)), Color::white());
+	EXPECT_EQ(pattern.pattern_at_shape(sphere, Point3(1.5, 0.5, 0)), Color::black());
+
+	// Rotate 90 degrees (pi/2) stripe orientation.
+	Stripe transformed(Color::white(), Color::black());
+	transformed.transform = Matrix4::rotateZ(pi/2);
+	EXPECT_EQ(transformed.pattern_at_shape(sphere, Point3(0.5, 0.5, 0)), Color::white());
+	EXPECT_EQ(transformed.pattern_at_shape(sphere, Point3(0.5, 1.5, 0)), Color::black());
+	EXPECT_EQ(transformed.pattern_at_shape(sphere, Point3(1.5, 0.5, 0)), Color::white());
+}
+
 //Scenario: Stripes with both an object and a pattern transformation
 //  Given object ← sphere()
 //    And set_transform(object, scaling(2, 2, 2))

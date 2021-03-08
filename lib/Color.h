@@ -55,6 +55,8 @@ namespace ray {
 		static Color slategrey() { return cssrgb(112, 128, 144); }
 		//lightgrey	#D3D3D3	211,211,211
 		static Color lightgrey() { return cssrgb(211, 211, 211); }
+		//green	#008000	0,128,0
+		static Color green() { return cssrgb(0,128,0); }
 	};
 
 } // namespace ray
