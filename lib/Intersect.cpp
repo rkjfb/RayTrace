@@ -33,6 +33,7 @@ IntersectionInfo Intersection::info(const Ray& ray) const {
 		info.inside = true;
 		info.normal = -info.normal;
 	}
+	info.reflect = ray.direction.reflect(info.normal);
 	info.over_point = info.point + info.normal * ray::RAY_EPSILON;
 	return info;
 }

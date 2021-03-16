@@ -12,6 +12,7 @@ namespace ray {
 		Point3 over_point;
 		Vec3 eye;
 		Vec3 normal;
+		Vec3 reflect;
 		bool inside = false;
 	};
 

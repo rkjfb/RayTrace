@@ -8,10 +8,11 @@ namespace ray {
 	{
 	public:
 		std::unique_ptr<Pattern> pattern;
-		double ambient = 0.1f;
-		double diffuse = 0.9f;
-		double specular = 0.9f;
-		double shininess = 200.0f;
+		double ambient = 0.1;
+		double diffuse = 0.9;
+		double specular = 0.9;
+		double shininess = 200;
+		double reflective = 0;
 
 		Material() : pattern(std::make_unique<Solid>(Color::white())) {}
 

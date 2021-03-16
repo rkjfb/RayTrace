@@ -140,24 +140,12 @@ TEST(World, ColorAt) {
 //  Then c = inner.material.color
 TEST(World, ColorAtBehind) {
 
-	std::vector<std::unique_ptr<Shape>> shapes;
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+	vec[0]->material.ambient = 1;
+	vec[1]->material.ambient = 1;
+	auto weak_s2 = vec[1].get();
 
-	Material m;
-	m.pattern = std::make_unique<Solid>(0.8f, 1, 0.6f);
-	m.diffuse = 0.7f;
-	m.specular = 0.2f;
-	m.ambient = 1;
-
-	auto s1 = std::make_unique<Sphere>();
-	s1->material = m;
-	shapes.emplace_back(std::move(s1));
-
-	auto s2 = std::make_unique<Sphere>(Matrix4::scale(0.5f, 0.5f, 0.5f));
-	auto weak_s2 = s2.get();
-	s2->material.ambient = 1;
-	shapes.emplace_back(std::move(s2));
-
-	World w(PointLight(Point3(-10, 10, -10), Color::white()), std::move(shapes));
+	World w(PointLight(Point3(-10, 10, -10), Color::white()), std::move(vec));
 
 	Ray r(Point3(0, 0, 0.75f), Vec3(0, 0, -1));
 	Color c = w.color_at_slow(r);
@@ -223,15 +211,14 @@ TEST(World, ShadowBehindPoint) {
 //    And c ← shade_hit(w, comps)
 //  Then c = color(0.1, 0.1, 0.1)
 TEST(World, ShadowWorld) {
-	auto s1 = std::make_unique<Sphere>();
-	auto s2 = std::make_unique<Sphere>();
-	Shape* weak_s2 = s2.get();
-	s2->transform = Matrix4::translate(0, 0, 10);
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+
+	vec[1]->transform = Matrix4::translate(0, 0, 10);
+	Shape* weak_s2 = vec[1].get();
+
 	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
-	std::vector<std::unique_ptr<Shape>> vec;
-	vec.push_back(std::move(s1));
-	vec.push_back(std::move(s2));
 	World w(light, std::move(vec));
+
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
 	Intersection i(4, weak_s2);
 	IntersectionInfo info = i.info(r);
@@ -249,7 +236,24 @@ TEST(World, ShadowWorld) {
 //  When comps ← prepare_computations(i, r)
 //    And color ← reflected_color(w, comps)
 //  Then color = color(0, 0, 0)
-//
+TEST(World, ReflectNonReflective) {
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+
+	vec[1]->material.ambient = 1;
+	vec[1]->transform = Matrix4::translate(0, 0, 10);
+	Shape* weak_s2 = vec[1].get();
+
+	PointLight light(Point3(0, 0, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
+	Intersection i(1, weak_s2);
+	IntersectionInfo info = i.info(r);
+	Color c = w.reflected_color_slow(info,1);
+
+	EXPECT_EQ(c, Color::black());
+}
+
 //Scenario: The reflected color for a reflective material
 //  Given w ← default_world()
 //    And shape ← plane() with:                 
@@ -261,7 +265,35 @@ TEST(World, ShadowWorld) {
 //  When comps ← prepare_computations(i, r)
 //    And color ← reflected_color(w, comps)
 //  Then color = color(0.19032, 0.2379, 0.14274)
-//
+
+/* 
+* per jamis: https://forum.raytracerchallenge.com/thread/82/stuck-test-strike-reflective-surface
+reflect - ray origin = p(0.0000, -0.9999, -2.0000)
+reflect - ray direction = v(0.0000, 0.7071, 0.7071)
+col = v(0.3807, 0.4759, 0.2855)
+result of multiply - color = v(0.1903, 0.2379, 0.1428)
+*/
+TEST(World, ReflectReflective) {
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+
+	auto plane = std::make_unique<Plane>();
+	Plane* plane_weak = plane.get();
+	plane->material.reflective = 0.5;
+	plane->transform = Matrix4::translate(0, -1, 0);
+	vec.push_back(std::move(plane));
+
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	double ss = sqrt(2);
+	Ray r(Point3(0, 0, -3), Vec3(0, -ss/2, ss/2));
+	Intersection i(ss, plane_weak);
+	IntersectionInfo info = i.info(r);
+	Color c = w.reflected_color_slow(info,1);
+
+	EXPECT_EQ(c, Color(0.190332, 0.237915, 0.142749));
+}
+
 //Scenario: shade_hit() with a reflective material
 //  Given w ← default_world()
 //    And shape ← plane() with:
@@ -273,7 +305,27 @@ TEST(World, ShadowWorld) {
 //  When comps ← prepare_computations(i, r)
 //    And color ← shade_hit(w, comps)
 //  Then color = color(0.87677, 0.92436, 0.82918)
-//
+TEST(World, ReflectShadeHit) {
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+
+	auto plane = std::make_unique<Plane>();
+	Plane* plane_weak = plane.get();
+	plane->material.reflective = 0.5;
+	plane->transform = Matrix4::translate(0, -1, 0);
+	vec.push_back(std::move(plane));
+
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	double ss = sqrt(2);
+	Ray r(Point3(0, 0, -3), Vec3(0, -ss / 2, ss / 2));
+	Intersection i(ss, plane_weak);
+	IntersectionInfo info = i.info(r);
+	Color c = w.shade_slow(info);
+
+	EXPECT_EQ(c, Color(0.876757, 0.92434, 0.829174));
+}
+
 //Scenario: color_at() with mutually reflective surfaces
 //  Given w ← world()
 //    And w.light ← point_light(point(0, 0, 0), color(1, 1, 1))
@@ -287,7 +339,32 @@ TEST(World, ShadowWorld) {
 //    And upper is added to w
 //    And r ← ray(point(0, 0, 0), vector(0, 1, 0))
 //  Then color_at(w, r) should terminate successfully
-//
+TEST(World, ReflectParallel) {
+	std::vector<std::unique_ptr<Shape>> vec;
+
+	{
+		auto lower_plane = std::make_unique<Plane>();
+		lower_plane->material.reflective = 1;
+		lower_plane->transform = Matrix4::translate(0, -1, 0);
+		vec.push_back(std::move(lower_plane));
+	}
+
+	{
+		auto upper_plane = std::make_unique<Plane>();
+		upper_plane->material.reflective = 1;
+		upper_plane->transform = Matrix4::translate(0, 1, 0);
+		vec.push_back(std::move(upper_plane));
+	}
+
+	PointLight light(Point3(0, 0, 0), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	Ray r(Point3(0, 0, 0), Vec3(0, 1, 0));
+	Color c = w.color_at_slow(r);
+
+	EXPECT_EQ(c, Color(11.4, 11.4, 11.4));
+}
+
 //Scenario: The reflected color at the maximum recursive depth
 //  Given w ← default_world()
 //    And shape ← plane() with:
@@ -299,7 +376,27 @@ TEST(World, ShadowWorld) {
 //  When comps ← prepare_computations(i, r)
 //    And color ← reflected_color(w, comps, 0)    
 //  Then color = color(0, 0, 0)
-//
+TEST(World, ReflectMaxRecurse) {
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+
+	auto plane = std::make_unique<Plane>();
+	Plane* plane_weak = plane.get();
+	plane->material.reflective = 0.5;
+	plane->transform = Matrix4::translate(0, -1, 0);
+	vec.push_back(std::move(plane));
+
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	double ss = sqrt(2);
+	Ray r(Point3(0, 0, -3), Vec3(0, -ss / 2, ss / 2));
+	Intersection i(ss, plane_weak);
+	IntersectionInfo info = i.info(r);
+	Color c = w.reflected_color_slow(info, 0);
+
+	EXPECT_EQ(c, Color::black());
+}
+
 //Scenario: The refracted color with an opaque surface
 //  Given w ← default_world()
 //    And shape ← the first object in w

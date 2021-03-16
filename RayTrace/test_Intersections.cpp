@@ -46,7 +46,15 @@ TEST(Intersect, Info) {
 //    And i ← intersection(√2, shape)                      
 //  When comps ← prepare_computations(i, r)
 //  Then comps.reflectv = vector(0, √2/2, √2/2)                
-//
+TEST(Intersect, InfoReflective) {
+	Plane shape;
+	double ss = sqrt(2);
+	Ray ray(Point3(0, 1, -1), Vec3(0, -ss/2, ss/2));
+	Intersection i(ss, &shape);
+	IntersectionInfo info = i.info(ray);
+	EXPECT_EQ(info.reflect, Vec3(0, ss/2, ss/2));
+}
+
 //Scenario: The hit, when an intersection occurs on the outside
 //  Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
 //    And shape ← sphere()

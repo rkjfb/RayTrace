@@ -19,6 +19,8 @@ namespace ray {
 		// supply light + get 2 stock shapes
 		World(const PointLight& light);
 
+		static std::vector<std::unique_ptr<Shape>> make_default_shapes();
+
 		const std::vector<std::unique_ptr<Shape>>& shapes() const {
 			return _shapes;
 		}
@@ -41,26 +43,28 @@ namespace ray {
 		}
 
 		// intersections for speed
-		Color shade(const IntersectionInfo& info, std::vector<Intersection>& intersections) const {
+		Color shade(const IntersectionInfo& info, std::vector<Intersection>& intersections, int remaining = 5) const {
 			const Material& material = info.object->material;
 			bool in_shadow = is_shadowed(info.over_point, intersections);
-			return material.lighting(_light, *info.object, info.over_point, info.eye, info.normal, in_shadow);
+			Color surface = material.lighting(_light, *info.object, info.over_point, info.eye, info.normal, in_shadow);
+			Color reflection = reflected_color_slow(info, remaining);
+			return surface + reflection;
 		}
 
-		Color color_at_slow(const Ray& ray) const {
+		Color color_at_slow(const Ray& ray, int remaining = 5) const {
 			std::vector<Intersection> intersections;
-			return color_at(ray, intersections);
+			return color_at(ray, intersections, remaining);
 		}
 
 		// intersections is supplied to dodge the allocation, no functional value.
-		Color color_at(const Ray& ray, std::vector<Intersection>& intersections) const {
+		Color color_at(const Ray& ray, std::vector<Intersection>& intersections, int remaining = 5) const {
 			intersect(ray, intersections);
 			const Intersection* hit = Intersection::hit(intersections);
 			if (hit == nullptr) {
 				return Color::black();
 			}
 			IntersectionInfo info = hit->info(ray);
-			return shade(info, intersections);
+			return shade(info, intersections, remaining);
 		}
 
 		bool is_shadowed_slow(const Point3& point) const {
@@ -84,6 +88,24 @@ namespace ray {
 			}
 			return false;
 		}
+
+		Color reflected_color_slow(const IntersectionInfo& info, int remaining) const {
+
+			if (remaining <= 0) {
+				return Color::black();
+			}
+
+			double reflective = info.object->material.reflective;
+
+			if (IsEqual(reflective, 0)) {
+				return Color::black();
+			}
+
+			Ray reflect_ray(info.over_point, info.reflect);
+			Color c = color_at_slow(reflect_ray, remaining - 1);
+			return c * reflective;
+		}
+
 
 	private:
 		std::vector<std::unique_ptr<Shape>> _shapes;

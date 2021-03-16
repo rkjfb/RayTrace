@@ -20,16 +20,19 @@ using namespace ray;
 TEST(Material, Ctor) {
 	Material mat;
 	EXPECT_EQ(mat.pattern->pattern_at(Point3()), Color::white());
-	EXPECT_EQ(mat.ambient, 0.1f);
-	EXPECT_EQ(mat.diffuse, 0.9f);
-	EXPECT_EQ(mat.specular, 0.9f);
-	EXPECT_EQ(mat.shininess, 200.0f);
+	EXPECT_EQ(mat.ambient, 0.1);
+	EXPECT_EQ(mat.diffuse, 0.9);
+	EXPECT_EQ(mat.specular, 0.9);
+	EXPECT_EQ(mat.shininess, 200);
 }
 
 //Scenario: Reflectivity for the default material
 //  Given m ← material()
 //  Then m.reflective = 0.0
-// TODO
+TEST(Material, CtorReflective) {
+	Material mat;
+	EXPECT_EQ(mat.reflective, 0);
+}
 
 //Scenario: Transparency and Refractive Index for the default material
 //  Given m ← material()
