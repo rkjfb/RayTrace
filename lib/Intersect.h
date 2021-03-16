@@ -27,8 +27,8 @@ namespace ray {
 		// Returns the smallest positive hit. As a raw pointer, straight into list.
 		// Returns nullptr on miss.
 		// list is expected to be sorted.
-		static const Intersection* hit(const std::vector<Intersection>& list);
-		static void sort(std::vector<Intersection>& v);
+		static const Intersection* hit(const std::pmr::vector<Intersection>& list);
+		static void sort(std::pmr::vector<Intersection>& v);
 		IntersectionInfo info(const Ray& ray) const;
 	};
 }

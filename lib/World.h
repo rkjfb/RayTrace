@@ -29,7 +29,8 @@ namespace ray {
 			return _light;
 		}
 
-		void intersect(const Ray& r, std::vector<Intersection>& intersections) const {
+		// void intersect(const Ray& r, std::vector<Intersection>& intersections) const {
+		void intersect(const Ray & r, std::pmr::vector<Intersection>& intersections) const {
 			intersections.clear();
 			for (const auto& s : _shapes) {
 				s->intersect(r, intersections);
@@ -38,12 +39,12 @@ namespace ray {
 		}
 
 		Color shade_slow(const IntersectionInfo& info) const {
-			std::vector<Intersection> intersections;
+			std::pmr::vector<Intersection> intersections; // bugbug
 			return shade(info, intersections);
 		}
 
 		// intersections for speed
-		Color shade(const IntersectionInfo& info, std::vector<Intersection>& intersections, int remaining = 5) const {
+		Color shade(const IntersectionInfo& info, std::pmr::vector<Intersection>& intersections, int remaining = 5) const {
 			const Material& material = info.object->material;
 			bool in_shadow = is_shadowed(info.over_point, intersections);
 			Color surface = material.lighting(_light, *info.object, info.over_point, info.eye, info.normal, in_shadow);
@@ -51,29 +52,16 @@ namespace ray {
 			return surface + reflection;
 		}
 
-		Color color_at_slow(const Ray& ray, int remaining = 5) const {
-			std::vector<Intersection> intersections;
-			return color_at(ray, intersections, remaining);
-		}
-
-		// intersections is supplied to dodge the allocation, no functional value.
-		Color color_at(const Ray& ray, std::vector<Intersection>& intersections, int remaining = 5) const {
-			intersect(ray, intersections);
-			const Intersection* hit = Intersection::hit(intersections);
-			if (hit == nullptr) {
-				return Color::black();
-			}
-			IntersectionInfo info = hit->info(ray);
-			return shade(info, intersections, remaining);
-		}
+		Color color_at_slow(const Ray& ray, int remaining = 5) const;
+		Color color_at(const Ray& ray, int remaining = 5) const;
 
 		bool is_shadowed_slow(const Point3& point) const {
-			std::vector<Intersection> intersections;
+			std::pmr::vector<Intersection> intersections; //bugbug
 			return is_shadowed(point, intersections);
 		}
 
 		// intersections is only passed to get speed up from avoiding heap allocations.
-		bool is_shadowed(const Point3& point, std::vector<Intersection>& intersections) const {
+		bool is_shadowed(const Point3& point, std::pmr::vector<Intersection>& intersections) const {
 			Vec3 v = _light.position - point;
 			double distance = v.magnitude();
 			Vec3 direction = v.norm();

@@ -55,7 +55,9 @@ TEST(World, Ctor) {
 TEST(World, Intersect) {
 	World w;
 
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	w.intersect(Ray(Point3(0, 0, -5), Vec3(0, 0, 1)), intersections);
 
 	EXPECT_EQ(intersections.size(), 4);

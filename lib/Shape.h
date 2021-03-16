@@ -1,4 +1,5 @@
 #pragma once
+#include <memory_resource>  
 #include "Matrix.h"
 #include "Material.h"
 
@@ -37,9 +38,9 @@ namespace ray {
 			return world_normal.norm();
 		}
 
-		virtual void local_intersect(const Ray& inr, std::vector<Intersection>& out) const = 0;
+		virtual void local_intersect(const Ray& inr, std::pmr::vector<Intersection>& out) const = 0;
 
-		void intersect(const Ray& inr, std::vector<Intersection>& out) const {
+		void intersect(const Ray& inr, std::pmr::vector<Intersection>& out) const {
 			Ray local_ray = transform.inverse_multiply(inr);
 
 			local_intersect(local_ray, out);
@@ -69,7 +70,7 @@ namespace ray {
 			return local_point - Point3(0, 0, 0);
 		}
 
-		void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override;
+		void local_intersect(const Ray& local_ray, std::pmr::vector<Intersection>& out) const override;
 	};
 
 	class Plane : public Shape
@@ -94,7 +95,7 @@ namespace ray {
 			return Vec3(0,1,0);
 		}
 
-		void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override;
+		void local_intersect(const Ray& local_ray, std::pmr::vector<Intersection>& out) const override;
 	};
 
 
@@ -126,7 +127,7 @@ namespace ray {
 			return Vec3(local_point.x, local_point.y, local_point.z);
 		}
 
-		void local_intersect(const Ray& local_ray, std::vector<Intersection>& out) const override
+		void local_intersect(const Ray& local_ray, std::pmr::vector<Intersection>& out) const override
 		{
 			saved_ray = local_ray;
 		}

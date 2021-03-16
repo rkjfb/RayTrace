@@ -15,7 +15,9 @@ using namespace ray;
 TEST(Sphere, Intersect) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
 	EXPECT_EQ(intersections[0].t, 4.0);
@@ -32,7 +34,9 @@ TEST(Sphere, Intersect) {
 TEST(Sphere, IntersectTangent) {
 	Ray r(Point3(0, 1, -5), Vec3(0, 0, 1));
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
 	EXPECT_EQ(intersections[0].t, 5.0);
@@ -47,7 +51,9 @@ TEST(Sphere, IntersectTangent) {
 TEST(Sphere, IntersectMiss) {
 	Ray r(Point3(0, 2, -5), Vec3(0, 0, 1));
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 0);
 }
@@ -62,7 +68,9 @@ TEST(Sphere, IntersectMiss) {
 TEST(Sphere, IntersectInside) {
 	Ray r(Point3(0, 0,0), Vec3(0, 0, 1));
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
 	EXPECT_EQ(intersections[0].t, -1);
@@ -79,7 +87,9 @@ TEST(Sphere, IntersectInside) {
 TEST(Sphere, IntersectBehind) {
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
 	EXPECT_EQ(intersections[0].t, -6);
@@ -96,7 +106,9 @@ TEST(Sphere, IntersectBehind) {
 TEST(Sphere, IntersectSetObject) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
 	EXPECT_EQ(intersections[0].object, &s);
@@ -133,7 +145,9 @@ TEST(Sphere, CtorTransformTranslate) {
 TEST(Sphere, IntersectScaled) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s(Matrix4::scale(2,2,2));
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
 	EXPECT_EQ(intersections[0].t, 3);
@@ -149,7 +163,9 @@ TEST(Sphere, IntersectScaled) {
 TEST(Sphere, IntersectTranslateMiss) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s(Matrix4::translate(5,0,0));
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 0);
 }

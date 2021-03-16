@@ -51,12 +51,11 @@ public:
 		auto start = std::chrono::steady_clock::now();
 		Canvas image(hsize, vsize);
 		auto& pixels = image.pixels();
-		std::vector<Intersection> intersections;
 
 		for (int y = 0; y < vsize; y++) {
 			for (int x = 0; x < hsize; x++) {
 				Ray r = ray(x, y);
-				Color c = world.color_at(r, intersections);
+				Color c = world.color_at_slow(r);
 				pixels[x][y] = c;
 			}
 		}

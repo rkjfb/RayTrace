@@ -23,6 +23,7 @@ public:
 
 		ray::PointLight light(ray::Point3(-10, 10, -10), ray::Color(1, 1, 1));
 
+		/*
 		std::vector<ray::Intersection> intersections;
 		for (int x = 0; x < width; x++) {
 			float flx = 2.0f * x / width - 1.0f;
@@ -40,6 +41,7 @@ public:
 				}
 			}
 		}
+		*/
 
 		std::ofstream ostrm("chap6.ppm", std::ios::binary);
 		canvas.write_ppm(ostrm);

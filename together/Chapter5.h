@@ -17,7 +17,7 @@ public:
 		int height = 550;
 		ray::Canvas canvas(width, height);
 		auto& pixels = canvas.pixels();
-
+		/*
 		ray::Sphere sphere;
 		std::vector<ray::Intersection> intersections;
 		for (int x = 0; x < width; x++) {
@@ -32,6 +32,7 @@ public:
 				}
 			}
 		}
+		*/
 
 		std::ofstream ostrm("chap5.ppm", std::ios::binary);
 		canvas.write_ppm(ostrm);

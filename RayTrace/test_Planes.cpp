@@ -29,7 +29,9 @@ TEST(Plane, ConstantNormal) {
 TEST(Plane, IntersectParallel) {
 	Plane plane;
 	Ray r(Point3(0, 10, 0), Vec3(0, 0, 1));
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	plane.local_intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 0);
 }
@@ -42,7 +44,9 @@ TEST(Plane, IntersectParallel) {
 TEST(Plane, IntersectCoplanar) {
 	Plane plane;
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	plane.local_intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 0);
 }
@@ -57,7 +61,9 @@ TEST(Plane, IntersectCoplanar) {
 TEST(Plane, IntersectAbove) {
 	Plane plane;
 	Ray r(Point3(0, 1, 0), Vec3(0, -1, 0));
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	plane.local_intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 1);
 	EXPECT_EQ(intersections[0].t, 1);
@@ -74,7 +80,9 @@ TEST(Plane, IntersectAbove) {
 TEST(Plane, IntersectBelow) {
 	Plane plane;
 	Ray r(Point3(0, -1, 0), Vec3(0, 1, 0));
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	plane.local_intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 1);
 	EXPECT_EQ(intersections[0].t, 1);

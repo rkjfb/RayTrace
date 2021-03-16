@@ -3,7 +3,7 @@
 #include "Shape.h"
 using namespace ray;
 
-const Intersection* Intersection::hit(const std::vector<Intersection>& list) {
+const Intersection* Intersection::hit(const std::pmr::vector<Intersection>& list) {
 	for (const auto& i : list) {
 		if (i.t >= 0) {
 			return &i;
@@ -13,7 +13,7 @@ const Intersection* Intersection::hit(const std::vector<Intersection>& list) {
 	return nullptr;
 }
 
-void Intersection::sort(std::vector<Intersection>& v) {
+void Intersection::sort(std::pmr::vector<Intersection>& v) {
 	struct {
 		bool operator()(const Intersection& a, const Intersection& b) const {
 			return a.t < b.t;

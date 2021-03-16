@@ -136,7 +136,12 @@ TEST(Intersect, OffsetPoint) {
 //  Then i = i1
 TEST(Intersect, HitPositive) {
 	Sphere s;
-	std::vector<Intersection> intersections;
+
+	// bugbug: really need an intersection list type ..
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
+
 	intersections.push_back(Intersection(1, &s));
 	intersections.push_back(Intersection(2, &s));
 	const Intersection* hit = Intersection::hit(intersections);
@@ -153,7 +158,10 @@ TEST(Intersect, HitPositive) {
 //  Then i = i2
 TEST(Intersect, HitSkipNegative) {
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
+
 	intersections.push_back(Intersection(-1, &s));
 	intersections.push_back(Intersection(1, &s));
 	const Intersection* hit = Intersection::hit(intersections);
@@ -169,7 +177,9 @@ TEST(Intersect, HitSkipNegative) {
 //  Then i is nothing
 TEST(Intersect, HitMiss) {
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	intersections.push_back(Intersection(-2, &s));
 	intersections.push_back(Intersection(-1, &s));
 	const Intersection* hit = Intersection::hit(intersections);
@@ -187,7 +197,9 @@ TEST(Intersect, HitMiss) {
 //Then i = i4
 TEST(Intersect, HitLowest) {
 	Sphere s;
-	std::vector<Intersection> intersections;
+	char buffer[64] = {};
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<Intersection> intersections{ &pool };
 	intersections.push_back(Intersection(5, &s));
 	intersections.push_back(Intersection(7, &s));
 	intersections.push_back(Intersection(-3, &s));
