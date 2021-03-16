@@ -78,7 +78,7 @@ TEST(World, Shade) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Intersection i(4, w.shapes()[0].get());
 	IntersectionInfo info = i.info(r);
-	Color c = w.shade_slow(info);
+	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f)); 
 }
@@ -98,7 +98,7 @@ TEST(World, ShadeInside) {
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
 	Intersection i(0.5, w.shapes()[1].get());
 	IntersectionInfo info = i.info(r);
-	Color c = w.shade_slow(info);
+	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.90498f, 0.90498f, 0.90498f));
 }
@@ -111,7 +111,7 @@ TEST(World, ShadeInside) {
 TEST(World, ColorAtMiss) {
 	World w;
 	Ray r(Point3(0, 0, -5), Vec3(0, 1, 0));
-	Color c = w.color_at_slow(r);
+	Color c = w.color_at(r);
 
 	EXPECT_EQ(c, Color::black());
 }
@@ -124,7 +124,7 @@ TEST(World, ColorAtMiss) {
 TEST(World, ColorAt) {
 	World w;
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
-	Color c = w.color_at_slow(r);
+	Color c = w.color_at(r);
 
 	EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f));
 }
@@ -148,7 +148,7 @@ TEST(World, ColorAtBehind) {
 	World w(PointLight(Point3(-10, 10, -10), Color::white()), std::move(vec));
 
 	Ray r(Point3(0, 0, 0.75f), Vec3(0, 0, -1));
-	Color c = w.color_at_slow(r);
+	Color c = w.color_at(r);
 
 	EXPECT_EQ(c, weak_s2->material.pattern->pattern_at(Point3()));
 }
@@ -161,7 +161,7 @@ TEST(World, ShadowColinear) {
 	World w;
 	Point3 p(0, 10, 0);
 
-	EXPECT_EQ(w.is_shadowed_slow(p), false);
+	EXPECT_EQ(w.is_shadowed(p), false);
 }
 
 //Scenario: The shadow when an object is between the point and the light
@@ -172,7 +172,7 @@ TEST(World, ShadowBlocked) {
 	World w;
 	Point3 p(10, -10, 10);
 
-	EXPECT_EQ(w.is_shadowed_slow(p), true);
+	EXPECT_EQ(w.is_shadowed(p), true);
 }
 
 //Scenario: There is no shadow when an object is behind the light
@@ -183,7 +183,7 @@ TEST(World, ShadowBehindLight) {
 	World w;
 	Point3 p(-20, 20, -20);
 
-	EXPECT_EQ(w.is_shadowed_slow(p), false);
+	EXPECT_EQ(w.is_shadowed(p), false);
 }
 
 //Scenario: There is no shadow when an object is behind the point
@@ -194,7 +194,7 @@ TEST(World, ShadowBehindPoint) {
 	World w;
 	Point3 p(-2, 2, -2);
 
-	EXPECT_EQ(w.is_shadowed_slow(p), false); 
+	EXPECT_EQ(w.is_shadowed(p), false); 
 }
 
 //Scenario: shade_hit() is given an intersection in shadow
@@ -222,7 +222,7 @@ TEST(World, ShadowWorld) {
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
 	Intersection i(4, weak_s2);
 	IntersectionInfo info = i.info(r);
-	Color c = w.shade_slow(info);
+	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.1f, 0.1f, 0.1f));
 }
@@ -249,7 +249,7 @@ TEST(World, ReflectNonReflective) {
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
 	Intersection i(1, weak_s2);
 	IntersectionInfo info = i.info(r);
-	Color c = w.reflected_color_slow(info,1);
+	Color c = w.reflected_color(info,1);
 
 	EXPECT_EQ(c, Color::black());
 }
@@ -289,7 +289,7 @@ TEST(World, ReflectReflective) {
 	Ray r(Point3(0, 0, -3), Vec3(0, -ss/2, ss/2));
 	Intersection i(ss, plane_weak);
 	IntersectionInfo info = i.info(r);
-	Color c = w.reflected_color_slow(info,1);
+	Color c = w.reflected_color(info,1);
 
 	EXPECT_EQ(c, Color(0.190332, 0.237915, 0.142749));
 }
@@ -321,7 +321,7 @@ TEST(World, ReflectShadeHit) {
 	Ray r(Point3(0, 0, -3), Vec3(0, -ss / 2, ss / 2));
 	Intersection i(ss, plane_weak);
 	IntersectionInfo info = i.info(r);
-	Color c = w.shade_slow(info);
+	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.876757, 0.92434, 0.829174));
 }
@@ -360,7 +360,7 @@ TEST(World, ReflectParallel) {
 	World w(light, std::move(vec));
 
 	Ray r(Point3(0, 0, 0), Vec3(0, 1, 0));
-	Color c = w.color_at_slow(r);
+	Color c = w.color_at(r);
 
 	EXPECT_EQ(c, Color(11.4, 11.4, 11.4));
 }
@@ -392,7 +392,7 @@ TEST(World, ReflectMaxRecurse) {
 	Ray r(Point3(0, 0, -3), Vec3(0, -ss / 2, ss / 2));
 	Intersection i(ss, plane_weak);
 	IntersectionInfo info = i.info(r);
-	Color c = w.reflected_color_slow(info, 0);
+	Color c = w.reflected_color(info, 0);
 
 	EXPECT_EQ(c, Color::black());
 }

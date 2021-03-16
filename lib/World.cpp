@@ -30,10 +30,6 @@ std::vector<std::unique_ptr<Shape>> World::make_default_shapes()
 	return vec;
 }
 
-Color World::color_at_slow(const Ray& ray, int remaining) const {
-	return color_at(ray, remaining);
-}
-
 // intersections is supplied to dodge the allocation, no functional value.
 Color World::color_at(const Ray& ray, int remaining) const {
 	IntersectionList list;

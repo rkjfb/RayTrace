@@ -36,26 +36,16 @@ namespace ray {
 			list.sort();
 		}
 
-		Color shade_slow(const IntersectionInfo& info) const {
-			return shade(info);
-		}
-
 		// intersections for speed
 		Color shade(const IntersectionInfo& info, int remaining = 5) const {
 			const Material& material = info.object->material;
 			bool in_shadow = is_shadowed(info.over_point);
 			Color surface = material.lighting(_light, *info.object, info.over_point, info.eye, info.normal, in_shadow);
-			Color reflection = reflected_color_slow(info, remaining);
+			Color reflection = reflected_color(info, remaining);
 			return surface + reflection;
 		}
 
-		Color color_at_slow(const Ray& ray, int remaining = 5) const;
 		Color color_at(const Ray& ray, int remaining = 5) const;
-
-		// todo: delete *_slow
-		bool is_shadowed_slow(const Point3& point) const {
-			return is_shadowed(point);
-		}
 
 		// intersections is only passed to get speed up from avoiding heap allocations.
 		bool is_shadowed(const Point3& point) const {
@@ -75,7 +65,7 @@ namespace ray {
 			return false;
 		}
 
-		Color reflected_color_slow(const IntersectionInfo& info, int remaining) const {
+		Color reflected_color(const IntersectionInfo& info, int remaining) const {
 
 			if (remaining <= 0) {
 				return Color::black();
@@ -88,7 +78,7 @@ namespace ray {
 			}
 
 			Ray reflect_ray(info.over_point, info.reflect);
-			Color c = color_at_slow(reflect_ray, remaining - 1);
+			Color c = color_at(reflect_ray, remaining - 1);
 			return c * reflective;
 		}
 
