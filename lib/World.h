@@ -29,24 +29,21 @@ namespace ray {
 			return _light;
 		}
 
-		// void intersect(const Ray& r, std::vector<Intersection>& intersections) const {
-		void intersect(const Ray & r, std::pmr::vector<Intersection>& intersections) const {
-			intersections.clear();
+		void intersect(const Ray & r, IntersectionList& list) const {
 			for (const auto& s : _shapes) {
-				s->intersect(r, intersections);
+				s->intersect(r, list);
 			}
-			Intersection::sort(intersections);
+			list.sort();
 		}
 
 		Color shade_slow(const IntersectionInfo& info) const {
-			std::pmr::vector<Intersection> intersections; // bugbug
-			return shade(info, intersections);
+			return shade(info);
 		}
 
 		// intersections for speed
-		Color shade(const IntersectionInfo& info, std::pmr::vector<Intersection>& intersections, int remaining = 5) const {
+		Color shade(const IntersectionInfo& info, int remaining = 5) const {
 			const Material& material = info.object->material;
-			bool in_shadow = is_shadowed(info.over_point, intersections);
+			bool in_shadow = is_shadowed(info.over_point);
 			Color surface = material.lighting(_light, *info.object, info.over_point, info.eye, info.normal, in_shadow);
 			Color reflection = reflected_color_slow(info, remaining);
 			return surface + reflection;
@@ -55,21 +52,22 @@ namespace ray {
 		Color color_at_slow(const Ray& ray, int remaining = 5) const;
 		Color color_at(const Ray& ray, int remaining = 5) const;
 
+		// todo: delete *_slow
 		bool is_shadowed_slow(const Point3& point) const {
-			std::pmr::vector<Intersection> intersections; //bugbug
-			return is_shadowed(point, intersections);
+			return is_shadowed(point);
 		}
 
 		// intersections is only passed to get speed up from avoiding heap allocations.
-		bool is_shadowed(const Point3& point, std::pmr::vector<Intersection>& intersections) const {
+		bool is_shadowed(const Point3& point) const {
 			Vec3 v = _light.position - point;
 			double distance = v.magnitude();
 			Vec3 direction = v.norm();
 			// aim from point to light
-			Ray r(point, direction);
-			// see what you hit
-			intersect(r, intersections);
-			const Intersection* hit = Intersection::hit(intersections);
+			Ray ray(point, direction);
+
+			IntersectionList list;
+			intersect(ray, list);
+			const Intersection* hit = list.hit();
 			// if you hit something and its closer than the light, you're in the shadows.
 			if (hit != nullptr && hit->t < distance) {
 				return true;

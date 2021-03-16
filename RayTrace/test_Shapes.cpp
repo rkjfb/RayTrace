@@ -55,9 +55,7 @@ TEST(Shape, IntersectScaled) {
 	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
 	TestShape shape;
 	shape.transform = Matrix4::scale(2, 2, 2);
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	shape.intersect(ray, intersections);
 	EXPECT_EQ(shape.saved_ray, Ray(Point3(0,0,-2.5), Vec3(0,0,0.5)));
 }
@@ -73,9 +71,7 @@ TEST(Shape, IntersectTranslated) {
 	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
 	TestShape shape;
 	shape.transform = Matrix4::translate(5,0,0);
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	shape.intersect(ray, intersections);
 	EXPECT_EQ(shape.saved_ray, Ray(Point3(-5,0,-5), Vec3(0, 0, 1)));
 }

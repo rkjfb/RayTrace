@@ -54,17 +54,15 @@ TEST(World, Ctor) {
 //    And xs[3].t = 6
 TEST(World, Intersect) {
 	World w;
+	IntersectionList intersections;
 
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
 	w.intersect(Ray(Point3(0, 0, -5), Vec3(0, 0, 1)), intersections);
 
 	EXPECT_EQ(intersections.size(), 4);
-	EXPECT_EQ(intersections[0].t, 4);
-	EXPECT_EQ(intersections[1].t, 4.5);
-	EXPECT_EQ(intersections[2].t, 5.5);
-	EXPECT_EQ(intersections[3].t, 6);
+	EXPECT_EQ(intersections.at(0).t, 4);
+	EXPECT_EQ(intersections.at(1).t, 4.5);
+	EXPECT_EQ(intersections.at(2).t, 5.5);
+	EXPECT_EQ(intersections.at(3).t, 6);
 }
 
 //Scenario: Shading an intersection

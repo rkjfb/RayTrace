@@ -15,13 +15,11 @@ using namespace ray;
 TEST(Sphere, Intersect) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
-	EXPECT_EQ(intersections[0].t, 4.0);
-	EXPECT_EQ(intersections[1].t, 6.0);
+	EXPECT_EQ(intersections.at(0).t, 4.0);
+	EXPECT_EQ(intersections.at(1).t, 6.0);
 }
 
 //Scenario: A ray intersects a sphere at a tangent
@@ -34,13 +32,11 @@ TEST(Sphere, Intersect) {
 TEST(Sphere, IntersectTangent) {
 	Ray r(Point3(0, 1, -5), Vec3(0, 0, 1));
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
-	EXPECT_EQ(intersections[0].t, 5.0);
-	EXPECT_EQ(intersections[1].t, 5.0);
+	EXPECT_EQ(intersections.at(0).t, 5.0);
+	EXPECT_EQ(intersections.at(1).t, 5.0);
 }
 
 //Scenario: A ray misses a sphere
@@ -51,9 +47,7 @@ TEST(Sphere, IntersectTangent) {
 TEST(Sphere, IntersectMiss) {
 	Ray r(Point3(0, 2, -5), Vec3(0, 0, 1));
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 0);
 }
@@ -68,13 +62,11 @@ TEST(Sphere, IntersectMiss) {
 TEST(Sphere, IntersectInside) {
 	Ray r(Point3(0, 0,0), Vec3(0, 0, 1));
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
-	EXPECT_EQ(intersections[0].t, -1);
-	EXPECT_EQ(intersections[1].t, 1);
+	EXPECT_EQ(intersections.at(0).t, -1);
+	EXPECT_EQ(intersections.at(1).t, 1);
 }
 
 //Scenario: A sphere is behind a ray
@@ -87,13 +79,11 @@ TEST(Sphere, IntersectInside) {
 TEST(Sphere, IntersectBehind) {
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
-	EXPECT_EQ(intersections[0].t, -6);
-	EXPECT_EQ(intersections[1].t, -4);
+	EXPECT_EQ(intersections.at(0).t, -6);
+	EXPECT_EQ(intersections.at(1).t, -4);
 }
 
 //Scenario: Intersect sets the object on the intersection
@@ -106,13 +96,11 @@ TEST(Sphere, IntersectBehind) {
 TEST(Sphere, IntersectSetObject) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
-	EXPECT_EQ(intersections[0].object, &s);
-	EXPECT_EQ(intersections[1].object, &s);
+	EXPECT_EQ(intersections.at(0).object, &s);
+	EXPECT_EQ(intersections.at(1).object, &s);
 }
 
 //Scenario: A sphere's default transformation
@@ -145,13 +133,11 @@ TEST(Sphere, CtorTransformTranslate) {
 TEST(Sphere, IntersectScaled) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s(Matrix4::scale(2,2,2));
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 2);
-	EXPECT_EQ(intersections[0].t, 3);
-	EXPECT_EQ(intersections[1].t, 7);
+	EXPECT_EQ(intersections.at(0).t, 3);
+	EXPECT_EQ(intersections.at(1).t, 7);
 }
 
 //Scenario: Intersecting a translated sphere with a ray
@@ -163,9 +149,7 @@ TEST(Sphere, IntersectScaled) {
 TEST(Sphere, IntersectTranslateMiss) {
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s(Matrix4::translate(5,0,0));
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
+	IntersectionList intersections;
 	s.intersect(r, intersections);
 	EXPECT_EQ(intersections.size(), 0);
 }

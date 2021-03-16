@@ -3,8 +3,8 @@
 #include "Shape.h"
 using namespace ray;
 
-const Intersection* Intersection::hit(const std::pmr::vector<Intersection>& list) {
-	for (const auto& i : list) {
+const Intersection* IntersectionList::hit() {
+	for (const auto& i : intersections) {
 		if (i.t >= 0) {
 			return &i;
 		}
@@ -13,13 +13,13 @@ const Intersection* Intersection::hit(const std::pmr::vector<Intersection>& list
 	return nullptr;
 }
 
-void Intersection::sort(std::pmr::vector<Intersection>& v) {
+void IntersectionList::sort() {
 	struct {
 		bool operator()(const Intersection& a, const Intersection& b) const {
 			return a.t < b.t;
 		}
 	} customLess;
-	std::sort(v.begin(), v.end(), customLess);
+	std::sort(intersections.begin(), intersections.end(), customLess);
 }
 
 IntersectionInfo Intersection::info(const Ray& ray) const {

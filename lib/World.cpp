@@ -36,16 +36,12 @@ Color World::color_at_slow(const Ray& ray, int remaining) const {
 
 // intersections is supplied to dodge the allocation, no functional value.
 Color World::color_at(const Ray& ray, int remaining) const {
-	char buffer[1024];
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
-	size_t newsize = sizeof(buffer) / sizeof(Intersection);
-	intersections.reserve(newsize);
-	intersect(ray, intersections);
-	const Intersection* hit = Intersection::hit(intersections);
+	IntersectionList list;
+	intersect(ray, list);
+	const Intersection* hit = list.hit();
 	if (hit == nullptr) {
 		return Color::black();
 	}
 	IntersectionInfo info = hit->info(ray);
-	return shade(info, intersections, remaining);
+	return shade(info, remaining);
 }

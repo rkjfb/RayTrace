@@ -136,15 +136,10 @@ TEST(Intersect, OffsetPoint) {
 //  Then i = i1
 TEST(Intersect, HitPositive) {
 	Sphere s;
-
-	// bugbug: really need an intersection list type ..
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
-
-	intersections.push_back(Intersection(1, &s));
-	intersections.push_back(Intersection(2, &s));
-	const Intersection* hit = Intersection::hit(intersections);
+	IntersectionList intersections;
+	intersections.append(Intersection(1, &s));
+	intersections.append(Intersection(2, &s));
+	const Intersection* hit = intersections.hit();
 	EXPECT_NEAR(hit->t, 1, RAY_EPSILON);
 }
 
@@ -158,13 +153,10 @@ TEST(Intersect, HitPositive) {
 //  Then i = i2
 TEST(Intersect, HitSkipNegative) {
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
-
-	intersections.push_back(Intersection(-1, &s));
-	intersections.push_back(Intersection(1, &s));
-	const Intersection* hit = Intersection::hit(intersections);
+	IntersectionList intersections;
+	intersections.append(Intersection(-1, &s));
+	intersections.append(Intersection(1, &s));
+	const Intersection* hit = intersections.hit();
 	EXPECT_NEAR(hit->t, 1, RAY_EPSILON);
 }
 
@@ -177,12 +169,10 @@ TEST(Intersect, HitSkipNegative) {
 //  Then i is nothing
 TEST(Intersect, HitMiss) {
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
-	intersections.push_back(Intersection(-2, &s));
-	intersections.push_back(Intersection(-1, &s));
-	const Intersection* hit = Intersection::hit(intersections);
+	IntersectionList intersections;
+	intersections.append(Intersection(-2, &s));
+	intersections.append(Intersection(-1, &s));
+	const Intersection* hit = intersections.hit();
 	EXPECT_EQ(hit, nullptr);
 }
 
@@ -197,15 +187,13 @@ TEST(Intersect, HitMiss) {
 //Then i = i4
 TEST(Intersect, HitLowest) {
 	Sphere s;
-	char buffer[64] = {};
-	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
-	std::pmr::vector<Intersection> intersections{ &pool };
-	intersections.push_back(Intersection(5, &s));
-	intersections.push_back(Intersection(7, &s));
-	intersections.push_back(Intersection(-3, &s));
-	intersections.push_back(Intersection(2, &s));
-	Intersection::sort(intersections);
-	const Intersection* hit = Intersection::hit(intersections);
+	IntersectionList intersections;
+	intersections.append(Intersection(5, &s));
+	intersections.append(Intersection(7, &s));
+	intersections.append(Intersection(-3, &s));
+	intersections.append(Intersection(2, &s));
+	intersections.sort();
+	const Intersection* hit = intersections.hit();
 	EXPECT_NEAR(hit->t, 2, RAY_EPSILON);
 }
 
