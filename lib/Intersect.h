@@ -48,13 +48,17 @@ namespace ray {
 			return intersections.size();
 		}
 
+		void clear() {
+			return intersections.clear();
+		}
+
 		const Intersection& at(size_t index) {
 			return intersections[index];
 		}
 
 	private:
 		// avoid heap allocations for vector.
-		char buffer[1024];
+		char buffer[128];
 		std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
 		std::pmr::vector<Intersection> intersections{ &pool };
 	};
