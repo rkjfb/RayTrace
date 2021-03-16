@@ -21,8 +21,9 @@ public:
 	void run() {
 		auto floor = std::make_unique<Sphere>();
 		floor->transform = Matrix4::scale(10, 0.01f, 10);
-		floor->material.pattern = std::make_unique<Solid>(1, 0.9f, 0.9f);
-		floor->material.specular = 0;
+		floor->material.pattern = std::make_unique<Solid>(Color::black());
+		//floor->material.specular = 0;
+		floor->material.reflective = 1;
 
 		auto left_wall = std::make_unique<Sphere>();
 		left_wall->transform =
@@ -46,6 +47,7 @@ public:
 		middle->material.pattern->transform = Matrix4::scale(0.1, 0.1, 0.1);
 		middle->material.diffuse = 0.7f;
 		middle->material.specular = 0.3f;
+		middle->material.reflective = 1;
 
 		auto right = std::make_unique<Sphere>();
 		right->transform = Matrix4::translate(1.5f, 0.5f, -0.5f);// *Matrix4::scale(0.5f, 0.5f, 0.5f);
@@ -53,6 +55,8 @@ public:
 		right->material.pattern->transform = Matrix4::scale(0.1, 0.1, 0.1);
 		right->material.diffuse = 0.7f;
 		right->material.specular = 0.3f;
+		right->material.reflective = 1;
+
 
 		auto back_right = std::make_unique<Sphere>();
 		back_right->transform = Matrix4::translate(1.5f, 1.5f, 1.5f);// *Matrix4::scale(0.5f, 0.5f, 0.5f);
@@ -67,6 +71,7 @@ public:
 		left->material.pattern->transform = Matrix4::scale(0.1, 0.1, 0.1);
 		left->material.diffuse = 0.7f;
 		left->material.specular = 0.3f;
+		left->material.reflective = 1;
 
 		std::vector<std::unique_ptr<Shape>> vec;
 		vec.push_back(std::move(floor));
@@ -74,7 +79,7 @@ public:
 		vec.push_back(std::move(right_wall));
 		vec.push_back(std::move(middle));
 		vec.push_back(std::move(right));
-		vec.push_back(std::move(back_right));
+		//vec.push_back(std::move(back_right));
 		vec.push_back(std::move(left));
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
@@ -82,14 +87,14 @@ public:
 		World world(light, std::move(vec));
 
 		Camera camera(4000, 2000, pi / 3);
-		Point3 from(0, 1.5, -5);
+		Point3 from(0, 1.5, -10);
 		Point3 to(0, 1, 0);
 		Vec3 up(0, 1, 0);
 		camera.transform = Matrix4::view(from, to, up);
 
 		Canvas canvas = camera.render(world);
 
-		std::ofstream ostrm("chap7.ppm", std::ios::binary);
+		std::ofstream ostrm("chap7b.ppm", std::ios::binary);
 		canvas.write_ppm(ostrm);
 	}
 };

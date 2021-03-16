@@ -10,6 +10,6 @@
 int main()
 {
     std::cout << "Hello World!\n";
-    Chapter10 chap;
+    Chapter7 chap;
     chap.run();
 }
