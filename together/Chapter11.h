@@ -24,23 +24,22 @@ public:
 		{
 			auto wall = std::make_unique<Plane>();
 			wall->material.pattern = std::make_unique<Checker>(Color::black(), Color::white());
-			//wall->material.pattern = std::make_unique<Solid>(Color::white());
 			wall->material.diffuse = 1;
-			//wall->material.pattern->transform = Matrix4::scale(0.25, 0.25, 0.25);
-			wall->transform = Matrix4::translate(0, 0, 10) * Matrix4::rotateX(pi / 2); // *Matrix4::scale(0.2, 0.2, 0.2);
-
+			wall->transform = Matrix4::translate(0, 0, 10) * Matrix4::rotateX(pi / 2);
 			vec.push_back(std::move(wall));
 		}
 
 		{
 			auto glass = Sphere::glass();
-			glass->material.pattern = std::make_unique<Solid>(Color::black());
-			glass->material.ambient = 0;
-			glass->material.diffuse = 0;
-			glass->material.specular = 0;
 			vec.push_back(std::move(glass));
 		}
 
+		{
+			auto air = Sphere::air();
+			air->material.pattern = std::make_unique<Solid>(Color::black());
+			air->transform = Matrix4::scale(0.5, 0.5, 0.5);
+			vec.push_back(std::move(air));
+		}
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
 

@@ -262,5 +262,5 @@ TEST(Sphere, MaterialAssign) {
 TEST(Sphere, MaterialGlass) {
 	auto s = Sphere::glass();
 	EXPECT_EQ(s->material.transparency, 1);
-	EXPECT_EQ(s->material.refractive_index, 1.5);
+	EXPECT_EQ(s->material.refractive_index, 1.52);
 }
