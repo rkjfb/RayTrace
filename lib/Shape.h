@@ -46,7 +46,6 @@ namespace ray {
 
 			local_intersect(local_ray, out);
 		}
-
 	};
 
 	class Sphere : public Shape
@@ -72,6 +71,14 @@ namespace ray {
 		}
 
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+
+		// Returns a glass material sphere.
+		static std::unique_ptr<Sphere> glass() {
+			auto ret = std::make_unique<Sphere>();
+			ret->material.transparency = 1;
+			ret->material.refractive_index = 1.5;
+			return ret;
+		}
 	};
 
 	class Plane : public Shape

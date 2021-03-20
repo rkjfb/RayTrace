@@ -259,4 +259,8 @@ TEST(Sphere, MaterialAssign) {
 //  Then s.transform = identity_matrix
 //    And s.material.transparency = 1.0
 //    And s.material.refractive_index = 1.5
-// TODO
+TEST(Sphere, MaterialAssign) {
+	auto s = Sphere::glass();
+	EXPECT_EQ(s->material.transparency, 1);
+	EXPECT_EQ(s->material.refractive_index, 1.5);
+}
