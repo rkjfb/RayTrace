@@ -61,9 +61,15 @@ Color World::shade(const IntersectionInfo& info, int remaining) const {
 	const Material& material = info.object->material;
 	bool in_shadow = is_shadowed(info.over_point);
 	Color surface = material.lighting(_light, *info.object, info.over_point, info.eye, info.normal, in_shadow);
-	Color reflection = reflected_color(info, remaining);
-	Color refraction = refracted_color(info, remaining);
-	return surface + reflection + refraction;
+	Color reflected = reflected_color(info, remaining);
+	Color refracted = refracted_color(info, remaining);
+
+	if (material.reflective > 0 && material.transparency > 0) {
+		double reflectance = info.schlick();
+		return surface + reflected * reflectance + refracted * (1 - reflectance);
+	}
+
+	return surface + reflected + refracted;
 }
 
 Color World::reflected_color(const IntersectionInfo& info, int remaining) const {

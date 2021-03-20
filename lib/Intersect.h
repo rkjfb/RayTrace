@@ -19,6 +19,22 @@ namespace ray {
 		Vec3 normal;
 		Vec3 reflect;
 		bool inside = false;
+
+		double schlick() const {
+			double cosen = eye.dot(normal);
+			if (n1 > n2) {
+				double n = n1 / n2;
+				double sin2_t = n * n * (1 - cosen * cosen);
+				if (sin2_t > 1) {
+					return 1;
+				}
+				cosen = sqrt(1 - sin2_t);
+			}
+
+			double r0 = (n1 - n2) / (n1 + n2);
+			r0 = r0 * r0;
+			return r0 + (1 - r0) * pow((1 - cosen), 5);
+		}
 	};
 
 	class Intersection

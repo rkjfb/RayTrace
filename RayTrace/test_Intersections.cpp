@@ -283,7 +283,19 @@ TEST(Intersect, RefractiveIndex) {
 //  When comps ← prepare_computations(xs[1], r, xs)
 //    And reflectance ← schlick(comps)
 //  Then reflectance = 1.0
-//
+TEST(Intersect, SchlickInternalReflect) {
+	auto shape = Sphere::glass();
+	double ss = sqrt(2);
+	Ray r(Point3(0, 0, ss / 2), Vec3(0, 1, 0));
+
+	IntersectionList intersections;
+	intersections.append(Intersection(-ss/2, shape.get()));
+	intersections.append(Intersection(ss/2, shape.get()));
+	IntersectionInfo info = intersections.info(r, &intersections.at(1));
+	double reflectance = info.schlick();
+	EXPECT_NEAR(reflectance, 1, RAY_EPSILON);
+}
+
 //Scenario: The Schlick approximation with a perpendicular viewing angle
 //  Given shape ← glass_sphere()
 //    And r ← ray(point(0, 0, 0), vector(0, 1, 0))
@@ -291,7 +303,18 @@ TEST(Intersect, RefractiveIndex) {
 //  When comps ← prepare_computations(xs[1], r, xs)
 //    And reflectance ← schlick(comps)
 //  Then reflectance = 0.04
-//
+TEST(Intersect, Schlick90) {
+	auto shape = Sphere::glass();
+	Ray r(Point3(0, 0, 0), Vec3(0, 1, 0));
+
+	IntersectionList intersections;
+	intersections.append(Intersection(-1, shape.get()));
+	intersections.append(Intersection(1, shape.get()));
+	IntersectionInfo info = intersections.info(r, &intersections.at(1));
+	double reflectance = info.schlick();
+	EXPECT_NEAR(reflectance, 0.042579994960, RAY_EPSILON);
+}
+
 //Scenario: The Schlick approximation with small angle and n2 > n1
 //  Given shape ← glass_sphere()
 //    And r ← ray(point(0, 0.99, -2), vector(0, 0, 1))
@@ -299,7 +322,17 @@ TEST(Intersect, RefractiveIndex) {
 //  When comps ← prepare_computations(xs[0], r, xs)
 //    And reflectance ← schlick(comps)
 //  Then reflectance = 0.48873
-//
+TEST(Intersect, SchlickSmall) {
+	auto shape = Sphere::glass();
+	Ray r(Point3(0, 0.99, -2), Vec3(0, 0, 1));
+
+	IntersectionList intersections;
+	intersections.append(Intersection(1.8589, shape.get()));
+	IntersectionInfo info = intersections.info(r, &intersections.at(0));
+	double reflectance = info.schlick();
+	EXPECT_NEAR(reflectance, 0.4901048433862, RAY_EPSILON);
+}
+
 //Scenario: An intersection can encapsulate `u` and `v`
 //  Given s ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
 //  When i ← intersection_with_uv(3.5, s, 0.2, 0.4)

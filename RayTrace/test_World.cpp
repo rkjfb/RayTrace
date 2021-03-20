@@ -597,3 +597,40 @@ TEST(World, RefractShade) {
 //  When comps ← prepare_computations(xs[0], r, xs)
 //    And color ← shade_hit(w, comps, 5)
 //  Then color = color(0.93391, 0.69643, 0.69243)
+TEST(World, RefractShadeTransparent) {
+
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+
+	Plane* floor_weak;
+	{
+		auto floor = std::make_unique<Plane>();
+		floor_weak = floor.get();
+		floor->transform = Matrix4::translate(0, -1, 0);
+		floor->material.reflective = 0.5;
+		floor->material.transparency = 0.5;
+		floor->material.refractive_index = 1.5;
+		vec.push_back(std::move(floor));
+	}
+
+	{
+		auto ball = std::make_unique<Sphere>();
+		ball->transform = Matrix4::translate(0, -3.5, -0.5);
+		ball->material.pattern = std::make_unique<Solid>(Color::red());
+		ball->material.ambient = 0.5;
+		vec.push_back(std::move(ball));
+	}
+
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	double ss = sqrt(2) / 2;
+	Ray r(Point3(0, 0, -3), Vec3(0, -ss, ss));
+
+	IntersectionList xs;
+	xs.append(Intersection(sqrt(2), floor_weak));
+
+	IntersectionInfo info = xs.info(r, &xs.at(0));
+	Color c = w.shade(info, 5);
+
+	EXPECT_EQ(c, Color(0.93391, 0.69643, 0.69243));
+}
