@@ -13,6 +13,8 @@ namespace ray {
 		double specular = 0.9;
 		double shininess = 200;
 		double reflective = 0;
+		double transparency = 0;
+		double refractive_index = 1;
 
 		Material() : pattern(std::make_unique<Solid>(Color::white())) {}
 

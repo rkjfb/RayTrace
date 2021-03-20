@@ -38,7 +38,11 @@ TEST(Material, CtorReflective) {
 //  Given m ← material()
 //  Then m.transparency = 0.0
 //    And m.refractive_index = 1.0
-// TODO
+TEST(Material, CtorTransparent) {
+	Material mat;
+	EXPECT_EQ(mat.transparency, 0);
+	EXPECT_EQ(mat.refractive_index, 1);
+}
 
 //Scenario: Lighting with the eye between the light and the surface
 //  Given eyev ← vector(0, 0, -1)
