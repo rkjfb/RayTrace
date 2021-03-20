@@ -29,6 +29,13 @@ std::vector<std::unique_ptr<Shape>> World::make_default_shapes()
 	return vec;
 }
 
+void World::intersect(const Ray& r, IntersectionList& list) const {
+	for (const auto& s : _shapes) {
+		s->intersect(r, list);
+	}
+	list.sort();
+}
+
 Color World::color_at(const Ray& ray, int remaining) const {
 	IntersectionList list;
 	intersect(ray, list);
@@ -50,6 +57,7 @@ bool World::is_shadowed(const Point3& point) const {
 	IntersectionList list;
 	intersect(ray, list);
 	const Intersection* hit = list.hit();
+
 	// if you hit something and its closer than the light, you're in the shadows.
 	if (hit != nullptr && hit->t < distance) {
 		return true;

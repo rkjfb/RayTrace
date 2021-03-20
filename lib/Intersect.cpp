@@ -44,7 +44,9 @@ IntersectionInfo Intersection::infox(const Ray& ray) const {
 IntersectionInfo IntersectionList::info(const Ray& ray, const Intersection* hit) const {
 	IntersectionInfo info = hit->infox(ray);
 
-	std::vector<const Shape *> containers;
+	char buffer[64];
+	std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
+	std::pmr::vector<const Shape*> containers{ &pool };
 
 	for (const auto& i : intersections) {
 		if (&i == hit) {

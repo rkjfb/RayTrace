@@ -30,12 +30,7 @@ namespace ray {
 		}
 
 		// populates, and sorts, list with all intersection with r.
-		void intersect(const Ray & r, IntersectionList& list) const {
-			for (const auto& s : _shapes) {
-				s->intersect(r, list);
-			}
-			list.sort();
-		}
+		void intersect(const Ray& r, IntersectionList& list) const;
 
 		// todo: replace recursion with iteration.
 		Color color_at(const Ray& ray, int remaining = 5) const;
