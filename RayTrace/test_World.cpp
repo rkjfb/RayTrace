@@ -77,7 +77,7 @@ TEST(World, Shade) {
 	World w;
 	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Intersection i(4, w.shapes()[0].get());
-	IntersectionInfo info = i.info(r);
+	IntersectionInfo info = i.infox(r);
 	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.38066f, 0.47583f, 0.2855f)); 
@@ -97,7 +97,7 @@ TEST(World, ShadeInside) {
 	World w(light);
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
 	Intersection i(0.5, w.shapes()[1].get());
-	IntersectionInfo info = i.info(r);
+	IntersectionInfo info = i.infox(r);
 	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.90498f, 0.90498f, 0.90498f));
@@ -221,7 +221,7 @@ TEST(World, ShadowWorld) {
 
 	Ray r(Point3(0, 0, 5), Vec3(0, 0, 1));
 	Intersection i(4, weak_s2);
-	IntersectionInfo info = i.info(r);
+	IntersectionInfo info = i.infox(r);
 	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.1f, 0.1f, 0.1f));
@@ -248,7 +248,7 @@ TEST(World, ReflectNonReflective) {
 
 	Ray r(Point3(0, 0, 0), Vec3(0, 0, 1));
 	Intersection i(1, weak_s2);
-	IntersectionInfo info = i.info(r);
+	IntersectionInfo info = i.infox(r);
 	Color c = w.reflected_color(info,1);
 
 	EXPECT_EQ(c, Color::black());
@@ -288,7 +288,7 @@ TEST(World, ReflectReflective) {
 	double ss = sqrt(2);
 	Ray r(Point3(0, 0, -3), Vec3(0, -ss/2, ss/2));
 	Intersection i(ss, plane_weak);
-	IntersectionInfo info = i.info(r);
+	IntersectionInfo info = i.infox(r);
 	Color c = w.reflected_color(info,1);
 
 	EXPECT_EQ(c, Color(0.190332, 0.237915, 0.142749));
@@ -320,7 +320,7 @@ TEST(World, ReflectShadeHit) {
 	double ss = sqrt(2);
 	Ray r(Point3(0, 0, -3), Vec3(0, -ss / 2, ss / 2));
 	Intersection i(ss, plane_weak);
-	IntersectionInfo info = i.info(r);
+	IntersectionInfo info = i.infox(r);
 	Color c = w.shade(info);
 
 	EXPECT_EQ(c, Color(0.876757, 0.92434, 0.829174));
@@ -391,7 +391,7 @@ TEST(World, ReflectMaxRecurse) {
 	double ss = sqrt(2);
 	Ray r(Point3(0, 0, -3), Vec3(0, -ss / 2, ss / 2));
 	Intersection i(ss, plane_weak);
-	IntersectionInfo info = i.info(r);
+	IntersectionInfo info = i.infox(r);
 	Color c = w.reflected_color(info, 0);
 
 	EXPECT_EQ(c, Color::black());

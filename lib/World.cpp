@@ -61,7 +61,7 @@ Color World::color_at(const Ray& ray, int remaining) const {
 	if (hit == nullptr) {
 		return Color::black();
 	}
-	IntersectionInfo info = hit->info(ray);
+	IntersectionInfo info = list.info(ray, hit);
 	return shade(info, remaining);
 }
 

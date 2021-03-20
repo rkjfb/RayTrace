@@ -7,6 +7,10 @@ namespace ray {
 	class IntersectionInfo {
 	public:
 		double t = 0;
+		// refractive index from
+		double n1 = 1;
+		// refractive index to
+		double n2 = 1;
 		const Shape* object = nullptr;
 		Point3 point;
 		Point3 over_point;
@@ -23,7 +27,7 @@ namespace ray {
 		double t;
 
 		Intersection(double time, const Shape* shape) : t(time), object(shape) {}
-		IntersectionInfo info(const Ray& ray) const;
+		IntersectionInfo infox(const Ray& ray) const;
 	};
 
 	class IntersectionList
@@ -37,12 +41,14 @@ namespace ray {
 
 		// Returns the smallest positive hit. As a raw pointer, straight into list.
 		// Returns nullptr on miss.
-		// list is expected to be sorted.
 		const Intersection* hit();
 		void sort();
 		void append(Intersection&& intersection) {
 			intersections.push_back(std::move(intersection));
 		}
+
+		// Return info at hit. List is needed for refractions.
+		IntersectionInfo info(const Ray& ray, const Intersection* hit) const;
 
 		size_t size() {
 			return intersections.size();
@@ -57,7 +63,8 @@ namespace ray {
 		}
 
 	private:
-		// avoid heap allocations for vector.
+		// avoid heap allocations for small vectors. 
+		// 128 was found by trial and error in profiler for chapter 7 scene.
 		char buffer[128];
 		std::pmr::monotonic_buffer_resource pool{ std::data(buffer), std::size(buffer) };
 		std::pmr::vector<Intersection> intersections{ &pool };

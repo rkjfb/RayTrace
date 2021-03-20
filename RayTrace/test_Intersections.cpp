@@ -32,7 +32,7 @@ TEST(Intersect, Info) {
 	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
 	Sphere s;
 	Intersection i(4, &s);
-	IntersectionInfo info = i.info(ray);
+	IntersectionInfo info = i.infox(ray);
 	EXPECT_EQ(info.t, 4);
 	EXPECT_EQ(info.object, &s);
 	EXPECT_EQ(info.point, Point3(0,0,-1));
@@ -51,7 +51,7 @@ TEST(Intersect, InfoReflective) {
 	double ss = sqrt(2);
 	Ray ray(Point3(0, 1, -1), Vec3(0, -ss/2, ss/2));
 	Intersection i(ss, &shape);
-	IntersectionInfo info = i.info(ray);
+	IntersectionInfo info = i.infox(ray);
 	EXPECT_EQ(info.reflect, Vec3(0, ss/2, ss/2));
 }
 
@@ -65,7 +65,7 @@ TEST(Intersect, Outside) {
 	Ray ray(Point3(0, 0,-5), Vec3(0, 0,1));
 	Sphere s;
 	Intersection i(4, &s);
-	IntersectionInfo info = i.info(ray);
+	IntersectionInfo info = i.infox(ray);
 	EXPECT_EQ(info.inside, false);
 }
 
@@ -83,7 +83,7 @@ TEST(Intersect, Inside) {
 	Ray ray(Point3(0, 0, 0), Vec3(0, 0, 1));
 	Sphere s;
 	Intersection i(1, &s);
-	IntersectionInfo info = i.info(ray);
+	IntersectionInfo info = i.infox(ray);
 	EXPECT_EQ(info.point, Point3(0,0,1));
 	EXPECT_EQ(info.eye, Vec3(0,0,-1));
 	EXPECT_EQ(info.inside, true);
@@ -103,7 +103,7 @@ TEST(Intersect, OffsetPoint) {
 	Sphere shape;
 	shape.transform = Matrix4::translate(0, 0, 1);
 	Intersection i(5, &shape);
-	IntersectionInfo info = i.info(ray);
+	IntersectionInfo info = i.infox(ray);
 	EXPECT_GT(ray::RAY_EPSILON / 2, info.point.z);
 	EXPECT_GT(info.point.z, info.over_point.z);
 }
@@ -221,7 +221,51 @@ TEST(Intersect, HitLowest) {
 //    | 3     | 2.5 | 2.5 |
 //    | 4     | 2.5 | 1.5 |
 //    | 5     | 1.5 | 1.0 |
-//
+TEST(Intersect, RefractiveIndex) {
+	auto a = Sphere::glass();
+	a->transform = Matrix4::scale(2, 2, 2);
+	a->material.refractive_index = 1.5;
+	auto b = Sphere::glass();
+	b->transform = Matrix4::translate(0,0,-0.25);
+	b->material.refractive_index = 2;
+	auto c = Sphere::glass();
+	c->transform = Matrix4::translate(0,0,0.25);
+	c->material.refractive_index = 2.5;
+	Ray r(Point3(0, 0, -4), Vec3(0, 0, 1));
+
+	IntersectionList intersections;
+	intersections.append(Intersection(2, a.get()));
+	intersections.append(Intersection(2.75, b.get()));
+	intersections.append(Intersection(3.25, c.get()));
+	intersections.append(Intersection(4.75, b.get()));
+	intersections.append(Intersection(5.25, c.get()));
+	intersections.append(Intersection(6, a.get()));
+
+	auto i0 = intersections.info(r, &intersections.at(0));
+	EXPECT_EQ(i0.n1, 1);
+	EXPECT_EQ(i0.n2, 1.5);
+
+	auto i1 = intersections.info(r, &intersections.at(1));
+	EXPECT_EQ(i1.n1, 1.5);
+	EXPECT_EQ(i1.n2, 2);
+
+	auto i2 = intersections.info(r, &intersections.at(2));
+	EXPECT_EQ(i2.n1, 2);
+	EXPECT_EQ(i2.n2, 2.5);
+
+	auto i3 = intersections.info(r, &intersections.at(3));
+	EXPECT_EQ(i3.n1, 2.5);
+	EXPECT_EQ(i3.n2, 2.5);
+
+	auto i4 = intersections.info(r, &intersections.at(4));
+	EXPECT_EQ(i4.n1, 2.5);
+	EXPECT_EQ(i4.n2, 1.5);
+
+	auto i5 = intersections.info(r, &intersections.at(5));
+	EXPECT_EQ(i5.n1, 1.5);
+	EXPECT_EQ(i5.n2, 1);
+}
+
 //Scenario: The Schlick approximation under total internal reflection
 //  Given shape ← glass_sphere()
 //    And r ← ray(point(0, 0, √2/2), vector(0, 1, 0))

@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <set>
+
 #include "Intersect.h"
 #include "Shape.h"
 using namespace ray;
@@ -22,7 +24,7 @@ void IntersectionList::sort() {
 	std::sort(intersections.begin(), intersections.end(), customLess);
 }
 
-IntersectionInfo Intersection::info(const Ray& ray) const {
+IntersectionInfo Intersection::infox(const Ray& ray) const {
 	IntersectionInfo info;
 	info.t = t;
 	info.object = object;
@@ -35,5 +37,47 @@ IntersectionInfo Intersection::info(const Ray& ray) const {
 	}
 	info.reflect = ray.direction.reflect(info.normal);
 	info.over_point = info.point + info.normal * ray::RAY_EPSILON;
+	return info;
+}
+
+IntersectionInfo IntersectionList::info(const Ray& ray, const Intersection* hit) const {
+	IntersectionInfo info = hit->infox(ray);
+	std::set<const Shape *> containers;
+
+	for (const auto& i : intersections) {
+		if (&i == hit) {
+			if (containers.empty()) {
+				info.n1 = 1;
+			}
+			else
+			{
+				const Shape* last = *containers.rbegin();
+				info.n1 = last->material.refractive_index;
+			}
+		}
+
+		auto it = containers.find(i.object);
+		if (it != containers.end()) {
+			containers.erase(it);
+		}
+		else
+		{
+			containers.insert(i.object);
+		}
+
+		if (&i == hit) {
+			if (containers.empty()) {
+				info.n2 = 1;
+			}
+			else
+			{
+				const Shape* last = *containers.rbegin();
+				info.n2 = last->material.refractive_index;
+			}
+
+			break;
+		}
+	}
+
 	return info;
 }
