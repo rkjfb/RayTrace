@@ -37,10 +37,12 @@ namespace ray {
 			list.sort();
 		}
 
+		// todo: replace recursion with iteration.
+		Color color_at(const Ray& ray, int remaining = 5) const;
 		bool is_shadowed(const Point3& point) const;
 		Color shade(const IntersectionInfo& info, int remaining = 5) const;
-		Color color_at(const Ray& ray, int remaining = 5) const;
 		Color reflected_color(const IntersectionInfo& info, int remaining) const;
+		Color refracted_color(const IntersectionInfo& info, int remaining) const;
 
 	private:
 		std::vector<std::unique_ptr<Shape>> _shapes;

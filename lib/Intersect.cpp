@@ -37,12 +37,14 @@ IntersectionInfo Intersection::infox(const Ray& ray) const {
 	}
 	info.reflect = ray.direction.reflect(info.normal);
 	info.over_point = info.point + info.normal * ray::RAY_EPSILON;
+	info.under_point = info.point - info.normal * ray::RAY_EPSILON;
 	return info;
 }
 
 IntersectionInfo IntersectionList::info(const Ray& ray, const Intersection* hit) const {
 	IntersectionInfo info = hit->infox(ray);
-	std::set<const Shape *> containers;
+
+	std::vector<const Shape *> containers;
 
 	for (const auto& i : intersections) {
 		if (&i == hit) {
@@ -56,13 +58,13 @@ IntersectionInfo IntersectionList::info(const Ray& ray, const Intersection* hit)
 			}
 		}
 
-		auto it = containers.find(i.object);
+		auto it = std::find(containers.begin(), containers.end(), i.object);
 		if (it != containers.end()) {
 			containers.erase(it);
 		}
 		else
 		{
-			containers.insert(i.object);
+			containers.emplace_back(i.object);
 		}
 
 		if (&i == hit) {

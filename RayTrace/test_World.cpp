@@ -405,7 +405,21 @@ TEST(World, ReflectMaxRecurse) {
 //  When comps ← prepare_computations(xs[0], r, xs)
 //    And c ← refracted_color(w, comps, 5)
 //  Then c = color(0, 0, 0)
-//
+TEST(World, RefractOpaque) {
+	World w;
+
+	auto shape = w.shapes()[0].get();
+	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
+
+	IntersectionList xs;
+	xs.append(Intersection(4, shape));
+	xs.append(Intersection(6, shape));
+	IntersectionInfo info = xs.info(r, &xs.at(0));
+	Color c = w.refracted_color(info, 5);
+
+	EXPECT_EQ(c, Color::black());
+}
+
 //Scenario: The refracted color at the maximum recursive depth
 //  Given w ← default_world()
 //    And shape ← the first object in w
@@ -417,7 +431,26 @@ TEST(World, ReflectMaxRecurse) {
 //  When comps ← prepare_computations(xs[0], r, xs)
 //    And c ← refracted_color(w, comps, 0)
 //  Then c = color(0, 0, 0)
-//
+TEST(World, RefractMaxRecurse) {
+
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+	vec[0]->material.transparency = 1;
+	vec[0]->material.refractive_index = 1.5;
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	Ray r(Point3(0, 0, -5), Vec3(0, 0, 1));
+
+	auto shape = w.shapes()[0].get();
+	IntersectionList xs;
+	xs.append(Intersection(4, shape));
+	xs.append(Intersection(6, shape));
+	IntersectionInfo info = xs.info(r, &xs.at(0));
+	Color c = w.refracted_color(info, 0);
+
+	EXPECT_EQ(c, Color::black());
+}
+
 //Scenario: The refracted color under total internal reflection
 //  Given w ← default_world()
 //    And shape ← the first object in w
@@ -431,7 +464,27 @@ TEST(World, ReflectMaxRecurse) {
 //  When comps ← prepare_computations(xs[1], r, xs)
 //    And c ← refracted_color(w, comps, 5)
 //  Then c = color(0, 0, 0)
-//
+TEST(World, TotalInternalReflection) {
+
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+	vec[0]->material.transparency = 1;
+	vec[0]->material.refractive_index = 1.5;
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	double ss = sqrt(2) / 2;
+	Ray r(Point3(0, 0, ss), Vec3(0, 1, 0));
+
+	auto shape = w.shapes()[0].get();
+	IntersectionList xs;
+	xs.append(Intersection(-ss, shape));
+	xs.append(Intersection(ss, shape));
+	IntersectionInfo info = xs.info(r, &xs.at(1));
+	Color c = w.refracted_color(info, 5);
+
+	EXPECT_EQ(c, Color::black());
+}
+
 //Scenario: The refracted color with a refracted ray
 //  Given w ← default_world()
 //    And A ← the first object in w
@@ -447,7 +500,31 @@ TEST(World, ReflectMaxRecurse) {
 //  When comps ← prepare_computations(xs[2], r, xs)
 //    And c ← refracted_color(w, comps, 5)
 //  Then c = color(0, 0.99888, 0.04725)
-//
+TEST(World, RefractColor) {
+
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+	vec[0]->material.ambient = 1;
+	vec[0]->material.pattern = std::make_unique<TestPattern>();
+	vec[1]->material.transparency = 1;
+	vec[1]->material.refractive_index = 1.5;
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	Ray r(Point3(0, 0, 0.1), Vec3(0, 1, 0));
+
+	auto a = w.shapes()[0].get();
+	auto b = w.shapes()[1].get();
+	IntersectionList xs;
+	xs.append(Intersection(-0.9899, a));
+	xs.append(Intersection(-0.4899, b));
+	xs.append(Intersection(0.4899, b));
+	xs.append(Intersection(0.9899, a));
+	IntersectionInfo info = xs.info(r, &xs.at(2));
+	Color c = w.refracted_color(info, 5);
+
+	EXPECT_EQ(c, Color(0, 0.998875, 0.047219));
+}
+
 //Scenario: shade_hit() with a transparent material
 //  Given w ← default_world()
 //    And floor ← plane() with:
@@ -465,7 +542,43 @@ TEST(World, ReflectMaxRecurse) {
 //  When comps ← prepare_computations(xs[0], r, xs)
 //    And color ← shade_hit(w, comps, 5)
 //  Then color = color(0.93642, 0.68642, 0.68642)
-//
+TEST(World, RefractShade) {
+
+	std::vector<std::unique_ptr<Shape>> vec = World::make_default_shapes();
+
+	Plane* floor_weak;
+	{
+		auto floor = std::make_unique<Plane>();
+		floor_weak = floor.get();
+		floor->transform = Matrix4::translate(0, -1, 0);
+		floor->material.transparency = 0.5;
+		floor->material.refractive_index = 1.5;
+		vec.push_back(std::move(floor));
+	}
+
+	{
+		auto ball = std::make_unique<Sphere>();
+		ball->transform = Matrix4::translate(0, -3.5, -0.5);
+		ball->material.pattern = std::make_unique<Solid>(Color::red());
+		ball->material.ambient = 0.5;
+		vec.push_back(std::move(ball));
+	}
+
+	PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
+	World w(light, std::move(vec));
+
+	double ss = sqrt(2) / 2;
+	Ray r(Point3(0, 0, -3), Vec3(0, -ss, ss));
+
+	IntersectionList xs;
+	xs.append(Intersection(sqrt(2), floor_weak));
+
+	IntersectionInfo info = xs.info(r, &xs.at(0));
+	Color c = w.shade(info, 5);
+
+	EXPECT_EQ(c, Color(0.93642, 0.68642, 0.68642));
+}
+
 //Scenario: shade_hit() with a reflective, transparent material
 //  Given w ← default_world()
 //    And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))

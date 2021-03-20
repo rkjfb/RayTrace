@@ -117,7 +117,17 @@ TEST(Intersect, OffsetPoint) {
 //  When comps ← prepare_computations(i, r, xs)
 //  Then comps.under_point.z > EPSILON/2
 //    And comps.point.z < comps.under_point.z
-//
+TEST(Intersect, UnderPoint) {
+	Ray ray(Point3(0, 0, -5), Vec3(0, 0, 1));
+	auto shape = Sphere::glass();
+	shape->transform = Matrix4::translate(0, 0, 1);
+	IntersectionList xs;
+	xs.append(Intersection(5, shape.get()));
+	IntersectionInfo info = xs.info(ray, &xs.at(0));
+	EXPECT_GT(info.under_point.z, ray::RAY_EPSILON / 2);
+	EXPECT_GT(info.under_point.z, info.point.z);
+}
+
 //Scenario: Aggregating intersections
 //  Given s ← sphere()
 //    And i1 ← intersection(1, s)

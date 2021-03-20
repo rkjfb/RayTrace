@@ -14,6 +14,7 @@ namespace ray {
 		const Shape* object = nullptr;
 		Point3 point;
 		Point3 over_point;
+		Point3 under_point;
 		Vec3 eye;
 		Vec3 normal;
 		Vec3 reflect;
