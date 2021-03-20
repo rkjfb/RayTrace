@@ -76,6 +76,7 @@ namespace ray {
 		static std::unique_ptr<Sphere> glass() {
 			auto ret = std::make_unique<Sphere>();
 			ret->material.transparency = 1;
+			ret->material.reflective = 1;
 			ret->material.refractive_index = 1.52;
 			ret->material.pattern = std::make_unique<Solid>(Color::black());
 			ret->material.ambient = 0;
