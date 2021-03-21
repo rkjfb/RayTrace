@@ -133,6 +133,33 @@ namespace ray {
 
 	};
 
+	class Cube : public Shape
+	{
+	public:
+		Cube() = default;
+		Cube(const Matrix4& t) : Shape(t) {}
+
+		friend std::ostream& operator<<(std::ostream& os, const Cube& rhs) {
+			return os << "Cube(" << rhs.transform << ", " << rhs.material << ")";
+		}
+
+		bool operator==(const Cube& rhs) const {
+			return Cube::operator==(rhs);
+		}
+
+		bool operator!=(const Cube& rhs) const {
+			return !operator==(rhs);
+		}
+
+		Vec3 local_normal_at(const Point3& local_point) const override {
+			return Vec3(0, 1, 0);
+		}
+
+		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+
+	private:
+		std::pair<double, double> check_axis(double origin, double direction) const;
+	};
 
 	// Used for unit testing Shape.
 	class TestShape : public Shape

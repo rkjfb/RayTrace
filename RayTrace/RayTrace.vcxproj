@@ -45,6 +45,7 @@
     </ClCompile>
     <ClCompile Include="test_Camera.cpp" />
     <ClCompile Include="test_Canvas.cpp" />
+    <ClCompile Include="test_Cubes.cpp" />
     <ClCompile Include="test_Intersections.cpp" />
     <ClCompile Include="test_Lights.cpp" />
     <ClCompile Include="test_Materials.cpp" />
