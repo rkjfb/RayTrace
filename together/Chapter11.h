@@ -36,7 +36,8 @@ public:
 
 		{
 			// water
-			auto glass = Plane::glass();
+			auto glass = std::make_unique<Plane>();
+			glass->material = Material::glass();
 			glass->material.pattern = std::make_unique<Solid>(Color::aquamarine());
 			glass->material.ambient = 0.3;
 			glass->material.diffuse = 0.3;

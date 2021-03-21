@@ -98,7 +98,17 @@ namespace ray {
 			return material;
 		}
 
+		static Material water() {
+			Material material = glass();
+			material.refractive_index = 1.333;
+			return material;
+		}
 
+		static Material diamond() {
+			Material material = glass();
+			material.refractive_index = 2.417;
+			return material;
+		}
 	};
 } // namespace ray
 
