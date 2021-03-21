@@ -1,5 +1,8 @@
 #include "pch.h"
+#include <chrono>
+
 #include "Camera.h"
+
 
 using namespace ray;
 
@@ -48,7 +51,7 @@ void Camera::fill_column(const World* world, std::vector<std::vector<Color>>& pi
 
 		for (int y = 0; y < vsize; y++) {
 			Ray r = ray(localx, y);
-			Color c = world->color_at(r);
+			Color c = world->color_at(r,8);
 			pixels[localx][y] = c;
 		}
 	}
@@ -62,6 +65,12 @@ Canvas Camera::render(const World& world) {
 	std::vector<std::thread> threads;
 	for (uint32_t i = 0; i < std::thread::hardware_concurrency(); i++) {
 		threads.emplace_back(std::thread([&] { fill_column(&world, image.pixels()); }));
+	}
+
+	while (x < hsize) {
+		std::chrono::milliseconds d(200);
+		std::this_thread::sleep_for(d);
+		std::cout << floor(100 * x / (double)hsize) << "%" << std::endl;
 	}
 
 	for (auto& t : threads) {
