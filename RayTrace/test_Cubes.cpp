@@ -66,7 +66,29 @@ TEST(Cube, LocalIntersect) {
 //    | point(2, 0, 2)   | vector(0, 0, -1)               |
 //    | point(0, 2, 2)   | vector(0, -1, 0)               |
 //    | point(2, 2, 0)   | vector(-1, 0, 0)               |
-//
+TEST(Cube, MissIntersect) {
+	Cube c;
+
+	struct {
+		Point3 p;
+		Vec3 v;
+	} expect[] = {
+		{ Point3(-2, 0, 0)  , Vec3(0.2673, 0.5345, 0.8018) },
+		{ Point3(0, -2, 0)  , Vec3(0.8018, 0.2673, 0.5345) },
+		{ Point3(0, 0, -2)  , Vec3(0.5345, 0.8018, 0.2673) },
+		{ Point3(2, 0, 2)   , Vec3(0, 0, -1)               },
+		{ Point3(0, 2, 2)   , Vec3(0, -1, 0)               },
+		{ Point3(2, 2, 0)   , Vec3(-1, 0, 0)               }
+	};
+
+	for (auto test : expect) {
+		Ray r(test.p, test.v);
+		IntersectionList xs;
+		c.local_intersect(r, xs);
+		EXPECT_EQ(xs.size(), 0);
+	}
+}
+
 //
 //Scenario Outline: The normal on the surface of a cube
 //  Given c ← cube()
@@ -84,3 +106,25 @@ TEST(Cube, LocalIntersect) {
 //    | point(0.4, 0.4, -1)  | vector(0, 0, -1) |
 //    | point(1, 1, 1)       | vector(1, 0, 0)  |
 //    | point(-1, -1, -1)    | vector(-1, 0, 0) |
+TEST(Cube, Normal) {
+	Cube c;
+
+	struct {
+		Point3 p;
+		Vec3 n;
+	} expect[] = {
+		{ Point3(1, 0.5, -0.8)  , Vec3(1, 0, 0)  },
+		{ Point3(-1, -0.2, 0.9) , Vec3(-1, 0, 0) },
+		{ Point3(-0.4, 1, -0.1) , Vec3(0, 1, 0)  },
+		{ Point3(0.3, -1, -0.7) , Vec3(0, -1, 0) },
+		{ Point3(-0.6, 0.3, 1)  , Vec3(0, 0, 1)  },
+		{ Point3(0.4, 0.4, -1)  , Vec3(0, 0, -1) },
+		{ Point3(1, 1, 1)       , Vec3(1, 0, 0)  },
+		{ Point3(-1, -1, -1)    , Vec3(-1, 0, 0) }
+	};
+
+	for (auto test : expect) {
+		Vec3 actual = c.local_normal_at(test.p);
+		EXPECT_EQ(test.n, actual);
+	}
+}

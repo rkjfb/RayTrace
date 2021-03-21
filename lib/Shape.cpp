@@ -62,8 +62,28 @@ void Cube::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 
 	// overall min, is largest of the per axis min.
 	double tmin = std::max(xmin, std::max(ymin, zmin));
-	out.append(Intersection(tmin, this));
-
 	double tmax = std::min(xmax, std::min(ymax, zmax));
-	out.append(Intersection(tmax, this));
+
+	if (tmin < tmax) {
+		out.append(Intersection(tmin, this));
+		out.append(Intersection(tmax, this));
+	}
 }
+
+Vec3 Cube::local_normal_at(const Point3& local_point) const {
+	double ax = abs(local_point.x);
+	double ay = abs(local_point.y);
+	double az = abs(local_point.z);
+
+	double maxdim = std::max(ax, std::max(ay, az));
+
+	if (maxdim == ax) {
+		return Vec3(local_point.x, 0, 0);
+	} else if (maxdim == ay) {
+		return Vec3(0, local_point.y, 0);
+	}
+
+	assert(maxdim == az);
+	return Vec3(0,0,local_point.z);
+}
+

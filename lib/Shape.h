@@ -151,10 +151,7 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override {
-			return Vec3(0, 1, 0);
-		}
-
+		Vec3 local_normal_at(const Point3& local_point) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 
 	private:
