@@ -59,6 +59,7 @@ namespace ray {
 		// Returns the smallest positive hit. As a raw pointer, straight into list.
 		// Returns nullptr on miss.
 		const Intersection* hit();
+		const Intersection* hit_ignoretransparent();
 		void sort();
 		void append(Intersection&& intersection) {
 			intersections.push_back(std::move(intersection));

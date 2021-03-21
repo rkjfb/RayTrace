@@ -56,6 +56,8 @@ bool World::is_shadowed(const Point3& point) const {
 
 	IntersectionList list;
 	intersect(ray, list);
+
+	// const Intersection* hit = list.hit_ignoretransparent();
 	const Intersection* hit = list.hit();
 
 	// if you hit something and its closer than the light, you're in the shadows.

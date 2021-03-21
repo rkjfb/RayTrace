@@ -15,6 +15,21 @@ const Intersection* IntersectionList::hit() {
 	return nullptr;
 }
 
+const Intersection* IntersectionList::hit_ignoretransparent() {
+	for (const auto& i : intersections) {
+		if (i.object->material.transparency > 0.9) {
+			// ignore very transparent things, like water..
+			continue;
+		}
+
+		if (i.t >= 0) {
+			return &i;
+		}
+	}
+
+	return nullptr;
+}
+
 void IntersectionList::sort() {
 	struct {
 		bool operator()(const Intersection& a, const Intersection& b) const {

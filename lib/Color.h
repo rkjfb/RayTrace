@@ -66,6 +66,20 @@ namespace ray {
 		//powderblue	#B0E0E6	176,224,230
 		static Color powderblue() { return cssrgb(176,224,230); }
 
+		// beige	#F5F5DC	245, 245, 220
+		static Color beige() { return cssrgb(245, 245, 220); }
+		// blanchedalmond	#FFEBCD	255, 235, 205
+		static Color blanchedalmond() { return cssrgb(255, 235, 205); }
+		// brown	#A52A2A	165, 42, 42
+		static Color brown() { return cssrgb(165, 42, 42); }
+		// burlywood	#DEB887	222, 184, 135
+		static Color burlywood() { return cssrgb(222, 184, 135); }
+		// chocolate	#D2691E	210, 105, 30
+		static Color chocolate() { return cssrgb(210, 105, 30); }
+
+		// aquamarine	#7FFFD4	127, 255, 212
+		static Color aquamarine() { return cssrgb(127, 255, 212); }
+
 
 	};
 
