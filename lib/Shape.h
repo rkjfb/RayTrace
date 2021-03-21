@@ -130,6 +130,28 @@ namespace ray {
 		std::pair<double, double> check_axis(double origin, double direction) const;
 	};
 
+	class Cylinder : public Shape
+	{
+	public:
+		Cylinder() = default;
+		Cylinder(const Matrix4& t) : Shape(t) {}
+
+		friend std::ostream& operator<<(std::ostream& os, const Cylinder& rhs) {
+			return os << "Cube(" << rhs.transform << ", " << rhs.material << ")";
+		}
+
+		bool operator==(const Cylinder& rhs) const {
+			return Cylinder::operator==(rhs);
+		}
+
+		bool operator!=(const Cylinder& rhs) const {
+			return !operator==(rhs);
+		}
+
+		Vec3 local_normal_at(const Point3& local_point) const override;
+		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+	};
+
 	// Used for unit testing Shape.
 	class TestShape : public Shape
 	{

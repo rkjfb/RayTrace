@@ -30,6 +30,7 @@ std::vector<std::unique_ptr<Shape>> World::make_default_shapes()
 }
 
 void World::intersect(const Ray& r, IntersectionList& list) const {
+	// bugbug: add some sort of spatial structure here, so we don't need to visit O(n) shapes.
 	for (const auto& s : _shapes) {
 		s->intersect(r, list);
 	}

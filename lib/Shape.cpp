@@ -87,3 +87,30 @@ Vec3 Cube::local_normal_at(const Point3& local_point) const {
 	return Vec3(0,0,local_point.z);
 }
 
+void Cylinder::local_intersect(const Ray& local_ray, IntersectionList& out) const {
+	double a = local_ray.direction.x * local_ray.direction.x + local_ray.direction.z * local_ray.direction.z;
+	if (IsEqual(a, 0)) {
+		// ray parallel to y axis, not hit currently, since cylinder wall is infinitely thin.
+		return;
+	}
+
+	double b = 2 * (local_ray.origin.x * local_ray.direction.x + local_ray.origin.z * local_ray.direction.z);
+	double c = local_ray.origin.x * local_ray.origin.x + local_ray.origin.z * local_ray.origin.z - 1;
+	double discriminant = b * b - 4 * a * c;
+	if (discriminant < 0) {
+		// no intersection.
+		return;
+	}
+
+	double mul = 1 / (2 * a);
+	double sqrtdisc = sqrt(discriminant);
+	double t0 = static_cast<double>((-b - sqrtdisc) * mul);
+	out.append(Intersection(t0, this));
+	double t1 = static_cast<double>((-b + sqrtdisc) * mul);
+	out.append(Intersection(t1, this));
+}
+
+Vec3 Cylinder::local_normal_at(const Point3& local_point) const {
+	return Vec3(local_point.x, 0, local_point.z);
+}
+
