@@ -4,8 +4,6 @@
 #include "Intersect.h"
 
 using namespace ray;
-/*
-
 //Feature: Cones
 //
 //Scenario Outline: Intersecting a cone with a ray
@@ -40,8 +38,8 @@ TEST(Cone, LocalIntersect) {
 		Ray r(test.p, test.v.norm());
 		IntersectionList xs;
 		c.local_intersect(r, xs);
-		EXPECT_EQ(test.t1, xs.at(0).t);
-		EXPECT_EQ(test.t2, xs.at(1).t);
+		EXPECT_NEAR(test.t1, xs.at(0).t, RAY_EPSILON);
+		EXPECT_NEAR(test.t2, xs.at(1).t, RAY_EPSILON);
 	}
 }
 
@@ -52,7 +50,16 @@ TEST(Cone, LocalIntersect) {
 //  When xs ← local_intersect(shape, r)
 //  Then xs.count = 1
 //    And xs[0].t = 0.35355
-//
+TEST(Cone, LocalIntersectParallel) {
+	Cone c;
+
+	Ray r(Point3(0,0,-1), Vec3(0,1,1).norm());
+	IntersectionList xs;
+	c.local_intersect(r, xs);
+	EXPECT_EQ(xs.size(), 1);
+	EXPECT_NEAR(xs.at(0).t, 0.35355, RAY_EPSILON);
+}
+
 //Scenario Outline: Intersecting a cone's end caps
 //  Given shape ← cone()
 //    And shape.minimum ← -0.5
@@ -68,7 +75,30 @@ TEST(Cone, LocalIntersect) {
 //    | point(0, 0, -5)    | vector(0, 1, 0) | 0     |
 //    | point(0, 0, -0.25) | vector(0, 1, 1) | 2     |
 //    | point(0, 0, -0.25) | vector(0, 1, 0) | 4     |
-//
+TEST(Cone, Caps) {
+	Cone c;
+	c.minimum = -0.5;
+	c.maximum = 0.5;
+	c.closed = true;
+
+	struct {
+		Point3 p;
+		Vec3 v;
+		int count;
+	} expect[] = {
+		{ Point3(0, 0, -5), Vec3(0, 1,0), 0 },
+		{ Point3(0, 0, -0.25), Vec3(0, 1,1), 2 },
+		{ Point3(0,0,-0.25), Vec3(0, 1,0), 4 }
+	};
+
+	for (auto test : expect) {
+		Ray r(test.p, test.v.norm());
+		IntersectionList xs;
+		c.local_intersect(r, xs);
+		EXPECT_EQ(test.count, xs.size());
+	}
+}
+
 //Scenario Outline: Computing the normal vector on a cone
 //  Given shape ← cone()
 //  When n ← local_normal_at(shape, <point>)
@@ -79,4 +109,20 @@ TEST(Cone, LocalIntersect) {
 //    | point(0, 0, 0)    | vector(0, 0, 0)        |
 //    | point(1, 1, 1)    | vector(1, -√2, 1)      |
 //    | point(-1, -1, 0)  | vector(-1, 1, 0)       |
-*/
+TEST(Cone, Normal) {
+	Cone c;
+
+	struct {
+		Point3 p;
+		Vec3 n;
+	} expect[] = {
+		{ Point3(0, 0, 0)  , Vec3(0, 0, 0)  },
+		{ Point3(1, 1, 1)  , Vec3(1, -sqrt(2), 1)  },
+		{ Point3(-1,-1,0)  , Vec3(-1,1,0)  }
+	};
+
+	for (auto test : expect) {
+		Vec3 actual = c.local_normal_at(test.p);
+		EXPECT_EQ(test.n, actual);
+	}
+}

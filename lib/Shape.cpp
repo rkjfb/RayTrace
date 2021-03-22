@@ -112,7 +112,6 @@ void Cylinder::local_intersect(const Ray& local_ray, IntersectionList& out) cons
 			out.append(Intersection(t0, this));
 		}
 
-		bool hit1 = false;
 		double y1 = local_ray.origin.y + t1 * local_ray.direction.y;
 		if (minimum < y1 && y1 < maximum) {
 			out.append(Intersection(t1, this));
@@ -168,7 +167,7 @@ void Cone::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 
 	if (IsEqual(a, 0)) {
 		if (!IsEqual(b,0)) {
-			double t = -c / 2 * b;
+			double t = -c / (2 * b);
 			double y = local_ray.origin.y + t * local_ray.direction.y;
 			if (minimum < y && y < maximum) {
 				out.append(Intersection(t, this));
@@ -177,7 +176,6 @@ void Cone::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	}
 	else
 	{
-		// bugbug: refactor;
 		double discriminant = b * b - 4 * a * c;
 		if (discriminant < 0) {
 			// no intersection.
@@ -189,30 +187,22 @@ void Cone::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 		double t0 = static_cast<double>((-b - sqrtdisc) * mul);
 		double t1 = static_cast<double>((-b + sqrtdisc) * mul);
 
-		if (t0 < t1) {
+		if (t0 > t1) {
 			std::swap(t0, t1);
 		}
 
-		bool hit0 = false;
 		double y0 = local_ray.origin.y + t0 * local_ray.direction.y;
 		if (minimum < y0 && y0 < maximum) {
-			hit0 = true;
 			out.append(Intersection(t0, this));
 		}
 
-		bool hit1 = false;
 		double y1 = local_ray.origin.y + t1 * local_ray.direction.y;
 		if (minimum < y1 && y1 < maximum) {
-			hit1 = true;
 			out.append(Intersection(t1, this));
 		}
-
-		// if we don't hit both sides, try the caps.
-		if (!hit0 || !hit1)
-		{
-			intersect_caps(local_ray, out);
-		}
 	}
+
+	intersect_caps(local_ray, out);
 }
 
 void Cone::intersect_caps(const Ray& local_ray, IntersectionList& out) const {
@@ -220,22 +210,23 @@ void Cone::intersect_caps(const Ray& local_ray, IntersectionList& out) const {
 		return;
 	}
 
+	// cone radius = cone Y = minimum for cap.
 	double t = (minimum - local_ray.origin.y) / local_ray.direction.y;
-	if (check_cap(local_ray, t)) {
+	if (check_cap(local_ray, t, abs(minimum))) {
 		out.append(Intersection(t, this));
 	}
 
 	t = (maximum - local_ray.origin.y) / local_ray.direction.y;
-	if (check_cap(local_ray, t)) {
+	if (check_cap(local_ray, t, abs(maximum))) {
 		out.append(Intersection(t, this));
 	}
 }
 
-bool Cone::check_cap(const Ray& ray, double t) const {
+bool Cone::check_cap(const Ray& ray, double t, double radius) const {
 	double x = ray.origin.x + ray.direction.x * t;
 	double z = ray.origin.z + ray.direction.z * t;
 
-	return (x * x + z * z) <= 1;
+	return (x * x + z * z) <= radius;
 }
 
 Vec3 Cone::local_normal_at(const Point3& local_point) const {
@@ -251,6 +242,11 @@ Vec3 Cone::local_normal_at(const Point3& local_point) const {
 		return Vec3(0, -1, 0);
 	}
 
-	return Vec3(local_point.x, 0, local_point.z);
+	double y = sqrt(local_point.x * local_point.x + local_point.z * local_point.z);
+	if (local_point.y > 0) {
+		y = -y;
+	}
+
+	return Vec3(local_point.x, y, local_point.z);
 }
 

@@ -188,7 +188,7 @@ namespace ray {
 
 	private:
 		void intersect_caps(const Ray& local_ray, IntersectionList& out) const;
-		bool check_cap(const Ray& ray, double t) const;
+		bool check_cap(const Ray& ray, double t, double radius) const;
 
 	};
 
