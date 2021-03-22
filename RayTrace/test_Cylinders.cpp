@@ -228,3 +228,23 @@ TEST(Cylinder, HitCaps) {
 //    | point(0, 2, 0)   | vector(0, 1, 0)  |
 //    | point(0.5, 2, 0) | vector(0, 1, 0)  |
 //    | point(0, 2, 0.5) | vector(0, 1, 0)  |
+TEST(Cylinder, Normal) {
+	Cylinder c;
+
+	struct {
+		Point3 p;
+		Vec3 n;
+	} expect[] = {
+		{ Point3(0, 1, 0)   , Vec3(0, -1, 0) },
+		{ Point3(0.5, 1, 0) , Vec3(0, -1, 0) },
+		{ Point3(0, 1, 0.5) , Vec3(0, -1, 0) },
+		{ Point3(0, 2, 0)   , Vec3(0, 1, 0)  },
+		{ Point3(0.5, 2, 0) , Vec3(0, 1, 0)  },
+		{ Point3(0, 2, 0.5) , Vec3(0, 1, 0)  }
+	};
+
+	for (auto test : expect) {
+		Vec3 actual = c.local_normal_at(test.p);
+		EXPECT_EQ(test.n, actual);
+	}
+}

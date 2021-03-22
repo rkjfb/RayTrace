@@ -156,6 +156,18 @@ bool Cylinder::check_cap(const Ray& ray, double t) const {
 }
 
 Vec3 Cylinder::local_normal_at(const Point3& local_point) const {
+	double dist = local_point.x * local_point.x + local_point.z * local_point.z;
+
+	// top cap
+	if (dist < 1 && local_point.y >= maximum - RAY_EPSILON) {
+		return Vec3(0, 1, 0);
+	}
+
+	// bottom cap.
+	if (dist < 1 && local_point.y <= minimum + RAY_EPSILON) {
+		return Vec3(0, -1, 0);
+	}
+
 	return Vec3(local_point.x, 0, local_point.z);
 }
 
