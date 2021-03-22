@@ -133,7 +133,7 @@ namespace ray {
 	class Cylinder : public Shape
 	{
 	public:
-		double minimum = std::numeric_limits<double>::min();
+		double minimum = -std::numeric_limits<double>::max();
 		double maximum = std::numeric_limits<double>::max();
 		bool closed = false;
 
@@ -141,7 +141,7 @@ namespace ray {
 		Cylinder(const Matrix4& t) : Shape(t) {}
 
 		friend std::ostream& operator<<(std::ostream& os, const Cylinder& rhs) {
-			return os << "Cube(" << rhs.transform << ", " << rhs.material << ")";
+			return os << "Cylinder(" << rhs.transform << ", " << rhs.material << ")";
 		}
 
 		bool operator==(const Cylinder& rhs) const {
@@ -149,6 +149,37 @@ namespace ray {
 		}
 
 		bool operator!=(const Cylinder& rhs) const {
+			return !operator==(rhs);
+		}
+
+		Vec3 local_normal_at(const Point3& local_point) const override;
+		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+
+	private:
+		void intersect_caps(const Ray& local_ray, IntersectionList& out) const;
+		bool check_cap(const Ray& ray, double t) const;
+
+	};
+
+	class Cone : public Shape
+	{
+	public:
+		double minimum = -std::numeric_limits<double>::max();
+		double maximum = std::numeric_limits<double>::max();
+		bool closed = false;
+
+		Cone() = default;
+		Cone(const Matrix4& t) : Shape(t) {}
+
+		friend std::ostream& operator<<(std::ostream& os, const Cone& rhs) {
+			return os << "Cone(" << rhs.transform << ", " << rhs.material << ")";
+		}
+
+		bool operator==(const Cone& rhs) const {
+			return Cone::operator==(rhs);
+		}
+
+		bool operator!=(const Cone& rhs) const {
 			return !operator==(rhs);
 		}
 

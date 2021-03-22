@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Material.h"
 #include "Shape.h"
+#include "Intersect.h"
 
 using namespace ray;
 
@@ -68,11 +69,11 @@ TEST(Cylinder, LocalIntersect) {
 	};
 
 	for (auto test : expect) {
-		Ray r(test.p, test.v);
+		Ray r(test.p, test.v.norm());
 		IntersectionList xs;
 		c.local_intersect(r, xs);
-		EXPECT_EQ(test.t1, xs.at(0).t);
-		EXPECT_EQ(test.t2, xs.at(1).t);
+		EXPECT_NEAR(test.t1, xs.at(0).t, RAY_EPSILON);
+		EXPECT_NEAR(test.t2, xs.at(1).t, RAY_EPSILON);
 	}
 }
 
@@ -112,7 +113,7 @@ TEST(Cylinder, Normal) {
 //    And cyl.maximum = infinity
 TEST(Cylinder, Ctor) {
 	Cylinder c;
-	EXPECT_EQ(c.minimum, std::numeric_limits<double>::min());
+	EXPECT_EQ(c.minimum, -std::numeric_limits<double>::max());
 	EXPECT_EQ(c.maximum, std::numeric_limits<double>::max());
 }
 
@@ -135,35 +136,39 @@ TEST(Cylinder, Ctor) {
 //    | 6 | point(0, 1.5, -2) | vector(0, 0, 1)   | 2     |
 TEST(Cylinder, HitClosed) {
 	Cylinder c;
+	c.minimum = 1;
+	c.maximum = 2;
 
 	struct {
 		Point3 p;
 		Vec3 v;
 	} expect[] = {
-		{ Point3(0, 1.5, 0)  , Vec3(0.1, 1, 0) , 0     },
-		{ Point3(0, 3, -5)   , Vec3(0, 0, 1)   , 0     },
-		{ Point3(0, 0, -5)   , Vec3(0, 0, 1)   , 0     },
-		{ Point3(0, 2, -5)   , Vec3(0, 0, 1)   , 0     },
-		{ Point3(0, 1, -5)   , Vec3(0, 0, 1)   , 0     }
+		{ Point3(0, 1.5, 0)  , Vec3(0.1, 1, 0)      },
+		{ Point3(0, 3, -5)   , Vec3(0, 0, 1)        },
+		{ Point3(0, 0, -5)   , Vec3(0, 0, 1)        },
+		{ Point3(0, 2, -5)   , Vec3(0, 0, 1)        },
+		{ Point3(0, 1, -5)   , Vec3(0, 0, 1)        }
 	};
 
 	for (auto test : expect) {
-		Ray r(test.p, test.v);
+		Ray r(test.p, test.v.norm());
 		IntersectionList xs;
 		c.local_intersect(r, xs);
 		EXPECT_EQ(xs.size(), 0);
 	}
 
-	Ray r(Point3(0,1.5,-2), Vec3(0,0,1));
-	IntersectionList xs;
-	c.local_intersect(r, xs);
-	EXPECT_EQ(xs.size(), 2);
+	{
+		Ray r2(Point3(0, 1.5, -2), Vec3(0, 0, 1));
+		IntersectionList xs2;
+		c.local_intersect(r2, xs2);
+		EXPECT_EQ(xs2.size(), 2);
+	}
 }
 
 //Scenario: The default closed value for a cylinder
 //  Given cyl ← cylinder()
 //  Then cyl.closed = false
-TEST(Cylinder, HitClosed) {
+TEST(Cylinder, CtorClosed) {
 	Cylinder c;
 	EXPECT_FALSE(c.closed);
 }
@@ -228,8 +233,11 @@ TEST(Cylinder, HitCaps) {
 //    | point(0, 2, 0)   | vector(0, 1, 0)  |
 //    | point(0.5, 2, 0) | vector(0, 1, 0)  |
 //    | point(0, 2, 0.5) | vector(0, 1, 0)  |
-TEST(Cylinder, Normal) {
+TEST(Cylinder, CapNormal) {
 	Cylinder c;
+	c.minimum = 1;
+	c.maximum = 2;
+	c.closed = true;
 
 	struct {
 		Point3 p;
