@@ -79,6 +79,8 @@ namespace ray {
 
 		// aquamarine	#7FFFD4	127, 255, 212
 		static Color aquamarine() { return cssrgb(127, 255, 212); }
+		//saddlebrown	#8B4513	139,69,19
+		static Color saddlebrown() { return cssrgb(139, 69, 19); }
 
 
 	};
