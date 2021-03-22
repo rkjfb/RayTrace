@@ -110,7 +110,12 @@ TEST(Cylinder, Normal) {
 //  Given cyl ← cylinder()
 //  Then cyl.minimum = -infinity
 //    And cyl.maximum = infinity
-//
+TEST(Cylinder, Ctor) {
+	Cylinder c;
+	EXPECT_EQ(c.minimum, std::numeric_limits<double>::min());
+	EXPECT_EQ(c.maximum, std::numeric_limits<double>::max());
+}
+
 //Scenario Outline: Intersecting a constrained cylinder
 //  Given cyl ← cylinder()
 //    And cyl.minimum ← 1
@@ -128,11 +133,41 @@ TEST(Cylinder, Normal) {
 //    | 4 | point(0, 2, -5)   | vector(0, 0, 1)   | 0     |
 //    | 5 | point(0, 1, -5)   | vector(0, 0, 1)   | 0     |
 //    | 6 | point(0, 1.5, -2) | vector(0, 0, 1)   | 2     |
-//
+TEST(Cylinder, HitClosed) {
+	Cylinder c;
+
+	struct {
+		Point3 p;
+		Vec3 v;
+	} expect[] = {
+		{ Point3(0, 1.5, 0)  , Vec3(0.1, 1, 0) , 0     },
+		{ Point3(0, 3, -5)   , Vec3(0, 0, 1)   , 0     },
+		{ Point3(0, 0, -5)   , Vec3(0, 0, 1)   , 0     },
+		{ Point3(0, 2, -5)   , Vec3(0, 0, 1)   , 0     },
+		{ Point3(0, 1, -5)   , Vec3(0, 0, 1)   , 0     }
+	};
+
+	for (auto test : expect) {
+		Ray r(test.p, test.v);
+		IntersectionList xs;
+		c.local_intersect(r, xs);
+		EXPECT_EQ(xs.size(), 0);
+	}
+
+	Ray r(Point3(0,1.5,-2), Vec3(0,0,1));
+	IntersectionList xs;
+	c.local_intersect(r, xs);
+	EXPECT_EQ(xs.size(), 2);
+}
+
 //Scenario: The default closed value for a cylinder
 //  Given cyl ← cylinder()
 //  Then cyl.closed = false
-//
+TEST(Cylinder, HitClosed) {
+	Cylinder c;
+	EXPECT_FALSE(c.closed);
+}
+
 //Scenario Outline: Intersecting the caps of a closed cylinder
 //  Given cyl ← cylinder()
 //    And cyl.minimum ← 1
@@ -150,7 +185,33 @@ TEST(Cylinder, Normal) {
 //    | 3 | point(0, 4, -2)  | vector(0, -1, 1) | 2     | # corner case
 //    | 4 | point(0, 0, -2)  | vector(0, 1, 2)  | 2     |
 //    | 5 | point(0, -1, -2) | vector(0, 1, 1)  | 2     | # corner case
-//
+TEST(Cylinder, HitCaps) {
+	Cylinder c;
+	c.minimum = 1;
+	c.maximum = 2;
+	c.closed = true;
+
+	struct {
+		Point3 p;
+		Vec3 n;
+		int count;
+	} expect[] = {
+		{ Point3(0, 3, 0)   , Vec3(0, -1, 0) , 2     },
+		{ Point3(0, 3, -2)  , Vec3(0, -1, 2) , 2     },
+		{ Point3(0, 4, -2)  , Vec3(0, -1, 1) , 2     },
+		{ Point3(0, 0, -2)  , Vec3(0, 1, 2)  , 2     },
+		{ Point3(0, -1, -2) , Vec3(0, 1, 1)  , 2     }
+	};
+
+	for (auto test : expect) {
+		Vec3 n = test.n.norm();
+		Ray r(test.p, n);
+		IntersectionList xs;
+		c.local_intersect(r, xs);
+		EXPECT_EQ(xs.size(), test.count);
+	}
+}
+
 //Scenario Outline: The normal vector on a cylinder's end caps
 //  Given cyl ← cylinder()
 //    And cyl.minimum ← 1

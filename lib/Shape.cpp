@@ -105,9 +105,54 @@ void Cylinder::local_intersect(const Ray& local_ray, IntersectionList& out) cons
 	double mul = 1 / (2 * a);
 	double sqrtdisc = sqrt(discriminant);
 	double t0 = static_cast<double>((-b - sqrtdisc) * mul);
-	out.append(Intersection(t0, this));
 	double t1 = static_cast<double>((-b + sqrtdisc) * mul);
-	out.append(Intersection(t1, this));
+
+	if (t0 < t1) {
+		std::swap(t0, t1);
+	}
+
+	bool hit0 = false;
+	double y0 = local_ray.origin.y + t0 * local_ray.direction.y;
+	if (minimum < y0 && y0 < maximum) {
+		hit0 = true;
+		out.append(Intersection(t0, this));
+	}
+
+	bool hit1 = false;
+	double y1 = local_ray.origin.y + t1 * local_ray.direction.y;
+	if (minimum < y1 && y1 < maximum) {
+		hit1 = true;
+		out.append(Intersection(t1, this));
+	}
+
+	// if we don't hit both sides, try the caps.
+	if (!hit0 || !hit1)
+	{
+		intersect_caps(local_ray, out);
+	}
+}
+
+void Cylinder::intersect_caps(const Ray& local_ray, IntersectionList& out) const {
+	if (!closed || IsEqual(local_ray.direction.y, 0)) {
+		return;
+	}
+
+	double t = (minimum - local_ray.origin.y) / local_ray.direction.y;
+	if (check_cap(local_ray, t)) {
+		out.append(Intersection(t, this));
+	}
+
+	t = (maximum - local_ray.origin.y) / local_ray.direction.y;
+	if (check_cap(local_ray, t)) {
+		out.append(Intersection(t, this));
+	}
+}
+
+bool Cylinder::check_cap(const Ray& ray, double t) const {
+	double x = ray.origin.x + ray.direction.x * t;
+	double z = ray.origin.z + ray.direction.z * t;
+
+	return (x * x + z * z) <= 1;
 }
 
 Vec3 Cylinder::local_normal_at(const Point3& local_point) const {

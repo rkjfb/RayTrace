@@ -133,6 +133,10 @@ namespace ray {
 	class Cylinder : public Shape
 	{
 	public:
+		double minimum = std::numeric_limits<double>::min();
+		double maximum = std::numeric_limits<double>::max();
+		bool closed = false;
+
 		Cylinder() = default;
 		Cylinder(const Matrix4& t) : Shape(t) {}
 
@@ -150,6 +154,11 @@ namespace ray {
 
 		Vec3 local_normal_at(const Point3& local_point) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+
+	private:
+		void intersect_caps(const Ray& local_ray, IntersectionList& out) const;
+		bool check_cap(const Ray& ray, double t) const;
+
 	};
 
 	// Used for unit testing Shape.
