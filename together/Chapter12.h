@@ -77,6 +77,13 @@ public:
 				{
 					cube->material = Material::air();
 				}
+
+				if (s == 2) {
+					cube->material.pattern = std::make_unique<Solid>(Color::red());
+					cube->material.ambient = 0.1;
+					cube->material.diffuse = 0.5;
+				}
+
 				cube->transform = Matrix4::scale(0.4 * s, 0.4 * s, 0.4 * s);
 				vec.push_back(std::move(cube));
 			}
