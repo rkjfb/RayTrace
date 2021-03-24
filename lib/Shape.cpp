@@ -67,9 +67,9 @@ void Plane::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	out.append(Intersection(t, this));
 }
 
-std::pair<double, double> Cube::check_axis(double origin, double direction) const {
-	double minnum = -1 - origin;
-	double maxnum = 1 - origin;
+std::pair<double, double> Cube::check_axis(double bmin, double bmax, double origin, double direction) {
+	double minnum = bmin - origin;
+	double maxnum = bmax - origin;
 
 	double tmin, tmax;
 
@@ -91,9 +91,9 @@ std::pair<double, double> Cube::check_axis(double origin, double direction) cons
 }
 
 void Cube::local_intersect(const Ray& local_ray, IntersectionList& out) const {
-	auto [xmin, xmax] = check_axis(local_ray.origin.x, local_ray.direction.x);
-	auto [ymin, ymax] = check_axis(local_ray.origin.y, local_ray.direction.y);
-	auto [zmin, zmax] = check_axis(local_ray.origin.z, local_ray.direction.z);
+	auto [xmin, xmax] = check_axis(-1, 1, local_ray.origin.x, local_ray.direction.x);
+	auto [ymin, ymax] = check_axis(-1, 1, local_ray.origin.y, local_ray.direction.y);
+	auto [zmin, zmax] = check_axis(-1, 1, local_ray.origin.z, local_ray.direction.z);
 
 	// overall min, is largest of the per axis min.
 	double tmin = std::max(xmin, std::max(ymin, zmin));
@@ -291,6 +291,23 @@ void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 		return;
 	}
 
+	{
+		Bounds b = bounds();
+		// todo: copy and paste from cube.
+		auto [xmin, xmax] = Cube::check_axis(b.min.x, b.max.x, local_ray.origin.x, local_ray.direction.x);
+		auto [ymin, ymax] = Cube::check_axis(b.min.y, b.max.y, local_ray.origin.y, local_ray.direction.y);
+		auto [zmin, zmax] = Cube::check_axis(b.min.z, b.max.z, local_ray.origin.z, local_ray.direction.z);
+
+		// overall min, is largest of the per axis min.
+		double tmin = std::max(xmin, std::max(ymin, zmin));
+		double tmax = std::min(xmax, std::min(ymax, zmax));
+
+		if (tmin > tmax) {
+			// bounding box empty, no need to check children.
+			return;
+		}
+	}
+
 	for (auto& shape : _shapes) {
 		shape->intersect(local_ray, out);
 	}
@@ -299,4 +316,31 @@ void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 Vec3 Group::local_normal_at(const Point3& local_point) const {
 	throw new std::runtime_error("its always an error to call group local_normal_at, should be called on children");
 	return Vec3(0, 0, 1);
+}
+
+// bugbug: don't want to compute this dynamically - grow bounds on shape add()?
+Bounds Group::bounds() const {
+	Bounds bounds;
+
+	for (auto& shape : _shapes) {
+		Bounds b = shape->bounds();
+		std::array<Point3, 8> corners = {
+			Point3(b.min.x, b.min.y, b.min.z),
+			Point3(b.min.x, b.min.y, b.max.z),
+			Point3(b.min.x, b.max.y, b.min.z),
+			Point3(b.min.x, b.max.y, b.max.z),
+
+			Point3(b.max.x, b.max.y, b.max.z),
+			Point3(b.max.x, b.max.y, b.min.z),
+			Point3(b.max.x, b.min.y, b.max.z),
+			Point3(b.max.x, b.min.y, b.min.z),
+		};
+
+		for (const auto& p : corners) {
+			Point3 w = shape->transform * p;
+			bounds.add(w);
+		}
+	}
+
+	return bounds;
 }

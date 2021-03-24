@@ -27,6 +27,8 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
+		virtual Bounds bounds() const = 0;
+
 		virtual Vec3 local_normal_at(const Point3& world_point) const = 0;
 
 		Vec3 normal_at(const Point3& world_point) const;
@@ -52,6 +54,10 @@ namespace ray {
 
 		bool operator!=(const Sphere& rhs) const {
 			return !operator==(rhs);
+		}
+
+		Bounds bounds() const override {
+			return Bounds(Point3(-1, -1, -1), Point3(1, 1, 1));
 		}
 
 		Vec3 local_normal_at(const Point3& local_point) const override {
@@ -86,6 +92,11 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
+		Bounds bounds() const override {
+			double m = std::numeric_limits<double>::max();
+			return Bounds(Point3(-m, 0, -m), Point3(m, 0, m));
+		}
+
 		Vec3 local_normal_at(const Point3& local_point) const override {
 			return Vec3(0,1,0);
 		}
@@ -111,11 +122,14 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
+		Bounds bounds() const override {
+			return Bounds(Point3(-1, -1, -1), Point3(1, 1, 1));
+		}
+
 		Vec3 local_normal_at(const Point3& local_point) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 
-	private:
-		std::pair<double, double> check_axis(double origin, double direction) const;
+		static std::pair<double, double> check_axis(double bmin, double bmax, double origin, double direction);
 	};
 
 	class Cylinder : public Shape
@@ -138,6 +152,10 @@ namespace ray {
 
 		bool operator!=(const Cylinder& rhs) const {
 			return !operator==(rhs);
+		}
+
+		Bounds bounds() const override {
+			return Bounds(Point3(-1, minimum, -1), Point3(1, maximum, 1));
 		}
 
 		Vec3 local_normal_at(const Point3& local_point) const override;
@@ -169,6 +187,10 @@ namespace ray {
 
 		bool operator!=(const Cone& rhs) const {
 			return !operator==(rhs);
+		}
+
+		Bounds bounds() const override {
+			return Bounds(Point3(-1, minimum, -1), Point3(1, maximum, 1));
 		}
 
 		Vec3 local_normal_at(const Point3& local_point) const override;
@@ -203,6 +225,10 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
+		Bounds bounds() const override {
+			return Bounds(Point3(-1, -1, -1), Point3(1, 1, 1));
+		}
+
 		Vec3 local_normal_at(const Point3& local_point) const override {
 			saved_point = local_point;
 			return Vec3(local_point.x, local_point.y, local_point.z);
@@ -232,6 +258,7 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
+		Bounds bounds() const override;
 		Vec3 local_normal_at(const Point3& local_point) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 

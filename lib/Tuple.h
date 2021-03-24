@@ -123,4 +123,31 @@ public:
 		return Point3(0, 0, 0);
 	}
 };
+
+// Axis-aligned bound box.
+class Bounds {
+public:
+	Bounds() {
+		// start with inverted max bounds, so we'll replace all bounds on first iteration.
+		double m = std::numeric_limits<double>::max();
+		min = Point3(m, m, m);
+		max = Point3(-m, -m, -m);
+	}
+
+	Bounds(const Point3& inmin, const Point3& inmax) : min(inmin), max(inmax) {}
+	Point3 min;
+	Point3 max;
+
+	// Add p to bounds.
+	void add(const Point3& p) {
+		min.x = std::min(min.x, p.x);
+		min.y = std::min(min.y, p.y);
+		min.z = std::min(min.z, p.z);
+
+		max.x = std::max(max.x, p.x);
+		max.y = std::max(max.y, p.y);
+		max.z = std::max(max.z, p.z);
+	}
+};
+
 } // namespace ray
