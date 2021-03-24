@@ -11,6 +11,8 @@ namespace ray {
 	public:
 		Matrix4 transform;
 		Material material;
+		Shape* parent = nullptr;
+
 		Shape() = default;
 		Shape(const Matrix4& t) : transform(t) {}
 
@@ -27,25 +29,11 @@ namespace ray {
 
 		virtual Vec3 local_normal_at(const Point3& world_point) const = 0;
 
-		Vec3 normal_at(const Point3& world_point) const {
-			Matrix4 inv = transform.inverse();
-			Point3 local_point = inv * world_point;
-
-			Vec3 local_normal = local_normal_at(local_point);
-
-			Matrix4 transpose = inv.transpose();
-			Vec3 world_normal = transpose * local_normal;
-			world_normal.w = 0;
-			return world_normal.norm();
-		}
-
+		Vec3 normal_at(const Point3& world_point) const;
 		virtual void local_intersect(const Ray& inr, IntersectionList& out) const = 0;
-
-		void intersect(const Ray& inr, IntersectionList& out) const {
-			Ray local_ray = transform.inverse_multiply(inr);
-
-			local_intersect(local_ray, out);
-		}
+		void intersect(const Ray& inr, IntersectionList& out) const;
+		Point3 world_to_object(Point3 point) const;
+		Vec3 normal_to_world(Vec3 normal) const;
 	};
 
 	class Sphere : public Shape
@@ -225,5 +213,45 @@ namespace ray {
 			saved_ray = local_ray;
 		}
 	};
+
+	class Group : public Shape
+	{
+	public:
+		Group() = default;
+		Group(const Matrix4& t) : Shape(t) {}
+
+		friend std::ostream& operator<<(std::ostream& os, const Group& rhs) {
+			return os << "Group(" << rhs.transform << ", " << rhs.material << ")";
+		}
+
+		bool operator==(const Group& rhs) const {
+			return Group::operator==(rhs);
+		}
+
+		bool operator!=(const Group& rhs) const {
+			return !operator==(rhs);
+		}
+
+		Vec3 local_normal_at(const Point3& local_point) const override;
+		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+
+		size_t size() {
+			return _shapes.size();
+		}
+
+		void add(std::unique_ptr<Shape> shape) {
+			shape->parent = this;
+			_shapes.push_back(std::move(shape));
+		}
+
+		const std::vector<std::unique_ptr<Shape>>& shapes() const {
+			return _shapes;
+		}
+
+	private:
+		std::vector<std::unique_ptr<Shape>> _shapes;
+	};
+
+
 
 } // namespace ray

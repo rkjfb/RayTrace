@@ -105,7 +105,11 @@ TEST(Shape, NormalTransformed) {
 //Scenario: A shape has a parent attribute
 //  Given s ← test_shape()
 //  Then s.parent is nothing
-//
+TEST(Shape, Parent) {
+	TestShape shape;
+	EXPECT_EQ(shape.parent, nullptr);
+}
+
 //Scenario: Converting a point from world to object space
 //  Given g1 ← group()
 //    And set_transform(g1, rotation_y(π/2))
@@ -117,7 +121,24 @@ TEST(Shape, NormalTransformed) {
 //    And add_child(g2, s)
 //  When p ← world_to_object(s, point(-2, 0, -10))
 //  Then p = point(0, 0, -1)
-//
+TEST(Shape, WorldToObject) {
+	auto g1 = std::make_unique<Group>();
+	g1->transform = Matrix4::rotateY(pi / 2);
+
+	auto g2 = std::make_unique<Group>();
+	g2->transform = Matrix4::scale(2,2,2);
+
+	auto s = std::make_unique<Sphere>();
+	Shape* weak_s = s.get();
+	s->transform = Matrix4::translate(5, 0, 0);
+	g2->add(std::move(s));
+
+	g1->add(std::move(g2));
+
+	Point3 p = weak_s->world_to_object(Point3(-2, 0, -10));
+	EXPECT_EQ(p, Point3(0,0,-1));
+}
+
 //Scenario: Converting a normal from object to world space
 //  Given g1 ← group()
 //    And set_transform(g1, rotation_y(π/2))
@@ -129,7 +150,25 @@ TEST(Shape, NormalTransformed) {
 //    And add_child(g2, s)
 //  When n ← normal_to_world(s, vector(√3/3, √3/3, √3/3))
 //  Then n = vector(0.2857, 0.4286, -0.8571)
-//
+TEST(Shape, NormalObjectToWorld) {
+	auto g1 = std::make_unique<Group>();
+	g1->transform = Matrix4::rotateY(pi / 2);
+
+	auto g2 = std::make_unique<Group>();
+	g2->transform = Matrix4::scale(1, 2, 3);
+
+	auto s = std::make_unique<Sphere>();
+	Shape* weak_s = s.get();
+	s->transform = Matrix4::translate(5, 0, 0);
+	g2->add(std::move(s));
+
+	g1->add(std::move(g2));
+
+	double ss = sqrt(3) / 3;
+	Vec3 n = weak_s->normal_to_world(Vec3(ss, ss, ss));
+	EXPECT_EQ(n, Vec3(0.285714, 0.428571, -0.857143));
+}
+
 //Scenario: Finding the normal on a child object
 //  Given g1 ← group()
 //    And set_transform(g1, rotation_y(π/2))
@@ -141,3 +180,20 @@ TEST(Shape, NormalTransformed) {
 //    And add_child(g2, s)
 //  When n ← normal_at(s, point(1.7321, 1.1547, -5.5774))
 //  Then n = vector(0.2857, 0.4286, -0.8571)
+TEST(Shape, NormalOnChild) {
+	auto g1 = std::make_unique<Group>();
+	g1->transform = Matrix4::rotateY(pi / 2);
+
+	auto g2 = std::make_unique<Group>();
+	g2->transform = Matrix4::scale(1, 2, 3);
+
+	auto s = std::make_unique<Sphere>();
+	Shape* weak_s = s.get();
+	s->transform = Matrix4::translate(5, 0, 0);
+	g2->add(std::move(s));
+
+	g1->add(std::move(g2));
+
+	Vec3 n = weak_s->normal_at(Point3(1.7321, 1.1547, -5.5774));
+	EXPECT_EQ(n, Vec3(0.285704, 0.428543, -0.857161));
+}

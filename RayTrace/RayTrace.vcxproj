@@ -48,6 +48,7 @@
     <ClCompile Include="test_Cones.cpp" />
     <ClCompile Include="test_Cubes.cpp" />
     <ClCompile Include="test_Cylinders.cpp" />
+    <ClCompile Include="test_Groups.cpp" />
     <ClCompile Include="test_Intersections.cpp" />
     <ClCompile Include="test_Lights.cpp" />
     <ClCompile Include="test_Materials.cpp" />

@@ -1,8 +1,43 @@
 #include "pch.h"
+#include <stdexcept>
+
 #include "Shape.h"
 #include "Intersect.h"
 
 using namespace ray;
+
+Vec3 Shape::normal_at(const Point3& world_point) const {
+	Point3 local_point = world_to_object(world_point);
+	Vec3 local_normal = local_normal_at(local_point);
+	return normal_to_world(local_normal);
+}
+
+void Shape::intersect(const Ray& inr, IntersectionList& out) const {
+	Ray local_ray = transform.inverse_multiply(inr);
+
+	local_intersect(local_ray, out);
+}
+
+Point3 Shape::world_to_object(Point3 point) const {
+	if (parent != nullptr) {
+		point = parent->world_to_object(point);
+	}
+	return transform.inverse_multiply(point);
+}
+
+Vec3 Shape::normal_to_world(Vec3 normal) const {
+	Matrix4 inv = transform.inverse();
+	Matrix4 transpose = inv.transpose();
+	normal = transpose * normal;
+	normal.w = 0;
+	normal = normal.norm();
+
+	if (parent != nullptr) {
+		normal = parent->normal_to_world(normal);
+	}
+
+	return normal;
+}
 
 void Sphere::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	Vec3 sphere_ray = local_ray.origin - Point3();
@@ -250,3 +285,18 @@ Vec3 Cone::local_normal_at(const Point3& local_point) const {
 	return Vec3(local_point.x, y, local_point.z);
 }
 
+void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
+	if (_shapes.size() == 0) {
+		// nothing to intersect.
+		return;
+	}
+
+	for (auto& shape : _shapes) {
+		shape->intersect(local_ray, out);
+	}
+}
+
+Vec3 Group::local_normal_at(const Point3& local_point) const {
+	throw new std::runtime_error("its always an error to call group local_normal_at, should be called on children");
+	return Vec3(0, 0, 1);
+}
