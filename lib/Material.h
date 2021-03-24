@@ -109,6 +109,18 @@ namespace ray {
 			material.refractive_index = 2.417;
 			return material;
 		}
+
+		static Material mirror() {
+			Material material;
+			material.transparency = 0;
+			material.reflective = 1;
+			material.refractive_index = 1.52;
+			material.pattern = std::make_unique<Solid>(Color::black());
+			material.ambient = 0.1;
+			material.diffuse = 0.1;
+			material.specular = 0.1;
+			return material;
+		}
 	};
 } // namespace ray
 

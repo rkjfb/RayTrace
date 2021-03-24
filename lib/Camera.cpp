@@ -63,8 +63,9 @@ Canvas Camera::render(const World& world) {
 
 	x.store(0);
 	std::vector<std::thread> threads;
+	// for (uint32_t i = 0; i < 1; i++) {
 	for (uint32_t i = 0; i < std::thread::hardware_concurrency(); i++) {
-		threads.emplace_back(std::thread([&] { fill_column(&world, image.pixels()); }));
+			threads.emplace_back(std::thread([&] { fill_column(&world, image.pixels()); }));
 	}
 
 	while (x < hsize) {
