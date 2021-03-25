@@ -297,12 +297,12 @@ namespace ray {
 		}
 
 		Ray operator*(const Ray& rhs) const {
-			return Ray(operator*(rhs.origin), operator*(rhs.direction));
+			return Ray(operator*(rhs.origin), operator*(rhs.direction()));
 		}
 
 		// Perf: Returns the this.inverse() * r
 		Ray inverse_multiply(const Ray& r) const {
-			return Ray(inverse_multiply(r.origin), inverse_multiply(r.direction));
+			return Ray(inverse_multiply(r.origin), inverse_multiply(r.direction()));
 		}
 
 		Matrix4 operator*(const Matrix4& rhs) const {

@@ -17,7 +17,7 @@ TEST(Ray, Ctor) {
 	Vec3 v(4, 5, 6);
 	Ray r(p, v);
 	EXPECT_EQ(r.origin, p);
-	EXPECT_EQ(r.direction, v);
+	EXPECT_EQ(r.direction(), v);
 }
 
 //Scenario: Computing a point from a distance
@@ -49,7 +49,7 @@ TEST(Ray, Translate) {
 	Matrix4 m = Matrix4::translate(3, 4, 5);
 	Ray result = m * r;
 	EXPECT_EQ(result.origin, Point3(4, 6, 8));
-	EXPECT_EQ(result.direction, Vec3(0,1,0));
+	EXPECT_EQ(result.direction(), Vec3(0,1,0));
 }
 
 //Scenario: Scaling a ray
@@ -65,5 +65,5 @@ TEST(Ray, Scale) {
 	Matrix4 m = Matrix4::scale(2, 3, 4);
 	Ray result = m * r;
 	EXPECT_EQ(result.origin, Point3(2, 6, 12));
-	EXPECT_EQ(result.direction, Vec3(0, 3, 0));
+	EXPECT_EQ(result.direction(), Vec3(0, 3, 0));
 }

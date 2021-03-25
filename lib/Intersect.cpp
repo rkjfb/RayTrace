@@ -44,13 +44,13 @@ IntersectionInfo Intersection::infox(const Ray& ray) const {
 	info.t = t;
 	info.object = object;
 	info.point = ray.position(info.t);
-	info.eye = -ray.direction;
+	info.eye = -ray.direction();
 	info.normal = info.object->normal_at(info.point);
 	if (info.normal.dot(info.eye) < 0) {
 		info.inside = true;
 		info.normal = -info.normal;
 	}
-	info.reflect = ray.direction.reflect(info.normal);
+	info.reflect = ray.direction().reflect(info.normal);
 	info.over_point = info.point + info.normal * ray::RAY_EPSILON;
 	info.under_point = info.point - info.normal * ray::RAY_EPSILON;
 	return info;

@@ -68,10 +68,21 @@ Canvas Camera::render(const World& world) {
 			threads.emplace_back(std::thread([&] { fill_column(&world, image.pixels()); }));
 	}
 
+	auto last_update = std::chrono::steady_clock::now();
 	while (x < hsize) {
-		std::chrono::milliseconds d(200);
-		std::this_thread::sleep_for(d);
-		std::cout << floor(100 * x / (double)hsize) << "%" << std::endl;
+		auto check = std::chrono::steady_clock::now();
+		std::chrono::duration<double> durdiff = check - last_update;
+		double diff = durdiff.count();
+
+		if (diff > 1) {
+			std::cout << floor(100 * x / (double)hsize) << "%" << std::endl;
+			last_update = check;
+		}
+		else
+		{
+			std::chrono::milliseconds d(10);
+			std::this_thread::sleep_for(d);
+		}
 	}
 
 	for (auto& t : threads) {

@@ -26,15 +26,17 @@ public:
 		int range = 5;
 		int step = 1;
 		for (int x = -range; x < range; x++) {
-			auto g = std::make_unique<Group>();
+			auto gx = std::make_unique<Group>();
 			for (int y = -range; y< range; y++) {
+				auto gy = std::make_unique<Group>();
 				for (int z = -range; z < range; z++) {
 					auto sphere = std::make_unique<Sphere>();
 					sphere->transform = Matrix4::translate(x, y, z);
-					g->add(std::move(sphere));
+					gy->add(std::move(sphere));
 				}
+				gx->add(std::move(gy));
 			}
-			vec.push_back(std::move(g));
+			vec.push_back(std::move(gx));
 		}
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));

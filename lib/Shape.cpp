@@ -41,8 +41,8 @@ Vec3 Shape::normal_to_world(Vec3 normal) const {
 
 void Sphere::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	Vec3 sphere_ray = local_ray.origin - Point3();
-	double a = local_ray.direction.dot(local_ray.direction);
-	double b = 2 * local_ray.direction.dot(sphere_ray);
+	double a = local_ray.direction().dot(local_ray.direction());
+	double b = 2 * local_ray.direction().dot(sphere_ray);
 	double c = sphere_ray.dot(sphere_ray) - 1;
 	double discriminant = b * b - 4 * a * c;
 	if (discriminant < 0) {
@@ -58,30 +58,21 @@ void Sphere::local_intersect(const Ray& local_ray, IntersectionList& out) const 
 }
 
 void Plane::local_intersect(const Ray& local_ray, IntersectionList& out) const {
-	if (IsEqual(local_ray.direction.y, 0)) {
+	if (IsEqual(local_ray.direction().y, 0)) {
 		// Ray is perpendicular to plane, no intersection.
 		return;
 	}
 
-	double t = -local_ray.origin.y / local_ray.direction.y;
+	double t = -local_ray.origin.y * local_ray.invdirection().y;
 	out.append(Intersection(t, this));
 }
 
-std::pair<double, double> Cube::check_axis(double bmin, double bmax, double origin, double direction) {
+std::pair<double, double> Cube::check_axis(double bmin, double bmax, double origin, double invdirection) {
 	double minnum = bmin - origin;
 	double maxnum = bmax - origin;
 
-	double tmin, tmax;
-
-	if (!IsEqual(direction, 0)) {
-		tmin = minnum / direction;
-		tmax = maxnum / direction;
-	}
-	else
-	{
-		tmin = minnum * std::numeric_limits<double>::max();
-		tmax = maxnum * std::numeric_limits<double>::max();
-	}
+	double tmin = minnum * invdirection;
+	double tmax = maxnum * invdirection;
 
 	if (tmin > tmax) {
 		std::swap(tmin, tmax);
@@ -91,9 +82,9 @@ std::pair<double, double> Cube::check_axis(double bmin, double bmax, double orig
 }
 
 void Cube::local_intersect(const Ray& local_ray, IntersectionList& out) const {
-	auto [xmin, xmax] = check_axis(-1, 1, local_ray.origin.x, local_ray.direction.x);
-	auto [ymin, ymax] = check_axis(-1, 1, local_ray.origin.y, local_ray.direction.y);
-	auto [zmin, zmax] = check_axis(-1, 1, local_ray.origin.z, local_ray.direction.z);
+	auto [xmin, xmax] = check_axis(-1, 1, local_ray.origin.x, local_ray.invdirection().x);
+	auto [ymin, ymax] = check_axis(-1, 1, local_ray.origin.y, local_ray.invdirection().y);
+	auto [zmin, zmax] = check_axis(-1, 1, local_ray.origin.z, local_ray.invdirection().z);
 
 	// overall min, is largest of the per axis min.
 	double tmin = std::max(xmin, std::max(ymin, zmin));
@@ -123,9 +114,9 @@ Vec3 Cube::local_normal_at(const Point3& local_point) const {
 }
 
 void Cylinder::local_intersect(const Ray& local_ray, IntersectionList& out) const {
-	double a = local_ray.direction.x * local_ray.direction.x + local_ray.direction.z * local_ray.direction.z;
+	double a = local_ray.direction().x * local_ray.direction().x + local_ray.direction().z * local_ray.direction().z;
 	if (!IsEqual(a, 0)) {
-		double b = 2 * (local_ray.origin.x * local_ray.direction.x + local_ray.origin.z * local_ray.direction.z);
+		double b = 2 * (local_ray.origin.x * local_ray.direction().x + local_ray.origin.z * local_ray.direction().z);
 		double c = local_ray.origin.x * local_ray.origin.x + local_ray.origin.z * local_ray.origin.z - 1;
 		double discriminant = b * b - 4 * a * c;
 		if (discriminant < 0) {
@@ -142,12 +133,12 @@ void Cylinder::local_intersect(const Ray& local_ray, IntersectionList& out) cons
 			std::swap(t0, t1);
 		}
 
-		double y0 = local_ray.origin.y + t0 * local_ray.direction.y;
+		double y0 = local_ray.origin.y + t0 * local_ray.direction().y;
 		if (minimum < y0 && y0 < maximum) {
 			out.append(Intersection(t0, this));
 		}
 
-		double y1 = local_ray.origin.y + t1 * local_ray.direction.y;
+		double y1 = local_ray.origin.y + t1 * local_ray.direction().y;
 		if (minimum < y1 && y1 < maximum) {
 			out.append(Intersection(t1, this));
 		}
@@ -157,24 +148,24 @@ void Cylinder::local_intersect(const Ray& local_ray, IntersectionList& out) cons
 }
 
 void Cylinder::intersect_caps(const Ray& local_ray, IntersectionList& out) const {
-	if (!closed || IsEqual(local_ray.direction.y, 0)) {
+	if (!closed) {
 		return;
 	}
 
-	double t = (minimum - local_ray.origin.y) / local_ray.direction.y;
+	double t = (minimum - local_ray.origin.y) * local_ray.invdirection().y;
 	if (check_cap(local_ray, t)) {
 		out.append(Intersection(t, this));
 	}
 
-	t = (maximum - local_ray.origin.y) / local_ray.direction.y;
+	t = (maximum - local_ray.origin.y) * local_ray.invdirection().y;
 	if (check_cap(local_ray, t)) {
 		out.append(Intersection(t, this));
 	}
 }
 
 bool Cylinder::check_cap(const Ray& ray, double t) const {
-	double x = ray.origin.x + ray.direction.x * t;
-	double z = ray.origin.z + ray.direction.z * t;
+	double x = ray.origin.x + ray.direction().x * t;
+	double z = ray.origin.z + ray.direction().z * t;
 
 	return (x * x + z * z) <= 1;
 }
@@ -196,14 +187,14 @@ Vec3 Cylinder::local_normal_at(const Point3& local_point) const {
 }
 
 void Cone::local_intersect(const Ray& local_ray, IntersectionList& out) const {
-	double a = local_ray.direction.x * local_ray.direction.x - local_ray.direction.y * local_ray.direction.y  + local_ray.direction.z * local_ray.direction.z;
-	double b = 2 * (local_ray.origin.x * local_ray.direction.x - local_ray.origin.y * local_ray.direction.y + local_ray.origin.z * local_ray.direction.z);
+	double a = local_ray.direction().x * local_ray.direction().x - local_ray.direction().y * local_ray.direction().y  + local_ray.direction().z * local_ray.direction().z;
+	double b = 2 * (local_ray.origin.x * local_ray.direction().x - local_ray.origin.y * local_ray.direction().y + local_ray.origin.z * local_ray.direction().z);
 	double c = local_ray.origin.x * local_ray.origin.x - local_ray.origin.y * local_ray.origin.y + local_ray.origin.z * local_ray.origin.z;
 
 	if (IsEqual(a, 0)) {
 		if (!IsEqual(b,0)) {
 			double t = -c / (2 * b);
-			double y = local_ray.origin.y + t * local_ray.direction.y;
+			double y = local_ray.origin.y + t * local_ray.direction().y;
 			if (minimum < y && y < maximum) {
 				out.append(Intersection(t, this));
 			}
@@ -226,12 +217,12 @@ void Cone::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 			std::swap(t0, t1);
 		}
 
-		double y0 = local_ray.origin.y + t0 * local_ray.direction.y;
+		double y0 = local_ray.origin.y + t0 * local_ray.direction().y;
 		if (minimum < y0 && y0 < maximum) {
 			out.append(Intersection(t0, this));
 		}
 
-		double y1 = local_ray.origin.y + t1 * local_ray.direction.y;
+		double y1 = local_ray.origin.y + t1 * local_ray.direction().y;
 		if (minimum < y1 && y1 < maximum) {
 			out.append(Intersection(t1, this));
 		}
@@ -241,25 +232,25 @@ void Cone::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 }
 
 void Cone::intersect_caps(const Ray& local_ray, IntersectionList& out) const {
-	if (!closed || IsEqual(local_ray.direction.y, 0)) {
+	if (!closed) {
 		return;
 	}
 
 	// cone radius = cone Y = minimum for cap.
-	double t = (minimum - local_ray.origin.y) / local_ray.direction.y;
+	double t = (minimum - local_ray.origin.y) * local_ray.invdirection().y;
 	if (check_cap(local_ray, t, abs(minimum))) {
 		out.append(Intersection(t, this));
 	}
 
-	t = (maximum - local_ray.origin.y) / local_ray.direction.y;
+	t = (maximum - local_ray.origin.y) * local_ray.invdirection().y;
 	if (check_cap(local_ray, t, abs(maximum))) {
 		out.append(Intersection(t, this));
 	}
 }
 
 bool Cone::check_cap(const Ray& ray, double t, double radius) const {
-	double x = ray.origin.x + ray.direction.x * t;
-	double z = ray.origin.z + ray.direction.z * t;
+	double x = ray.origin.x + ray.direction().x * t;
+	double z = ray.origin.z + ray.direction().z * t;
 
 	return (x * x + z * z) <= radius;
 }
@@ -292,11 +283,11 @@ void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	}
 
 	{
-		Bounds b = bounds();
+		const Bounds& b = _bounds;
 		// todo: copy and paste from cube.
-		auto [xmin, xmax] = Cube::check_axis(b.min.x, b.max.x, local_ray.origin.x, local_ray.direction.x);
-		auto [ymin, ymax] = Cube::check_axis(b.min.y, b.max.y, local_ray.origin.y, local_ray.direction.y);
-		auto [zmin, zmax] = Cube::check_axis(b.min.z, b.max.z, local_ray.origin.z, local_ray.direction.z);
+		auto [xmin, xmax] = Cube::check_axis(b.min.x, b.max.x, local_ray.origin.x, local_ray.invdirection().x);
+		auto [ymin, ymax] = Cube::check_axis(b.min.y, b.max.y, local_ray.origin.y, local_ray.invdirection().y);
+		auto [zmin, zmax] = Cube::check_axis(b.min.z, b.max.z, local_ray.origin.z, local_ray.invdirection().z);
 
 		// overall min, is largest of the per axis min.
 		double tmin = std::max(xmin, std::max(ymin, zmin));
