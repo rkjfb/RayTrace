@@ -53,5 +53,8 @@
     <ClInclude Include="Chapter14.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="lots_of_spheres.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

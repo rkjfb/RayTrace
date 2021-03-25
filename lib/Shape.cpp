@@ -318,29 +318,26 @@ Vec3 Group::local_normal_at(const Point3& local_point) const {
 	return Vec3(0, 0, 1);
 }
 
-// bugbug: don't want to compute this dynamically - grow bounds on shape add()?
-Bounds Group::bounds() const {
-	Bounds bounds;
+void Group::add(std::unique_ptr<Shape> shape) {
+	shape->parent = this;
 
-	for (auto& shape : _shapes) {
-		Bounds b = shape->bounds();
-		std::array<Point3, 8> corners = {
-			Point3(b.min.x, b.min.y, b.min.z),
-			Point3(b.min.x, b.min.y, b.max.z),
-			Point3(b.min.x, b.max.y, b.min.z),
-			Point3(b.min.x, b.max.y, b.max.z),
+	Bounds b = shape->bounds();
+	std::array<Point3, 8> corners = {
+		Point3(b.min.x, b.min.y, b.min.z),
+		Point3(b.min.x, b.min.y, b.max.z),
+		Point3(b.min.x, b.max.y, b.min.z),
+		Point3(b.min.x, b.max.y, b.max.z),
 
-			Point3(b.max.x, b.max.y, b.max.z),
-			Point3(b.max.x, b.max.y, b.min.z),
-			Point3(b.max.x, b.min.y, b.max.z),
-			Point3(b.max.x, b.min.y, b.min.z),
-		};
+		Point3(b.max.x, b.max.y, b.max.z),
+		Point3(b.max.x, b.max.y, b.min.z),
+		Point3(b.max.x, b.min.y, b.max.z),
+		Point3(b.max.x, b.min.y, b.min.z),
+	};
 
-		for (const auto& p : corners) {
-			Point3 w = shape->transform * p;
-			bounds.add(w);
-		}
+	for (const auto& p : corners) {
+		Point3 w = shape->transform * p;
+		_bounds.add(w);
 	}
 
-	return bounds;
+	_shapes.push_back(std::move(shape));
 }

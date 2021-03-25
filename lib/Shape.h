@@ -243,6 +243,8 @@ namespace ray {
 	class Group : public Shape
 	{
 	public:
+		Bounds _bounds;
+
 		Group() = default;
 		Group(const Matrix4& t) : Shape(t) {}
 
@@ -258,7 +260,7 @@ namespace ray {
 			return !operator==(rhs);
 		}
 
-		Bounds bounds() const override;
+		Bounds bounds() const override { return _bounds; }
 		Vec3 local_normal_at(const Point3& local_point) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 
@@ -266,10 +268,7 @@ namespace ray {
 			return _shapes.size();
 		}
 
-		void add(std::unique_ptr<Shape> shape) {
-			shape->parent = this;
-			_shapes.push_back(std::move(shape));
-		}
+		void add(std::unique_ptr<Shape> shape);
 
 		const std::vector<std::unique_ptr<Shape>>& shapes() const {
 			return _shapes;
