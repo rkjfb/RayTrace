@@ -313,17 +313,7 @@ void Group::add(std::unique_ptr<Shape> shape) {
 	shape->parent = this;
 
 	Bounds b = shape->bounds();
-	std::array<Point3, 8> corners = {
-		Point3(b.min.x, b.min.y, b.min.z),
-		Point3(b.min.x, b.min.y, b.max.z),
-		Point3(b.min.x, b.max.y, b.min.z),
-		Point3(b.min.x, b.max.y, b.max.z),
-
-		Point3(b.max.x, b.max.y, b.max.z),
-		Point3(b.max.x, b.max.y, b.min.z),
-		Point3(b.max.x, b.min.y, b.max.z),
-		Point3(b.max.x, b.min.y, b.min.z),
-	};
+	std::array<Point3, 8> corners = b.corners();
 
 	for (const auto& p : corners) {
 		Point3 w = shape->transform * p;

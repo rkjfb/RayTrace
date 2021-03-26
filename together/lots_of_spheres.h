@@ -31,20 +31,19 @@ public:
 				auto gy = std::make_unique<Group>();
 				for (int z = -range; z < range; z++) {
 					auto sphere = std::make_unique<Sphere>();
-					sphere->transform = Matrix4::translate(x, y, z);
-					gy->add(std::move(sphere));
+					sphere->transform = Matrix4::translate(x, y, z) * Matrix4::scale(0.2,0.2,0.2);
+					sphere->material.pattern = std::make_unique<Solid>(Color::cssrgb(150 + 50 * x, 150 + 50 * y, 150 + 50 * z));
+					vec.push_back(std::move(sphere));
 				}
-				gx->add(std::move(gy));
 			}
-			vec.push_back(std::move(gx));
 		}
 
 		PointLight light(Point3(-10, 10, -10), Color(1, 1, 1));
 
 		World world(light, std::move(vec));
 
-		Camera camera(1000, 1000, pi / 3);
-		Point3 from(0, 0, -10);
+		Camera camera(4000, 2000, pi / 3);
+		Point3 from(0, 0, -20);
 		Point3 to(0, 0, 0);
 		Vec3 up(0, 1, 0);
 		camera.transform = Matrix4::view(from, to, up);

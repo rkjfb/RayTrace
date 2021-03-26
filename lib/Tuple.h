@@ -148,6 +148,34 @@ public:
 		max.y = std::max(max.y, p.y);
 		max.z = std::max(max.z, p.z);
 	}
+
+	void add(const Bounds& b) {
+		add(b.min);
+		add(b.max);
+	}
+
+	double area() const {
+		return (max.x - min.x) * (max.y - min.y) * (max.z - min.z);
+	}
+
+	Point3 center() const {
+		return Point3((max.x + min.x) / 2, (max.y + min.y) / 2, (max.z - min.z) / 2);
+	}
+
+	std::array<Point3, 8> corners() {
+		return {
+			Point3(min.x, min.y, min.z),
+			Point3(min.x, min.y, max.z),
+			Point3(min.x, max.y, min.z),
+			Point3(min.x, max.y, max.z),
+
+			Point3(max.x, max.y, max.z),
+			Point3(max.x, max.y, min.z),
+			Point3(max.x, min.y, max.z),
+			Point3(max.x, min.y, min.z)
+		};
+	}
+
 };
 
 } // namespace ray
