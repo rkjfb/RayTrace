@@ -33,7 +33,7 @@ namespace ray {
 
 		Vec3 normal_at(const Point3& world_point) const;
 		virtual void local_intersect(const Ray& inr, IntersectionList& out) const = 0;
-		void intersect(const Ray& inr, IntersectionList& out) const;
+		virtual void intersect(const Ray& inr, IntersectionList& out) const;
 		Point3 world_to_object(Point3 point) const;
 		Vec3 normal_to_world(Vec3 normal) const;
 	};
@@ -277,6 +277,14 @@ namespace ray {
 	private:
 		std::vector<std::unique_ptr<Shape>> _shapes;
 	};
+
+	// A group without a transform, used by spatialize.
+	class NoopGroup : public Group {
+		void intersect(const Ray& local_ray, IntersectionList& out) const override {
+			return local_intersect(local_ray, out);
+		}
+	};
+
 
 
 

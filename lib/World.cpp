@@ -156,7 +156,7 @@ std::vector<std::unique_ptr<Shape>> World::spatialize(std::vector<std::unique_pt
 			continue;
 		}
 
-		auto group = std::make_unique<Group>();
+		auto group = std::make_unique<NoopGroup>();
 
 		while (!b.vec.empty()) {
 			auto shape = std::move(b.vec.back());
