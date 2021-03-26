@@ -25,7 +25,6 @@ std::vector<std::unique_ptr<Shape>> World::spatialize(std::vector<std::unique_pt
 		return shapes;
 	}
 
-	// todo: map(shape)->transformed bounds.
 	std::unordered_map<Shape*, Bounds> txbounds;
 	
 	// Bounds are stored in shape-local space, need to transform them into parent space to make them comparable.
@@ -58,7 +57,6 @@ std::vector<std::unique_ptr<Shape>> World::spatialize(std::vector<std::unique_pt
 	// Buckets
 	struct Bucket {
 		Point3 bcenter;
-		// todo: consider optimizing on perimeter instead of area.
 		double min_area;
 		Shape* min_shape;
 		std::vector<std::unique_ptr<Shape>> vec;
