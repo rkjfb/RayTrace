@@ -157,6 +157,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="balls_in_room.h" />
     <ClInclude Include="Chapter10.h" />
     <ClInclude Include="Chapter11.h" />
     <ClInclude Include="Chapter12.h" />

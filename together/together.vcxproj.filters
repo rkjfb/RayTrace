@@ -56,5 +56,8 @@
     <ClInclude Include="lots_of_spheres.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="balls_in_room.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

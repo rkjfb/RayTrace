@@ -10,8 +10,9 @@
 #include "Chapter12.h"
 #include "Chapter13.h"
 #include "lots_of_spheres.h"
+#include "balls_in_room.h"
 
 int main() {
-    LotsSpheres chap;
+    BallsInRoom chap;
     chap.run();
 }
