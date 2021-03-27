@@ -163,6 +163,7 @@
     <ClInclude Include="Chapter12.h" />
     <ClInclude Include="Chapter13.h" />
     <ClInclude Include="Chapter14.h" />
+    <ClInclude Include="Chapter15.h" />
     <ClInclude Include="Chapter2.h" />
     <ClInclude Include="Chapter4.h" />
     <ClInclude Include="Chapter5.h" />
