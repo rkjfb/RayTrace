@@ -60,6 +60,7 @@
     <ClCompile Include="test_Shapes.cpp" />
     <ClCompile Include="test_Spheres.cpp" />
     <ClCompile Include="test_Transformations.cpp" />
+    <ClCompile Include="test_Triangles.cpp" />
     <ClCompile Include="test_Tuple.cpp" />
     <ClCompile Include="test_World.cpp" />
   </ItemGroup>

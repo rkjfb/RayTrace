@@ -276,6 +276,40 @@ Vec3 Cone::local_normal_at(const Point3& local_point) const {
 	return Vec3(local_point.x, y, local_point.z);
 }
 
+// Moller-Trumbore algorithm
+// https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
+void Triangle::local_intersect(const Ray& local_ray, IntersectionList& out) const {
+	Vec3 dir_cross_e2 = local_ray.direction().cross(e2);
+	double det = e1.dot(dir_cross_e2);
+	if (IsEqual(det, 0)) {
+		// Ray direction is parallel to plane.
+		return;
+	}
+
+	double f = 1 / det;
+
+	Vec3 p1_to_origin = local_ray.origin - p1;
+	double u = f * p1_to_origin.dot(dir_cross_e2);
+	if (u < 0 || u > 1) {
+		// Miss p1-p3 edge
+		return;
+	}
+
+	Vec3 origin_cross_e1 = p1_to_origin.cross(e1);
+	double v = f * local_ray.direction().dot(origin_cross_e1);
+	if (v < 0 || (u + v) > 1) {
+		// Miss other 2 edges.
+		return;
+	}
+
+	// fake intersection for short-term testing.
+	out.append(Intersection(1, this));
+}
+
+Vec3 Triangle::local_normal_at(const Point3& local_point) const {
+	return normal;
+}
+
 void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	if (_shapes.size() == 0) {
 		// nothing to intersect.

@@ -3,6 +3,8 @@
 #include "Matrix.h"
 #include "Material.h"
 
+// todo: lots of duplicate code (eg. cone&cylinder, cube&aabb)
+
 namespace ray {
 	class Intersection;
 	class IntersectionList;
@@ -202,6 +204,42 @@ namespace ray {
 
 	};
 
+	class Triangle : public Shape
+	{
+	public:
+		Point3 p1, p2, p3;
+		Vec3 e1, e2, normal;
+
+		Triangle(const Point3& inp1, const Point3& inp2, const Point3& inp3) : p1(inp1), p2(inp2), p3(inp3) {
+			e1 = p2 - p1;
+			e2 = p3 - p1;
+			normal = e2.cross(e1).norm();
+		}
+
+		friend std::ostream& operator<<(std::ostream& os, const Triangle& rhs) {
+			return os << "Triangle(" << rhs.transform << ", " << rhs.material << ")";
+		}
+
+		bool operator==(const Triangle& rhs) const {
+			return Shape::operator==(rhs) && p1 == rhs.p1 && p2 == rhs.p2 && p3 == rhs.p3 && e1 == rhs.e1 && e2 == rhs.e2 && normal == rhs.normal;
+		}
+
+		bool operator!=(const Triangle& rhs) const {
+			return !operator==(rhs);
+		}
+
+		Bounds bounds() const override {
+			Bounds b;
+			b.add(p1);
+			b.add(p2);
+			b.add(p3);
+			return b;
+		}
+
+		Vec3 local_normal_at(const Point3& local_point) const override;
+		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+	};
+
 	// Used for unit testing Shape.
 	class TestShape : public Shape
 	{
@@ -283,6 +321,8 @@ namespace ray {
 		void intersect(const Ray& local_ray, IntersectionList& out) const override {
 			return local_intersect(local_ray, out);
 		}
+
+		// todo: move World::spatialize to be a static in here..
 	};
 
 
