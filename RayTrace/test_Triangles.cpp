@@ -110,7 +110,20 @@ TEST(Triangle, MissP2P3) {
 //  When xs ← local_intersect(t, r)
 //  Then xs.count = 1
 //    And xs[0].t = 2
-//
+TEST(Triangle, Hit) {
+	Point3 p1(0, 1, 0);
+	Point3 p2(-1, 0, 0);
+	Point3 p3(1, 0, 0);
+	Triangle t(p1, p2, p3);
+
+	Ray r(Point3(0, 0.5, -2), Vec3(0, 0, 1));
+
+	IntersectionList xs;
+	t.local_intersect(r, xs);
+	EXPECT_EQ(xs.size(), 1);
+	EXPECT_EQ(xs.at(0).t, 2);
+}
+
 //Scenario: Finding the normal on a triangle
 //  Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
 //  When n1 ← local_normal_at(t, point(0, 0.5, 0))

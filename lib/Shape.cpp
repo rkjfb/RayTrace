@@ -282,7 +282,7 @@ void Triangle::local_intersect(const Ray& local_ray, IntersectionList& out) cons
 	Vec3 dir_cross_e2 = local_ray.direction().cross(e2);
 	double det = e1.dot(dir_cross_e2);
 	if (IsEqual(det, 0)) {
-		// Ray direction is parallel to plane.
+		// Ray is parallel to plane.
 		return;
 	}
 
@@ -302,8 +302,8 @@ void Triangle::local_intersect(const Ray& local_ray, IntersectionList& out) cons
 		return;
 	}
 
-	// fake intersection for short-term testing.
-	out.append(Intersection(1, this));
+	double t = f * e2.dot(origin_cross_e1);
+	out.append(Intersection(t, this));
 }
 
 Vec3 Triangle::local_normal_at(const Point3& local_point) const {
