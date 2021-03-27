@@ -283,18 +283,22 @@ void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	}
 
 	{
+		// Optimization from: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
+
 		const Bounds& b = _bounds;
 		// todo: copy and paste from cube.
-		auto [xmin, xmax] = Cube::check_axis(b.min.x, b.max.x, local_ray.origin.x, local_ray.invdirection().x);
+		auto [tmin, tmax] = Cube::check_axis(b.min.x, b.max.x, local_ray.origin.x, local_ray.invdirection().x);
 		auto [ymin, ymax] = Cube::check_axis(b.min.y, b.max.y, local_ray.origin.y, local_ray.invdirection().y);
+
+		if (tmin > ymax || ymin > tmax) {
+			return;
+		}
+
+		tmin = std::max(tmin, ymin);
+		tmax = std::min(tmax, ymax);
 		auto [zmin, zmax] = Cube::check_axis(b.min.z, b.max.z, local_ray.origin.z, local_ray.invdirection().z);
 
-		// overall min, is largest of the per axis min.
-		double tmin = std::max(xmin, std::max(ymin, zmin));
-		double tmax = std::min(xmax, std::min(ymax, zmax));
-
-		if (tmin > tmax) {
-			// bounding box empty, no need to check children.
+		if (tmin > zmax || zmin > tmax) {
 			return;
 		}
 	}

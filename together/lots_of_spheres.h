@@ -23,7 +23,7 @@ public:
 	void run() {
 		std::vector<std::unique_ptr<Shape>> vec;
 
-		int range = 5;
+		int range = 3;
 		int step = 1;
 		for (int x = -range; x < range; x++) {
 			auto gx = std::make_unique<Group>();
@@ -31,11 +31,12 @@ public:
 				auto gy = std::make_unique<Group>();
 				for (int z = -range; z < range; z++) {
 					auto sphere = std::make_unique<Sphere>();
-					sphere->transform = Matrix4::translate(x+0.5, y+0.5, z+0.5) * Matrix4::scale(0.25,0.25,0.25);
+					sphere->transform = Matrix4::translate(x+0.5, y+0.5, z+0.5) * Matrix4::scale(0.4,0.4,0.4);
 					sphere->material = Material::glass();
 					sphere->material.ambient = 0.1;
 					sphere->material.diffuse = 0.5;
 					sphere->material.specular = 0.5;
+					sphere->material.transparency = 0.5;
 					sphere->material.pattern = std::make_unique<Solid>(Color::cssrgb(150 + 50 * x, 150 + 50 * y, 150 + 50 * z));
 					vec.push_back(std::move(sphere));
 				}
