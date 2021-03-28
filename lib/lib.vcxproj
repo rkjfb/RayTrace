@@ -175,6 +175,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Tuple.h" />
+    <ClInclude Include="Wavefront.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +198,7 @@
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Tuple.cpp" />
+    <ClCompile Include="Wavefront.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

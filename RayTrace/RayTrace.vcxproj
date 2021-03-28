@@ -62,6 +62,7 @@
     <ClCompile Include="test_Transformations.cpp" />
     <ClCompile Include="test_Triangles.cpp" />
     <ClCompile Include="test_Tuple.cpp" />
+    <ClCompile Include="test_Wavefront.cpp" />
     <ClCompile Include="test_World.cpp" />
   </ItemGroup>
   <ItemGroup>
