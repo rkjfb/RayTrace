@@ -312,6 +312,11 @@ namespace ray {
 			return _shapes;
 		}
 
+		// removes group shape array
+		std::vector<std::unique_ptr<Shape>> extract_shapes() {
+			return std::move(_shapes);
+		}
+
 	private:
 		std::vector<std::unique_ptr<Shape>> _shapes;
 	};
@@ -322,7 +327,9 @@ namespace ray {
 			return local_intersect(local_ray, out);
 		}
 
-		// todo: move World::spatialize to be a static in here..
+	public:
+		// Inserts NoopGroups into shapes to get spatial locality. Reducing intersection 20x in some scenes.
+		static std::vector<std::unique_ptr<Shape>> spatialize(std::vector<std::unique_ptr<Shape>>&& shapes);
 	};
 
 

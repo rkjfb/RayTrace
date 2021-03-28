@@ -12,7 +12,7 @@ namespace ray {
 		World(const PointLight& light, std::vector<std::unique_ptr<Shape>>&& shapes) :
 			_light(light),
 			_shapes(std::move(shapes)) {
-			_shapes = spatialize(std::move(_shapes));
+			_shapes = NoopGroup::spatialize(std::move(_shapes));
 		}
 
 		// default: get default light + 2 stock shapes
@@ -20,8 +20,6 @@ namespace ray {
 
 		// supply light + get 2 stock shapes
 		World(const PointLight& light) : World(light, make_default_shapes()) {}
-
-		std::vector<std::unique_ptr<Shape>> spatialize(std::vector<std::unique_ptr<Shape>>&& shapes);
 
 		static std::vector<std::unique_ptr<Shape>> make_default_shapes();
 

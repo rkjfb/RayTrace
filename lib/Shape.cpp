@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <stdexcept>
+#include <unordered_map>
 
 #include "Shape.h"
 #include "Intersect.h"
@@ -359,4 +360,168 @@ void Group::add(std::unique_ptr<Shape> shape) {
 	}
 
 	_shapes.push_back(std::move(shape));
+}
+
+// In large scenes (1000 shapes), intersections are currently ~90% of cpu time. The goal is to get this smaller. Manually bucketing gets a 4x improvement. This tries to automate the process.
+// tries to group shapes by space to reduce intersections. ideally from O(n) to O(logn). Algorithm:
+// 1. compute cumulative bounds
+// 2. for each shape: if bounds > 50% total, put in "huge" bucket
+//		(we're going to be intersecting this shape a lot no matter what ..)
+// 3. find center point, creating 8 buckets
+// 4. foreach bucket: find the shape that adds the least space to a bucket center point 
+//		(if new bounds>50% of cumulative, its a miss, so we might not use all 8 buckets)
+// 4.1. if we only have 1 bucket, give up.
+// 5. foreach shape: add to bucket which results in the smallest increase in volume
+// 6. foreach bucket: if it has >5 items, recurse into bucket
+// 7. add back huge
+std::vector<std::unique_ptr<Shape>> NoopGroup::spatialize(std::vector<std::unique_ptr<Shape>>&& shapes) {
+
+	if (shapes.size() < 8) {
+		// No point in bucketizing small lists.
+		return shapes;
+	}
+
+	std::unordered_map<Shape*, Bounds> txbounds;
+
+	// Bounds are stored in shape-local space, need to transform them into parent space to make them comparable.
+	// Also calculate cumulative bounds.
+	Bounds cumulative;
+	for (const auto& s : shapes) {
+		Bounds shape_bounds;
+		for (const auto& p : s->bounds().corners()) {
+			Point3 t = s->transform * p;
+			shape_bounds.add(t);
+		}
+		cumulative.add(shape_bounds);
+		txbounds[s.get()] = shape_bounds;
+	}
+
+	// Set aside huge area shapes.
+	std::vector<std::unique_ptr<Shape>> huge;
+	double huge_area = cumulative.area() / 2;
+	auto huge_it = std::partition(shapes.begin(), shapes.end(), [&](const auto& s) {
+		return txbounds[s.get()].area() < huge_area;
+		});
+	if (huge_it != shapes.end()) {
+		std::move(huge_it, shapes.end(), std::back_inserter(huge));
+		shapes.erase(huge_it, shapes.end());
+	}
+
+	// Center of cumulative bounds.
+	Point3 center = cumulative.center();
+
+	// Buckets
+	struct Bucket {
+		Point3 bcenter;
+		double min_area;
+		Shape* min_shape;
+		std::vector<std::unique_ptr<Shape>> vec;
+		Bounds bounds;
+	};
+	std::array<Bucket, 8> bucket;
+
+	// Center of buckets
+	std::array<Point3, 8> corners = cumulative.corners();
+	for (int i = 0; i < corners.size(); i++) {
+		Bounds b;
+		b.add(corners[i]);
+		b.add(center);
+		bucket[i].bcenter = b.center();
+	}
+
+	// Find best shape for bucket
+	// Note that there is a weird case where 1 shape is best for 2 buckets.
+	for (auto& b : bucket) {
+		b.min_area = std::numeric_limits<double>::max();
+		b.min_shape = nullptr;
+		for (const auto& s : shapes) {
+			Bounds bounds;
+			bounds.add(b.bcenter);
+			bounds.add(txbounds[s.get()]);
+			double area = bounds.area();
+			if (area < b.min_area && area < huge_area) {
+				b.min_area = bounds.area();
+				b.min_shape = s.get();
+			}
+		}
+	}
+
+	// Look for duplicate min_shapes
+	// and update bounds.
+	for (int i = 0; i < bucket.size(); i++) {
+		Shape* s = bucket[i].min_shape;
+		if (s != nullptr) {
+			bucket[i].bounds = txbounds[s];
+			for (int j = i + 1; j < bucket.size(); j++) {
+				if (bucket[j].min_shape == s) {
+					bucket[j].min_shape = nullptr;
+				}
+			}
+		}
+	}
+
+	// Check if bucketing produced a meaningful divide. If not, reconstruct shapes and return it..
+	int64_t buckets = std::count_if(std::begin(bucket), std::end(bucket), [](auto& b) { return b.min_shape != nullptr; });
+	if (buckets < 2) {
+		shapes.insert(shapes.end(), std::make_move_iterator(huge.begin()), std::make_move_iterator(huge.end()));
+		return shapes;
+	}
+
+	// Foreach shape, add to bucket where it adds the least bounds.
+	while (!shapes.empty()) {
+		auto shape = std::move(shapes.back());
+		shapes.pop_back();
+		Bucket* min_bucket = nullptr;
+		double min_area = std::numeric_limits<double>::max();
+		for (auto& b : bucket) {
+			if (b.min_shape == nullptr) {
+				continue;
+			}
+
+			Bounds bounds = b.bounds;
+			bounds.add(txbounds[shape.get()]);
+			if (bounds.area() < min_area) {
+				min_bucket = &b;
+				min_area = bounds.area();
+			}
+		}
+
+		min_bucket->vec.push_back(std::move(shape));
+	}
+
+	// Recurse into buckets
+	for (auto& b : bucket) {
+		if (b.min_shape == nullptr) {
+			continue;
+		}
+
+		b.vec = spatialize(std::move(b.vec));
+	}
+
+	// rebuild bucketized shapes.
+	assert(shapes.size() == 0);
+	std::vector<std::unique_ptr<Shape>> spatialized;
+	spatialized.insert(spatialized.end(), std::make_move_iterator(huge.begin()), std::make_move_iterator(huge.end()));
+
+	for (auto& b : bucket) {
+		if (b.min_shape == nullptr) {
+			continue;
+		}
+
+		if (b.vec.empty()) {
+			continue;
+		}
+
+		auto group = std::make_unique<NoopGroup>();
+
+		while (!b.vec.empty()) {
+			auto shape = std::move(b.vec.back());
+			b.vec.pop_back();
+			group->add(std::move(shape));
+		}
+
+		spatialized.push_back(std::move(group));
+	}
+
+	return spatialized;
 }

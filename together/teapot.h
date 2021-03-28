@@ -20,7 +20,6 @@ class Teapot
 
 public:
 
-
 	void run() {
 		std::ifstream file("teapot.obj");
 		Wavefront w(file);
@@ -41,7 +40,7 @@ public:
 
 		World world(light, std::move(vec));
 
-		Camera camera(400, 200, pi / 3);
+		Camera camera(4000, 2000, pi / 3);
 		Point3 from(0, 10, -10);
 		Point3 to(0, 0, 0);
 		Vec3 up(0, 1, 0);

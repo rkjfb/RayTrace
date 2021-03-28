@@ -37,7 +37,13 @@ namespace ray {
 			auto mega = std::make_unique<Group>();
 
 			for (auto& p : group) {
-				mega->add(std::move(p.second));
+				std::unique_ptr<Group> g = std::move(p.second);
+				std::vector<std::unique_ptr<Shape>> vec = g->extract_shapes();
+				// Spatialize as some models might have 1000s of triangles. (eg. MIT teapot has ~6000)
+				auto spatialized = NoopGroup::spatialize(std::move(vec));
+				for (auto& s : spatialized) {
+					mega->add(std::move(s));
+				}
 			}
 
 			// not expecting parser re-use, but just in case ..
