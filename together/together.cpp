@@ -12,8 +12,9 @@
 #include "lots_of_spheres.h"
 #include "balls_in_room.h"
 #include "Chapter15.h"
+#include "teapot.h"
 
 int main() {
-    Chapter15 chap;
+    Teapot chap;
     chap.run();
 }
