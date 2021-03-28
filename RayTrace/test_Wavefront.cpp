@@ -160,7 +160,24 @@ TEST(Wavefront, Polygon) {
 //    And t2.p1 = parser.vertices[1]
 //    And t2.p2 = parser.vertices[3]
 //    And t2.p3 = parser.vertices[4]
-//
+TEST(Wavefront, NamedGroups) {
+	std::ifstream file("triangles.obj");
+	Wavefront w(file);
+
+	Point3 p1(-1, 1, 0);
+	Point3 p2(-1, 0, 0);
+	Point3 p3(1, 0, 0);
+	Point3 p4(1, 1, 0);
+
+	const auto& g1 = w.named_group("FirstGroup");
+	const auto& s1 = g1->shapes();
+	EXPECT_EQ(*s1[0], Triangle(p1, p2, p3));
+
+	const auto& g2 = w.named_group("SecondGroup");
+	const auto& s2 = g2->shapes();
+	EXPECT_EQ(*s2[0], Triangle(p1, p3, p4));
+}
+
 //Scenario: Converting an OBJ file to a group
 //  Given file ← the file "triangles.obj"
 //    And parser ← parse_obj_file(file)

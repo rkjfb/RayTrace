@@ -7,19 +7,18 @@
 
 using namespace ray;
 
-void Wavefront::parse(const std::string& obj) {
-	std::stringstream ss(obj);
-	std::string line;
-
+void Wavefront::parse(std::istream& input) {
 	std::string strDouble = R"REGEX(\s+(-?\d*\.?\d+))REGEX";
 	std::regex reDouble(strDouble);
-	std::string strCommand = R"REGEX(\s*([a-z]+))REGEX";
-	std::regex reCommand(strCommand + strDouble + strDouble + strDouble);
+	std::string strCommandNum = R"REGEX(^\s*([a-z]+))REGEX";
+	std::regex reCommandNum(strCommandNum + strDouble + strDouble + strDouble);
+	std::regex reCommandGroup(R"REGEX(^\s*g\s+([a-zA-Z]+))REGEX");
 
-	while (std::getline(ss, line)) {
+	std::string line;
+	while (std::getline(input, line)) {
 		bool matched = false;
 		std::smatch match;
-		if (std::regex_search(line, match, reCommand)) {
+		if (std::regex_search(line, match, reCommandNum)) {
 			if (match[1] == "v") {
 				// eg. v -1.2 3 0.000
 				double x = stod(match[2]);
@@ -47,12 +46,19 @@ void Wavefront::parse(const std::string& obj) {
 				for (int i = 2; i < index.size(); i++) {
 					Point3 latest = vertices[index[i]];
 					auto t = std::make_unique<Triangle>(first, last, latest);
-					group->add(std::move(t));
+					if (group.count(currentGroup) != 1) {
+						group[currentGroup] = std::make_unique<Group>();
+					}
+					group[currentGroup]->add(std::move(t));
 					last = latest;
 				}
 
 				matched = true;
 			}
+		}
+		else if (std::regex_search(line, match, reCommandGroup)) {
+			currentGroup = match[1];
+			matched = true;
 		}
 
 		if (!matched) {
