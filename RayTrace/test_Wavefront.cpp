@@ -184,7 +184,26 @@ TEST(Wavefront, NamedGroups) {
 //  When g ← obj_to_group(parser)
 //  Then g includes "FirstGroup" from parser
 //    And g includes "SecondGroup" from parser
-//
+TEST(Wavefront, MegaGroup) {
+	std::ifstream file("triangles.obj");
+	Wavefront w(file);
+
+	const auto& g1 = w.named_group("FirstGroup");
+	const Group* weak_g1 = g1.get();
+	const auto& g2 = w.named_group("SecondGroup");
+	const Group* weak_g2 = g2.get();
+
+	auto mega = w.get_mega_group();
+	EXPECT_EQ(mega->size(), 2);
+
+	const auto& s = mega->shapes();
+	// group order is not garanteed, so check both.
+	bool found_first = s[0].get() == weak_g1 || s[1].get() == weak_g1;
+	EXPECT_TRUE(found_first);
+	bool found_second = s[0].get() == weak_g2 || s[1].get() == weak_g2;
+	EXPECT_TRUE(found_second);
+}
+
 //Scenario: Vertex normal records
 //  Given file ← a file containing:
 //    """

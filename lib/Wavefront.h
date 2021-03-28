@@ -31,10 +31,25 @@ namespace ray {
 			return group["default"];
 		}
 
+		// Moves all sub-groups into a single group and returns it to caller.
+		// Destroying internal parser state in the process.
+		std::unique_ptr<Group> get_mega_group() {
+			auto mega = std::make_unique<Group>();
+
+			for (auto& p : group) {
+				mega->add(std::move(p.second));
+			}
+
+			// not expecting parser re-use, but just in case ..
+			group.clear();
+			currentGroup = "default";
+
+			return mega;
+		}
+
 	private:
 
 		void init(std::istream& input) {
-			group[currentGroup] = std::make_unique<Group>();
 			// OBJ files use 1-based index, push a dummy vertex to keep numbering consistent.
 			vertices.push_back(Point3(0, 0, 0));
 			parse(input);
