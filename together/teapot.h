@@ -21,17 +21,21 @@ class Teapot
 public:
 
 	void run() {
-		std::ifstream file("teapot.obj");
-		Wavefront w(file);
-
 		std::vector<std::unique_ptr<Shape>> vec;
-		vec.push_back(w.get_mega_group());
+		{
+			std::ifstream file("cow.obj");
+			Wavefront w(file);
+
+			auto g = w.get_mega_group();
+			g->transform = Matrix4::translate(0,-g->bounds().min.y, 0) * Matrix4::rotateY(pi / 2);
+			vec.push_back(std::move(g));
+		}
 
 		{
 			auto s = std::make_unique<Cube>();
 			double scale = 20;
-			s->transform = Matrix4::scale(scale, scale, scale);
-			s->material.pattern = std::make_unique<Checker>(Color::darkorange(), Color::yellow());
+			s->transform = Matrix4::translate(0,scale,0) * Matrix4::scale(scale, scale, scale);
+			s->material.pattern = std::make_unique<Checker>(Color::green(), Color::blanchedalmond());
 			s->material.pattern->transform = Matrix4::scale(1 / scale, 1 / scale, 1 / scale);
 			vec.push_back(std::move(s));
 		}
@@ -41,8 +45,8 @@ public:
 		World world(light, std::move(vec));
 
 		Camera camera(4000, 2000, pi / 3);
-		Point3 from(0, 10, -10);
-		Point3 to(0, 0, 0);
+		Point3 from(-8, 10, -15 );
+		Point3 to(0, 3, 0);
 		Vec3 up(0, 1, 0);
 		camera.transform = Matrix4::view(from, to, up);
 
