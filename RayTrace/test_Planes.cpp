@@ -16,9 +16,9 @@ using namespace ray;
 //    And n3 = vector(0, 1, 0)
 TEST(Plane, ConstantNormal) {
 	Plane plane;
-	EXPECT_EQ(plane.local_normal_at(Point3(0, 0, 0)), Vec3(0, 1, 0));
-	EXPECT_EQ(plane.local_normal_at(Point3(10, 0, -10)), Vec3(0, 1, 0));
-	EXPECT_EQ(plane.local_normal_at(Point3(-5, 0, 150)), Vec3(0, 1, 0));
+	EXPECT_EQ(plane.local_normal_at(Point3(0, 0, 0), Intersection(1, &plane)), Vec3(0, 1, 0));
+	EXPECT_EQ(plane.local_normal_at(Point3(10, 0, -10), Intersection(1, &plane)), Vec3(0, 1, 0));
+	EXPECT_EQ(plane.local_normal_at(Point3(-5, 0, 150), Intersection(1, &plane)), Vec3(0, 1, 0));
 }
 
 //Scenario: Intersect with a ray parallel to the plane

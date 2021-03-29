@@ -338,3 +338,9 @@ TEST(Intersect, SchlickSmall) {
 //  When i ← intersection_with_uv(3.5, s, 0.2, 0.4)
 //  Then i.u = 0.2
 //    And i.v = 0.4
+TEST(Intersect, CtorUV) {
+	auto shape = std::make_unique<Triangle>(Point3(0, 1, 0), Point3(-1, 0, 0), Point3(1, 0, 0));
+	Intersection i(3.5, shape.get(), 0.2, 0.4);
+	EXPECT_EQ(i.u, 0.2);
+	EXPECT_EQ(i.v, 0.4);
+}

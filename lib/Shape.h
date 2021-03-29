@@ -31,9 +31,9 @@ namespace ray {
 
 		virtual Bounds bounds() const = 0;
 
-		virtual Vec3 local_normal_at(const Point3& world_point) const = 0;
+		virtual Vec3 local_normal_at(const Point3& world_point, const Intersection& hit) const = 0;
 
-		Vec3 normal_at(const Point3& world_point) const;
+		Vec3 normal_at(const Point3& world_point, const Intersection& hit) const;
 		virtual void local_intersect(const Ray& inr, IntersectionList& out) const = 0;
 		virtual void intersect(const Ray& inr, IntersectionList& out) const;
 		Point3 world_to_object(Point3 point) const;
@@ -62,7 +62,7 @@ namespace ray {
 			return Bounds(Point3(-1, -1, -1), Point3(1, 1, 1));
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override {
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override {
 			return local_point - Point3(0, 0, 0);
 		}
 
@@ -99,7 +99,7 @@ namespace ray {
 			return Bounds(Point3(-m, 0, -m), Point3(m, 0, m));
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override {
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override {
 			return Vec3(0,1,0);
 		}
 
@@ -128,7 +128,7 @@ namespace ray {
 			return Bounds(Point3(-1, -1, -1), Point3(1, 1, 1));
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override;
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 
 		static std::pair<double, double> check_axis(double bmin, double bmax, double origin, double direction);
@@ -160,7 +160,7 @@ namespace ray {
 			return Bounds(Point3(-1, minimum, -1), Point3(1, maximum, 1));
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override;
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 
 	private:
@@ -195,7 +195,7 @@ namespace ray {
 			return Bounds(Point3(-1, minimum, -1), Point3(1, maximum, 1));
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override;
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 
 	private:
@@ -236,8 +236,15 @@ namespace ray {
 			return b;
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override;
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+	};
+
+	class SmoothTriangle : public Triangle {
+	public:
+		Vec3 n1, n2, n3;
+		SmoothTriangle(const Point3& inp1, const Point3& inp2, const Point3& inp3, const Vec3& in1, const Vec3& in2, const Vec3& in3) : Triangle(inp1, inp2, inp3), n1(in1), n2(in2), n3(in3) {}
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override;
 	};
 
 	// Used for unit testing Shape.
@@ -267,7 +274,7 @@ namespace ray {
 			return Bounds(Point3(-1, -1, -1), Point3(1, 1, 1));
 		}
 
-		Vec3 local_normal_at(const Point3& local_point) const override {
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override {
 			saved_point = local_point;
 			return Vec3(local_point.x, local_point.y, local_point.z);
 		}
@@ -299,7 +306,7 @@ namespace ray {
 		}
 
 		Bounds bounds() const override { return _bounds; }
-		Vec3 local_normal_at(const Point3& local_point) const override;
+		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
 
 		size_t size() {

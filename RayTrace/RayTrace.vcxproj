@@ -58,6 +58,7 @@
     <ClCompile Include="test_Planes.cpp" />
     <ClCompile Include="test_Rays.cpp" />
     <ClCompile Include="test_Shapes.cpp" />
+    <ClCompile Include="test_SmoothTriangles.cpp" />
     <ClCompile Include="test_Spheres.cpp" />
     <ClCompile Include="test_Transformations.cpp" />
     <ClCompile Include="test_Triangles.cpp" />

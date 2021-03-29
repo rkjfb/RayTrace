@@ -84,7 +84,7 @@ TEST(Shape, IntersectTranslated) {
 TEST(Shape, NormalTranslated) {
 	TestShape shape;
 	shape.transform = Matrix4::translate(0, 1, 0);
-	Vec3 n = shape.normal_at(Point3(0, 1.70711, -0.70711));
+	Vec3 n = shape.normal_at(Point3(0, 1.70711, -0.70711), Intersection(1, &shape));
 	EXPECT_EQ(n, Vec3(0, 0.70711, -0.70711));
 }
 
@@ -98,7 +98,7 @@ TEST(Shape, NormalTransformed) {
 	TestShape shape;
 	shape.transform = Matrix4::scale(1, 0.5, 1) * Matrix4::rotateZ(pi / 5);
 	double ss = sqrt(2);
-	Vec3 n = shape.normal_at(Point3(0, ss/2,-ss/2));
+	Vec3 n = shape.normal_at(Point3(0, ss/2,-ss/2), Intersection(1, &shape));
 	EXPECT_EQ(n, Vec3(0, 0.97014, -0.24254));
 }
 
@@ -194,6 +194,6 @@ TEST(Shape, NormalOnChild) {
 
 	g1->add(std::move(g2));
 
-	Vec3 n = weak_s->normal_at(Point3(1.7321, 1.1547, -5.5774));
+	Vec3 n = weak_s->normal_at(Point3(1.7321, 1.1547, -5.5774), Intersection(1, weak_s));
 	EXPECT_EQ(n, Vec3(0.285704, 0.428543, -0.857161));
 }

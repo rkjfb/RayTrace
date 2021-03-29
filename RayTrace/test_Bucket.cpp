@@ -17,7 +17,6 @@ TEST(Bucket, Duplicates) {
 	std::vector<std::unique_ptr<Shape>> vec;
 	for (int i = 0; i < 10; i++) {
 		auto s = std::make_unique<Sphere>();
-		//s->transform = Matrix4::scale(i, i, i);
 		vec.push_back(std::move(s));
 	}
 

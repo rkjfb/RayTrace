@@ -138,10 +138,10 @@ TEST(Triangle, Normal) {
 	Point3 p3(1, 0, 0);
 	Triangle t(p1, p2, p3);
 
-	Vec3 n = t.local_normal_at(Point3(0, 0.5, 0));
+	Vec3 n = t.local_normal_at(Point3(0, 0.5, 0), Intersection(1, &t));
 	EXPECT_EQ(n, t.normal);
-	n = t.local_normal_at(Point3(-0.5, 0.75, 0));
+	n = t.local_normal_at(Point3(-0.5, 0.75, 0), Intersection(1, &t));
 	EXPECT_EQ(n, t.normal);
-	n = t.local_normal_at(Point3(0.5, 0.25, 0));
+	n = t.local_normal_at(Point3(0.5, 0.25, 0), Intersection(1, &t));
 	EXPECT_EQ(n, t.normal);
 }

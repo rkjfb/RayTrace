@@ -160,7 +160,7 @@ TEST(Sphere, IntersectTranslateMiss) {
 //  Then n = vector(1, 0, 0)
 TEST(Sphere, NormalX) {
 	Sphere s;
-	Vec3 n = s.normal_at(Point3(1, 0, 0));
+	Vec3 n = s.normal_at(Point3(1, 0, 0), Intersection(1, &s));
 	EXPECT_EQ(n, Vec3(1,0,0));
 }
 
@@ -170,7 +170,7 @@ TEST(Sphere, NormalX) {
 //  Then n = vector(0, 1, 0)
 TEST(Sphere, NormalY) {
 	Sphere s;
-	Vec3 n = s.normal_at(Point3(0, 1, 0));
+	Vec3 n = s.normal_at(Point3(0, 1, 0), Intersection(1, &s));
 	EXPECT_EQ(n, Vec3(0, 1, 0));
 }
 
@@ -180,7 +180,7 @@ TEST(Sphere, NormalY) {
 //  Then n = vector(0, 0, 1)
 TEST(Sphere, NormalZ) {
 	Sphere s;
-	Vec3 n = s.normal_at(Point3(0, 0, 1));
+	Vec3 n = s.normal_at(Point3(0, 0, 1), Intersection(1, &s));
 	EXPECT_EQ(n, Vec3(0, 0, 1));
 }
 
@@ -191,7 +191,7 @@ TEST(Sphere, NormalZ) {
 TEST(Sphere, NormalNonAxial) {
 	Sphere s;
 	float tt = sqrtf(3) / 3;
-	Vec3 n = s.normal_at(Point3(tt, tt, tt));
+	Vec3 n = s.normal_at(Point3(tt, tt, tt), Intersection(1, &s));
 	EXPECT_EQ(n, Vec3(tt,tt,tt));
 }
 
@@ -202,7 +202,7 @@ TEST(Sphere, NormalNonAxial) {
 TEST(Sphere, NormalNonAxialNorm) {
 	Sphere s;
 	float tt = sqrtf(3) / 3;
-	Vec3 n = s.normal_at(Point3(tt, tt, tt));
+	Vec3 n = s.normal_at(Point3(tt, tt, tt), Intersection(1, &s));
 	Vec3 result = n.norm();
 	EXPECT_EQ(result, n);
 }
@@ -213,7 +213,7 @@ TEST(Sphere, NormalNonAxialNorm) {
 //  Then n = vector(0, 0.70711, -0.70711)
 TEST(Sphere, NormalTranslate) {
 	Sphere s(Matrix4::translate(0,1,0));
-	Vec3 n = s.normal_at(Point3(0, 1.70711f, -0.70711f));
+	Vec3 n = s.normal_at(Point3(0, 1.70711f, -0.70711f), Intersection(1, &s));
 	EXPECT_EQ(n, Vec3(0, 0.70711f, -0.70711f));
 }
 
@@ -227,7 +227,7 @@ TEST(Sphere, NormalTransform) {
 	Matrix4 t = Matrix4::scale(1, 0.5, 1) * Matrix4::rotateZ(pi / 5);
 	Sphere s(t);
 	float st = sqrtf(2) / 2;
-	Vec3 n = s.normal_at(Point3(0, st,-st));
+	Vec3 n = s.normal_at(Point3(0, st,-st), Intersection(1, &s));
 	EXPECT_EQ(n, Vec3(0, 0.97014f, -0.24254f));
 }
 

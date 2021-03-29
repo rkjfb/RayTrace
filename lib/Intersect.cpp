@@ -45,7 +45,7 @@ IntersectionInfo Intersection::infox(const Ray& ray) const {
 	info.object = object;
 	info.point = ray.position(info.t);
 	info.eye = -ray.direction();
-	info.normal = info.object->normal_at(info.point);
+	info.normal = info.object->normal_at(info.point, *this);
 	if (info.normal.dot(info.eye) < 0) {
 		info.inside = true;
 		info.normal = -info.normal;

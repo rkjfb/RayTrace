@@ -43,7 +43,12 @@ namespace ray {
 		const Shape* object;
 		double t;
 
+		// smooth triangle intersection specific.
+		// todo: could this go somewhere that doesn't penalize non-smoothtriangles?
+		double u = 0, v =0;
+
 		Intersection(double time, const Shape* shape) : t(time), object(shape) {}
+		Intersection(double time, const Shape* shape, double inu, double inv) : t(time), object(shape), u(inu), v(inv) {}
 		IntersectionInfo infox(const Ray& ray) const;
 	};
 

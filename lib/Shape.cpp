@@ -7,9 +7,9 @@
 
 using namespace ray;
 
-Vec3 Shape::normal_at(const Point3& world_point) const {
+Vec3 Shape::normal_at(const Point3& world_point, const Intersection& hit) const {
 	Point3 local_point = world_to_object(world_point);
-	Vec3 local_normal = local_normal_at(local_point);
+	Vec3 local_normal = local_normal_at(local_point, hit);
 	return normal_to_world(local_normal);
 }
 
@@ -97,7 +97,7 @@ void Cube::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	}
 }
 
-Vec3 Cube::local_normal_at(const Point3& local_point) const {
+Vec3 Cube::local_normal_at(const Point3& local_point, const Intersection& hit) const {
 	double ax = abs(local_point.x);
 	double ay = abs(local_point.y);
 	double az = abs(local_point.z);
@@ -171,7 +171,7 @@ bool Cylinder::check_cap(const Ray& ray, double t) const {
 	return (x * x + z * z) <= 1;
 }
 
-Vec3 Cylinder::local_normal_at(const Point3& local_point) const {
+Vec3 Cylinder::local_normal_at(const Point3& local_point, const Intersection& hit) const {
 	double dist = local_point.x * local_point.x + local_point.z * local_point.z;
 
 	// top cap
@@ -256,7 +256,7 @@ bool Cone::check_cap(const Ray& ray, double t, double radius) const {
 	return (x * x + z * z) <= radius;
 }
 
-Vec3 Cone::local_normal_at(const Point3& local_point) const {
+Vec3 Cone::local_normal_at(const Point3& local_point, const Intersection& hit) const {
 	double dist = local_point.x * local_point.x + local_point.z * local_point.z;
 
 	// top cap
@@ -304,11 +304,15 @@ void Triangle::local_intersect(const Ray& local_ray, IntersectionList& out) cons
 	}
 
 	double t = f * e2.dot(origin_cross_e1);
-	out.append(Intersection(t, this));
+	out.append(Intersection(t, this, u, v));
 }
 
-Vec3 Triangle::local_normal_at(const Point3& local_point) const {
+Vec3 Triangle::local_normal_at(const Point3& local_point, const Intersection& hit) const {
 	return normal;
+}
+
+Vec3 SmoothTriangle::local_normal_at(const Point3& local_point, const Intersection& hit) const {
+	return n2 * hit.u + n3 * hit.v + n1 * (1-hit.u-hit.v);
 }
 
 void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
@@ -343,7 +347,7 @@ void Group::local_intersect(const Ray& local_ray, IntersectionList& out) const {
 	}
 }
 
-Vec3 Group::local_normal_at(const Point3& local_point) const {
+Vec3 Group::local_normal_at(const Point3& local_point, const Intersection& hit) const {
 	throw new std::runtime_error("its always an error to call group local_normal_at, should be called on children");
 	return Vec3(0, 0, 1);
 }

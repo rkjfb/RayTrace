@@ -102,7 +102,7 @@ TEST(Cylinder, Normal) {
 	};
 
 	for (auto test : expect) {
-		Vec3 actual = c.local_normal_at(test.p);
+		Vec3 actual = c.local_normal_at(test.p, Intersection(1,&c));
 		EXPECT_EQ(test.n, actual);
 	}
 }
@@ -252,7 +252,7 @@ TEST(Cylinder, CapNormal) {
 	};
 
 	for (auto test : expect) {
-		Vec3 actual = c.local_normal_at(test.p);
+		Vec3 actual = c.local_normal_at(test.p, Intersection(1, &c));
 		EXPECT_EQ(test.n, actual);
 	}
 }
