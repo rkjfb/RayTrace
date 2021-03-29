@@ -65,6 +65,8 @@ namespace ray {
 
 		std::string currentGroup = "default";
 		std::unordered_map<std::string, std::unique_ptr<Group>> group;
+		std::vector<double> parseDoubles(const std::string& line);
+		bool parseFace(const std::string& line);
 		void parse(std::istream& input);
 	};
 

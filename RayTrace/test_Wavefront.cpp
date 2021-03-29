@@ -256,3 +256,36 @@ TEST(Wavefront, VertexNormal) {
 //    And t1.n2 = parser.normals[1]
 //    And t1.n3 = parser.normals[2]
 //    And t2 = t1
+TEST(Wavefront, FaceNormal) {
+	Wavefront w(
+		R"literal(
+		v 0 1 0
+		v -1 0 0
+		v 1 0 0
+
+		vn -1 0 0
+		vn 1 0 0
+		vn 0 1 0
+
+		f 1//3 2//1 3//2
+		f 1/0/3 2/102/1 3/14/2
+		)literal");
+
+	auto& group = w.default_group();
+	auto& shapes = group->shapes();
+
+	Point3 p1(0, 1, 0);
+	Point3 p2(-1, 0, 0);
+	Point3 p3(1, 0, 0);
+	Vec3 n1(0, 1, 0);
+	Vec3 n2(-1, 0, 0);
+	Vec3 n3(1, 0, 0);
+
+	SmoothTriangle tri(p1, p2, p3, n1, n2, n3);
+
+	auto& t1 = shapes[0];
+	auto& t2 = shapes[1];
+
+	EXPECT_EQ(*t1, tri);
+	EXPECT_EQ(*t1, *t2);
+}
