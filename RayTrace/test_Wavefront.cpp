@@ -269,6 +269,7 @@ TEST(Wavefront, FaceNormal) {
 
 		f 1//3 2//1 3//2
 		f 1/0/3 2/102/1 3/14/2
+		f -2/0/0 -1/102/-1 0/14/-1
 		)literal");
 
 	auto& group = w.default_group();
@@ -285,7 +286,9 @@ TEST(Wavefront, FaceNormal) {
 
 	auto& t1 = shapes[0];
 	auto& t2 = shapes[1];
+	auto& t3 = shapes[2];
 
 	EXPECT_EQ(*t1, tri);
 	EXPECT_EQ(*t1, *t2);
+	EXPECT_EQ(*t1, *t3);
 }

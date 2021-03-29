@@ -19,11 +19,29 @@ std::vector<double> Wavefront::parseDoubles(const std::string& line) {
 	return vec;
 }
 
+// OBJ format allows negative indices.
+// Negative means subtract from current count.
+int Wavefront::normalizeVecIndex(int i) {
+	if (i < 0) {
+		i = (int)vertices.size() + i;
+	}
+
+	return i;
+}
+int Wavefront::normalizeNormIndex(int i) {
+	if (i < 0) {
+		i = (int)normals.size() + i;
+	}
+
+	return i;
+}
+
 // eg. f 1 2 3 4 5
 // eg. f 1/2/3 2/3/4 3/4/5
 // eg. f 1//3 2//4 3//5
+// eg. f -4//-4 -31//-31 -39//-39
 bool Wavefront::parseFace(const std::string& line) {
-	std::string strNumber = R"REGEX(\s*(\d*)\s*)REGEX";
+	std::string strNumber = R"REGEX(\s*(-?\d*)\s*)REGEX";
 	// note that vertex indices are 1-based
 	std::vector<int> vindex;
 	std::vector<int> nindex;
@@ -35,7 +53,9 @@ bool Wavefront::parseFace(const std::string& line) {
 		std::for_each(std::sregex_iterator(line.begin(), line.end(), reNumber), std::sregex_iterator(),
 			[&](const auto& innerMatch) {
 				if (innerMatch[1] != "") {
-					vindex.push_back(stoi(innerMatch[1]));
+					int i = stoi(innerMatch[1]);
+					i = normalizeVecIndex(i);
+					vindex.push_back(i);
 				}
 			});
 	}
@@ -44,9 +64,13 @@ bool Wavefront::parseFace(const std::string& line) {
 		std::regex reCluster(strNumber + "/" + strNumber + "/" + strNumber);
 		std::for_each(std::sregex_iterator(line.begin(), line.end(), reCluster), std::sregex_iterator(),
 			[&](const auto& innerMatch) {
-				vindex.push_back(stoi(innerMatch[1]));
+				int i = stoi(innerMatch[1]);
+				i = normalizeVecIndex(i);
+				vindex.push_back(i);
 				// texture index is 2
-				nindex.push_back(stoi(innerMatch[3]));
+				int n = stoi(innerMatch[3]);
+				n = normalizeNormIndex(n);
+				nindex.push_back(n);
 			});
 	}
 
