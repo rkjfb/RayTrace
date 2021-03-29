@@ -22,6 +22,20 @@ public:
 
 	void run() {
 		std::vector<std::unique_ptr<Shape>> vec;
+
+		{
+			std::ifstream file("dragon.obj");
+			Wavefront w(file);
+
+			auto g = w.get_mega_group();
+			Bounds bounds = g->bounds();
+			//g->transform = Matrix4::translate(0, 0, 0) * Matrix4::scale(3, 3, 3) * Matrix4::rotateY(pi);
+			Material m;
+			m.pattern = std::make_unique<Solid>(Color::red());
+			//g->update_material(Material::mirror());
+			vec.push_back(std::move(g));
+		}
+
 		{
 			std::ifstream file("teapot_normals.obj");
 			Wavefront w(file);
@@ -32,7 +46,7 @@ public:
 			Material m;
 			m.pattern = std::make_unique<Solid>(Color::red());
 			g->update_material(Material::mirror());
-			vec.push_back(std::move(g));
+			//vec.push_back(std::move(g));
 		}
 
 		{
@@ -46,7 +60,7 @@ public:
 			m.pattern = std::make_unique<Solid>(Color::red());
 			g->update_material(m);
 
-			vec.push_back(std::move(g));
+			//vec.push_back(std::move(g));
 		}
 
 		for (int x = -10; x < 11; x += 5)
@@ -66,7 +80,7 @@ public:
 			}
 
 			g->update_material(m);
-			vec.push_back(std::move(g));
+			//vec.push_back(std::move(g));
 		}
 
 		{

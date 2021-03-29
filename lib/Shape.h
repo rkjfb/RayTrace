@@ -346,7 +346,7 @@ namespace ray {
 
 	public:
 		// Inserts NoopGroups into shapes to get spatial locality. Reducing intersection 20x in some scenes.
-		static std::vector<std::unique_ptr<Shape>> spatialize(std::vector<std::unique_ptr<Shape>>&& shapes);
+		static std::vector<std::unique_ptr<Shape>> spatialize(std::vector<std::unique_ptr<Shape>>&& shapes, int loop = 0);
 	};
 
 

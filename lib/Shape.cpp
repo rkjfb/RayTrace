@@ -378,7 +378,7 @@ void Group::add(std::unique_ptr<Shape> shape) {
 // 5. foreach shape: add to bucket which results in the smallest increase in volume
 // 6. foreach bucket: if it has >5 items, recurse into bucket
 // 7. add back huge
-std::vector<std::unique_ptr<Shape>> NoopGroup::spatialize(std::vector<std::unique_ptr<Shape>>&& shapes) {
+std::vector<std::unique_ptr<Shape>> NoopGroup::spatialize(std::vector<std::unique_ptr<Shape>>&& shapes, int loop) {
 
 	if (shapes.size() < 8) {
 		// No point in bucketizing small lists.
@@ -398,6 +398,12 @@ std::vector<std::unique_ptr<Shape>> NoopGroup::spatialize(std::vector<std::uniqu
 		}
 		cumulative.add(shape_bounds);
 		txbounds[s.get()] = shape_bounds;
+	}
+
+	if (cumulative.area() < 0.0001) {
+		// Some models have big clusters of very tiny shapes, leading to infinite recursion trying to divide space.
+		// (eg. Stanford bunny ported to OBJ by McGuire Computer Graphics Archive)
+		return shapes;
 	}
 
 	// Set aside huge area shapes.
@@ -494,12 +500,12 @@ std::vector<std::unique_ptr<Shape>> NoopGroup::spatialize(std::vector<std::uniqu
 	}
 
 	// Recurse into buckets
-	for (auto& b : bucket) {
-		if (b.min_shape == nullptr) {
+	for (auto& buc : bucket) {
+		if (buc.min_shape == nullptr) {
 			continue;
 		}
 
-		b.vec = spatialize(std::move(b.vec));
+		buc.vec = spatialize(std::move(buc.vec), loop + 1);
 	}
 
 	// rebuild bucketized shapes.
