@@ -13,6 +13,7 @@ namespace ray {
 	public:
 		int ignored = 0;
 		std::vector<Point3> vertices;
+		std::vector<Vec3> normals;
 
 		Wavefront(std::ifstream& file) {
 			init(file);
@@ -57,7 +58,8 @@ namespace ray {
 
 		void init(std::istream& input) {
 			// OBJ files use 1-based index, push a dummy vertex to keep numbering consistent.
-			vertices.push_back(Point3(0, 0, 0));
+			vertices.push_back(Point3());
+			normals.push_back(Vec3());
 			parse(input);
 		}
 

@@ -26,6 +26,13 @@ void Wavefront::parse(std::istream& input) {
 				double z = stod(match[4]);
 				vertices.push_back(Point3(x, y, z));
 				matched = true;
+			} else if (match[1] == "vn") {
+				// eg. vn -1.2 3 0.000
+				double x = stod(match[2]);
+				double y = stod(match[3]);
+				double z = stod(match[4]);
+				normals.push_back(Vec3(x, y, z));
+				matched = true;
 			} else if (match[1] == "f") {
 				// eg. f 1 2 3 4 5
 				// note that vertex indices are 1-based

@@ -218,7 +218,19 @@ TEST(Wavefront, MegaGroup) {
 //  Then parser.normals[1] = vector(0, 0, 1)
 //    And parser.normals[2] = vector(0.707, 0, -0.707)
 //    And parser.normals[3] = vector(1, 2, 3)
-//
+TEST(Wavefront, VertexNormal) {
+	Wavefront w(
+		R"literal(
+		vn 0 0 1
+		vn 0.707 0 -0.707
+		vn 1 2 3
+		)literal");
+
+	EXPECT_EQ(w.normals[1], Vec3(0, 0, 1));
+	EXPECT_EQ(w.normals[2], Vec3(0.707, 0, -0.707));
+	EXPECT_EQ(w.normals[3], Vec3(1, 2, 3));
+}
+
 //Scenario: Faces with normals
 //  Given file ← a file containing:
 //    """
