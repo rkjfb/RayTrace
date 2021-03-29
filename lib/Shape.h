@@ -38,6 +38,9 @@ namespace ray {
 		virtual void intersect(const Ray& inr, IntersectionList& out) const;
 		Point3 world_to_object(Point3 point) const;
 		Vec3 normal_to_world(Vec3 normal) const;
+		virtual void update_material(const Material& mat) {
+			material = mat;
+		}
 	};
 
 	class Sphere : public Shape
@@ -308,6 +311,13 @@ namespace ray {
 		Bounds bounds() const override { return _bounds; }
 		Vec3 local_normal_at(const Point3& local_point, const Intersection& hit) const override;
 		void local_intersect(const Ray& local_ray, IntersectionList& out) const override;
+		virtual void update_material(const Material& mat) override{
+			material = mat;
+			for (auto& s : _shapes) {
+				s->update_material(mat);
+			}
+		}
+
 
 		size_t size() {
 			return _shapes.size();

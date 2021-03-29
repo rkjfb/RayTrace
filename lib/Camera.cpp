@@ -75,7 +75,9 @@ Canvas Camera::render(const World& world) {
 		double diff = durdiff.count();
 
 		if (diff > 1) {
-			std::cout << floor(100 * x / (double)hsize) << "%" << std::endl;
+			std::chrono::duration<double> durtot = check - start;
+			double tot = durtot.count();
+			std::cout << floor(100 * x / (double)hsize) << "% (" << floor(tot) << "s)" << std::endl;
 			last_update = check;
 		}
 		else

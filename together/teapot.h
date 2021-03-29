@@ -29,6 +29,9 @@ public:
 			auto g = w.get_mega_group();
 			Bounds bounds = g->bounds();
 			g->transform = Matrix4::translate(-4, 0, 0) * Matrix4::scale(0.2, 0.2, 0.2) * Matrix4::rotateX(-pi / 2);
+			Material m;
+			m.pattern = std::make_unique<Solid>(Color::red());
+			g->update_material(Material::mirror());
 			vec.push_back(std::move(g));
 		}
 
@@ -39,6 +42,10 @@ public:
 			auto g = w.get_mega_group();
 			Bounds bounds = g->bounds();
 			g->transform = Matrix4::translate(4, 0, 0) * Matrix4::rotateY(pi);
+			Material m;
+			m.pattern = std::make_unique<Solid>(Color::red());
+			g->update_material(m);
+
 			vec.push_back(std::move(g));
 		}
 
@@ -49,6 +56,16 @@ public:
 
 			auto g = w.get_mega_group();
 			g->transform = Matrix4::translate(x, -g->bounds().min.y, 10) * Matrix4::rotateY(pi / 2);
+			Material m;
+			m.pattern = std::make_unique<Solid>(Color::chocolate());
+
+			if (x == 0) {
+				auto jitter = std::make_unique<Checker>(Color::beige(), Color::chocolate());
+				m.pattern = std::make_unique<PerlinPattern>(std::move(jitter), 1.0f);
+				m.pattern->transform = Matrix4::scale(0.1, 0.1, 0.1);
+			}
+
+			g->update_material(m);
 			vec.push_back(std::move(g));
 		}
 
