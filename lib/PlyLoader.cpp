@@ -120,7 +120,7 @@ PlyLoader::PlyLoader(const std::string& filename) {
                 int first = flist[j]->verts[0];
                 int last = flist[j]->verts[1];
                 for (k = 2; k < flist[j]->nverts; k++) {
-                    int latest = flist[j]->verts[1];
+                    int latest = flist[j]->verts[k];
 
                     Point3 p1(vlist[first]->x, vlist[first]->y, vlist[first]->z);
                     Point3 p2(vlist[last]->x, vlist[last]->y, vlist[last]->z);

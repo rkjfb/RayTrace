@@ -13,8 +13,9 @@
 #include "balls_in_room.h"
 #include "Chapter15.h"
 #include "teapot.h"
+#include "dragon.h"
 
 int main() {
-    Teapot chap;
+    Dragon chap;
     chap.run();
 }
