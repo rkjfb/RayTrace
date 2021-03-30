@@ -63,6 +63,9 @@
     <ClInclude Include="Wavefront.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlyLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib.cpp">
@@ -111,6 +114,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Wavefront.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlyLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

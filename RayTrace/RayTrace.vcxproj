@@ -56,6 +56,7 @@
     <ClCompile Include="test_Matrix.cpp" />
     <ClCompile Include="test_Patterns.cpp" />
     <ClCompile Include="test_Planes.cpp" />
+    <ClCompile Include="test_PlyLoader.cpp" />
     <ClCompile Include="test_Rays.cpp" />
     <ClCompile Include="test_Shapes.cpp" />
     <ClCompile Include="test_SmoothTriangles.cpp" />

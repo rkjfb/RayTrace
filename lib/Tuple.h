@@ -127,6 +127,9 @@ public:
 // Axis-aligned bound box.
 class Bounds {
 public:
+	Point3 min;
+	Point3 max;
+
 	Bounds() {
 		// start with inverted max bounds, so we'll replace all bounds on first iteration.
 		double m = std::numeric_limits<double>::max();
@@ -135,8 +138,14 @@ public:
 	}
 
 	Bounds(const Point3& inmin, const Point3& inmax) : min(inmin), max(inmax) {}
-	Point3 min;
-	Point3 max;
+
+	bool operator==(const Bounds& rhs) const {
+		return min == rhs.min && max == rhs.max;
+	}
+	bool operator!=(const Bounds& rhs) const {
+		return !operator==(rhs);
+	}
+
 
 	// Add p to bounds.
 	void add(const Point3& p) {
