@@ -24,13 +24,15 @@ public:
 		std::vector<std::unique_ptr<Shape>> vec;
 
 		{
-			PlyLoader ply("..\\RayTrace\\cube.ply");
+			PlyLoader ply("..\\models\\bunny\\bun_zipper_res2.ply");
 
 			auto g = ply.get_mega_group();
 			Bounds bounds = g->bounds();
-			//g->transform = Matrix4::translate(0, 0, 0) * Matrix4::scale(3, 3, 3) * Matrix4::rotateY(pi);
+			std::cout << bounds << std::endl;
+			//g->transform = Matrix4::translate(0, 0, 0) * Matrix4::scale(1, 1, 1) * Matrix4::rotateY(pi);
 			Material m;
 			m.pattern = std::make_unique<Solid>(Color::red());
+			m.ambient = 0.5;
 			g->update_material(m);
 			//g->update_material(Material::mirror());
 			vec.push_back(std::move(g));
@@ -51,7 +53,7 @@ public:
 		World world(light, std::move(vec));
 
 		Camera camera(4000, 2000, pi / 3);
-		Point3 from(0, 5, -5);
+		Point3 from(0, 1, -1);
 		Point3 to(0, 0, 0);
 		Vec3 up(0, 1, 0);
 		camera.transform = Matrix4::view(from, to, up);

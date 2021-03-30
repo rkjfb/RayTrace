@@ -139,6 +139,10 @@ public:
 
 	Bounds(const Point3& inmin, const Point3& inmax) : min(inmin), max(inmax) {}
 
+	friend std::ostream& operator<<(std::ostream& os, const Bounds& rhs) {
+		return os << "Bounds(" << rhs.min << ", " << rhs.max << ")";
+	}
+
 	bool operator==(const Bounds& rhs) const {
 		return min == rhs.min && max == rhs.max;
 	}

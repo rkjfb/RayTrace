@@ -23,7 +23,7 @@ typedef struct Face {
 
 PlyProperty face_props[] = { /* list of property information for a vertex */
 //  {(char*)"intensity", PLY_UCHAR, PLY_UCHAR, offsetof(Face,intensity), 0, 0, 0, 0},
-  {(char*)"vertex_index", PLY_INT, PLY_INT, offsetof(Face,verts),
+  {(char*)"vertex_indices", PLY_INT, PLY_INT, offsetof(Face,verts),
    1, PLY_UCHAR, PLY_UCHAR, offsetof(Face,nverts)},
 };
 
